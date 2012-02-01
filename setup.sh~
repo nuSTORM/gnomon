@@ -1,0 +1,4 @@
+LIBS=/Users/tunnell/Downloads/geant4.9.5/environments/g4py/lib:/Users/tunnell/.cache/0install.net/implementations/sha1new=6335d896d140b14d4c8326776bdf4dc0eeacdcf4/./bin/../lib:`clhep-config --prefix`/lib
+
+export DYLD_LIBRARY_PATH=${LIBS}
+export PYTHONPATH=${LIBS}
