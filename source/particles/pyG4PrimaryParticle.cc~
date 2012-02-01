@@ -57,6 +57,8 @@ void export_G4PrimaryParticle()
     .def("GetPx",       &G4PrimaryParticle::GetPx)
     .def("GetPy",       &G4PrimaryParticle::GetPy)
     .def("GetPz",       &G4PrimaryParticle::GetPz)
+
+      
     .def("GetNext",     &G4PrimaryParticle::GetNext,
          return_internal_reference<>())
     .def("GetDaughter", &G4PrimaryParticle::GetNext,

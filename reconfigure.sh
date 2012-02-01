@@ -1,0 +1,1 @@
+./configure macosx --with-g4-libdir=`geant4-config --prefix`/lib --with-clhep-incdir=`clhep-config --prefix`/include --with-clhep-libdir=`clhep-config --prefix`/lib/ --with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib --with-g4-incdir=`geant4-config --prefix`/include/Geant4

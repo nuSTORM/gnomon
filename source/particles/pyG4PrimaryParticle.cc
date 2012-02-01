@@ -58,6 +58,8 @@ void export_G4PrimaryParticle()
     .def("GetPy",       &G4PrimaryParticle::GetPy)
     .def("GetPz",       &G4PrimaryParticle::GetPz)
 
+      .def("SetMomentum", &G4PrimaryParticle::SetMomentum)
+      .def("SetPDGcode", &G4PrimaryParticle::SetPDGcode)
       
     .def("GetNext",     &G4PrimaryParticle::GetNext,
          return_internal_reference<>())
