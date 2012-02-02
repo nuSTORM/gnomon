@@ -1,5 +1,3 @@
-source /Users/tunnell/work/genie-trunk2/env.sh
-
 LIBS=`pwd`/lib:`geant4-config --prefix`/lib:`clhep-config --prefix`/lib
 
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${LIBS}

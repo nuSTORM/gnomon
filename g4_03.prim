@@ -1,0 +1,1286 @@
+##G4.PRIM-FORMAT-2.4
+/BoundingBox              -750              -750              -750               750               750               750
+!SetCamera
+!OpenDevice
+!BeginModeling
+#--------------------
+#/PVName          Calorimeter.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               250               500               500
+#--------------------
+#/PVName               Layer.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -245                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -247.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -242.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.1
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -235                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -237.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -232.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.2
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -225                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -227.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -222.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.3
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -215                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -217.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -212.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.4
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -205                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -207.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -202.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.5
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -195                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -197.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -192.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.6
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -185                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -187.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -182.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.7
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -175                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -177.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -172.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.8
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -165                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -167.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -162.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.9
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -155                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -157.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -152.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.10
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -145                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -147.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -142.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.11
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -135                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -137.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -132.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.12
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -125                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -127.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -122.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.13
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -115                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -117.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -112.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.14
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -105                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -107.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin            -102.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.15
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -95                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -97.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -92.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.16
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -85                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -87.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -82.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.17
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -75                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -77.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -72.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.18
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -65                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -67.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -62.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.19
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -55                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -57.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -52.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.20
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -45                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -47.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -42.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.21
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -35                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -37.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -32.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.22
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -25                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -27.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -22.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.23
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               -15                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -17.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             -12.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.24
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                -5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -7.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              -2.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.25
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                 5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               2.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               7.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.26
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                15                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              12.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              17.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.27
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                25                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              22.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              27.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.28
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                35                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              32.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              37.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.29
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                45                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              42.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              47.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.30
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                55                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              52.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              57.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.31
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                65                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              62.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              67.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.32
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                75                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              72.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              77.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.33
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                85                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              82.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              87.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.34
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin                95                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              92.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin              97.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.35
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               105                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             102.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             107.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.36
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               115                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             112.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             117.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.37
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               125                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             122.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             127.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.38
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               135                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             132.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             137.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.39
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               145                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             142.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             147.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.40
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               155                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             152.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             157.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.41
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               165                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             162.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             167.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.42
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               175                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             172.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             177.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.43
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               185                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             182.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             187.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.44
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               195                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             192.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             197.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.45
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               205                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             202.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             207.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.46
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               215                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             212.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             217.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.47
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               225                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             222.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             227.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.48
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               235                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             232.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             237.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName               Layer.49
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin               245                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box                 5               500               500
+#--------------------
+#/PVName                    Iron.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             242.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+#--------------------
+#/PVName                    Scintillator.0
+/ColorRGB                 1                 1                 1
+/ForceWireframe  0
+/Origin             247.5                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Box               2.5               500               500
+/ColorRGB                 0                 1                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex                 0                 0                 0
+/PLVertex                 5       -1.34273019       -13.1548798
+/PLVertex                10       -2.68546038       -26.3097597
+/PLVertex                15       -4.02819057       -39.4646395
+/PLVertex                20       -5.37092076       -52.6195193
+/PLVertex                25       -6.71365095       -65.7743992
+/PLVertex                30       -8.05638114        -78.929279
+/PLVertex                35       -9.39911133       -92.0841589
+/PLVertex                40       -10.7418415       -105.239039
+/PLVertex                45       -12.0845717       -118.393919
+/PLVertex                50       -13.4273019       -131.548798
+/PLVertex                55       -14.7700321       -144.703678
+/PLVertex                60       -16.1127623       -157.858558
+/PLVertex                65       -17.4554925       -171.013438
+/PLVertex                70       -18.7982227       -184.168318
+/PLVertex                75       -20.1409528       -197.323198
+/PLVertex                80        -21.483683       -210.478077
+/PLVertex                85       -22.8264132       -223.632957
+/PLVertex                90       -24.1691434       -236.787837
+/PLVertex                95       -25.5118736       -249.942717
+/PLVertex               100       -26.8546038       -263.097597
+/PLVertex               105        -28.197334       -276.252477
+/PLVertex               110       -29.5400642       -289.407356
+/PLVertex               115       -30.8827944       -302.562236
+/PLVertex               120       -32.2255246       -315.717116
+/PLVertex               125       -33.5682547       -328.871996
+/PLVertex               130       -34.9109849       -342.026876
+/PLVertex               135       -36.2537151       -355.181756
+/PLVertex               140       -37.5964453       -368.336635
+/PLVertex               145       -38.9391755       -381.491515
+/PLVertex               150       -40.2819057       -394.646395
+/PLVertex               155       -41.6246359       -407.801275
+/PLVertex               160       -42.9673661       -420.956155
+/PLVertex               165       -44.3100963       -434.111035
+/PLVertex               170       -45.6528264       -447.265914
+/PLVertex               175       -46.9955566       -460.420794
+/PLVertex               180       -48.3382868       -473.575674
+/PLVertex               185        -49.681017       -486.730554
+/PLVertex               190       -51.0237472       -499.885434
+/PLVertex        190.043545       -51.0354411              -500
+/PLVertex        228.052254       -61.2425293              -600
+/EndPolyline
+/ColorRGB                 0                 0                 1
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex                 0                 0                 0
+/PLVertex        2.46726633       0.164545633       0.990493289
+/PLVertex                 5        0.31950978        2.01575157
+/PLVertex                10       0.608298316        4.03895589
+/PLVertex                15       0.880122283         6.0544186
+/PLVertex                20        1.12148828        8.02891418
+/PLVertex                25        1.34192976        10.0036396
+/PLVertex                30        1.46393273        11.9819589
+/PLVertex        31.1906597        1.49387845        12.4450111
+/PLVertex                35        1.59086726        13.9259278
+/PLVertex         36.734247        1.60779962        14.6028239
+/PLVertex                40        1.63305389        15.8817159
+/PLVertex                45        1.65480002        17.8336228
+/PLVertex                50        1.67641723        19.8221664
+/PLVertex                55        1.67427566        21.8150839
+/PLVertex                60        1.72255075        23.8243746
+/PLVertex         60.854393         1.7331195        24.1704303
+/PLVertex                65        1.77131724        25.8262503
+/PLVertex                70        1.80254398        27.8484586
+/PLVertex                75        1.81342067        29.8716136
+/PLVertex                80         1.7294821         31.926231
+/PLVertex                85        1.64549385         33.974194
+/PLVertex                90        1.58348359        36.0264735
+/PLVertex                95        1.48438779        38.0820559
+/PLVertex               100        1.33824571        40.1787692
+/PLVertex               105        1.17282175        42.2788668
+/PLVertex               110       0.964395437        44.3936513
+/PLVertex               115       0.735624431        46.5110178
+/PLVertex               120       0.601934496        48.6600161
+/PLVertex               125       0.456454524        50.8064391
+/PLVertex               130       0.265377941        52.9012988
+/PLVertex        131.556493       0.206361128        53.5491276
+/PLVertex               135      0.0401161183        54.9914583
+/PLVertex               140      -0.231743388        57.0419819
+/PLVertex               145      -0.518634245        59.1072301
+/PLVertex               150       -0.85263344        61.1369142
+/PLVertex               155       -1.20658906        63.1668622
+/PLVertex               160       -1.61499906        65.2521128
+/PLVertex        162.130214         -1.801997        66.1385262
+/PLVertex               165       -2.10224809         67.440773
+/PLVertex               170        -2.5979097         69.714615
+/PLVertex               175       -3.12389616        71.9929036
+/PLVertex               180       -3.68441773         74.281732
+/PLVertex               185       -4.26731014        76.5792827
+/PLVertex               190       -4.84197678        78.8554096
+/PLVertex        192.904507       -5.16998268        80.1922761
+/PLVertex               195       -5.40603314        81.1543057
+/PLVertex               200       -5.97680375        83.4370136
+/PLVertex               205       -6.56730349         85.726781
+/PLVertex               210       -7.23974746        88.0925829
+/PLVertex        212.932799       -7.65768876        89.4812827
+/PLVertex               215       -7.95407903        90.4623927
+/PLVertex               220       -8.46859141        92.7252991
+/PLVertex               225       -9.00943793        94.9977145
+/PLVertex               230       -9.54756834        97.2622603
+/PLVertex               235       -10.1167736        99.5384935
+/PLVertex               240       -10.7388364        101.852925
+/PLVertex               245       -11.3838412        104.166154
+/PLVertex               250       -12.0691611        106.499632
+/PLVertex               300       -20.0252483        129.944541
+/EndPolyline
+/ColorRGB                 1                 0                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex        212.932799       -7.65768876        89.4812827
+/PLVertex        212.957555       -8.76917156        89.7860225
+/PLVertex        212.957599       -8.76917335        89.7860617
+/EndPolyline
+/ColorRGB                 1                 0                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex        192.904507       -5.16998268        80.1922761
+/PLVertex        192.411329       -6.28061625        81.2388543
+/PLVertex        192.455896       -6.28873589        81.3089096
+/EndPolyline
+/ColorRGB                 1                 0                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex        162.130214         -1.801997        66.1385262
+/PLVertex        162.694299       -1.60276727        66.3483554
+/PLVertex        163.104651       -1.66881739        66.3896502
+/PLVertex        163.381173       -1.71257801        66.2624704
+/PLVertex        163.502587       -1.60096875        66.0829852
+/PLVertex        163.504852       -1.66391611        65.8511075
+/PLVertex        163.601601       -1.74450301        65.6481887
+/PLVertex        163.628706        -1.9065561        65.4733923
+/PLVertex        163.731987       -2.01755413         65.287712
+/PLVertex        163.949309       -2.05890854        65.2213909
+/PLVertex        164.039957        -2.2327416         65.155512
+/PLVertex        164.113997       -2.38902161        65.0415697
+/PLVertex        164.204942       -2.55461916        64.8940547
+/PLVertex        164.215133       -2.55537041        65.1292885
+/PLVertex        164.317431        -2.7395927        65.2388596
+/PLVertex        164.252079        -2.8146141        65.1216102
+/PLVertex         164.27251       -2.81478182        65.1108458
+/EndPolyline
+/ColorRGB                 1                 0                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex        131.556493       0.206361128        53.5491276
+/PLVertex        131.844121      -0.348715349        54.2523506
+/PLVertex        131.851111      -0.355910056         54.245306
+/EndPolyline
+/ColorRGB                 1                 0                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex         60.854393         1.7331195        24.1704303
+/PLVertex        60.9408542        1.94965023          24.26575
+/PLVertex        61.0227224        2.02145258        24.3708185
+/PLVertex          61.03568          2.135354        24.4185983
+/PLVertex        61.0442674        2.21035497        24.4753316
+/PLVertex        61.0192124        2.24672004        24.5600618
+/PLVertex        61.0355537        2.31780738         24.618036
+/PLVertex        60.9830344        2.30840921        24.6952215
+/PLVertex        60.8909567        2.32644142        24.9547761
+/PLVertex        60.9586241        2.47992587        25.0306609
+/PLVertex        61.0727685        2.51325234        24.9652652
+/PLVertex        61.1360109        2.60620374        24.9676305
+/PLVertex         61.156302        2.61465361        25.0484558
+/EndPolyline
+/ColorRGB                 1                 0                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex         36.734247        1.60779962        14.6028239
+/PLVertex        36.7071987        2.13563901        13.7843148
+/PLVertex        36.6958361        2.18160175         13.789656
+/EndPolyline
+/ColorRGB                 1                 0                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex        31.1906597        1.49387845        12.4450111
+/PLVertex        31.4507964        1.48928681        12.2232641
+/PLVertex        31.5145444        1.65839793        12.2071879
+/PLVertex        31.5350255        1.82389805        12.1763442
+/PLVertex        31.4211128         1.7444473         12.121715
+/PLVertex        31.4145274        1.62439997        12.1259102
+/PLVertex        31.4020297        1.59575394        12.0627568
+/EndPolyline
+/ColorRGB                 1                 0                 0
+/ForceWireframe  0
+/Origin                 0                 0                 0
+/BaseVector                 1                 0                 0                 0                 1                 0
+/Polyline
+/PLVertex        2.46726633       0.164545633       0.990493289
+/PLVertex        3.04981756      -0.263231463        1.14586007
+/PLVertex        3.23679617       -0.57184294        1.34087118
+/PLVertex        3.37397532      -0.897247202        1.39601089
+/PLVertex        3.34694146       -1.09334465        1.27165631
+/PLVertex        3.22638522       -1.24807845        1.19128281
+/PLVertex        3.00763729       -1.28147226        1.13224142
+/PLVertex        3.03219641       -1.30431994       0.905658117
+/PLVertex        3.08004918       -1.32544621       0.712841388
+/PLVertex        3.15383097       -1.41187904       0.680106087
+/EndPolyline
+#--------------------
+!EndModeling
+!DrawAll
+!CloseDevice
