@@ -65,6 +65,10 @@ void export_G4PrimaryVertex()
     .def("GetY0",       &G4PrimaryVertex::GetY0)
     .def("GetZ0",       &G4PrimaryVertex::GetZ0)
     .def("GetT0",       &G4PrimaryVertex::GetT0)
+
+      .def("SetPrimary", &G4PrimaryVertex::SetPrimary)
+      .def("SetPosition", &G4PrimaryVertex::SetPosition)
+      
     .def("GetNumberOfParticle", &G4PrimaryVertex::GetNumberOfParticle)
     .def("GetPrimary",  &G4PrimaryVertex::GetPrimary,
 	 return_internal_reference<>(), f_GetPrimary())

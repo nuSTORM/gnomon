@@ -1,42 +1,28 @@
-#!/usr/bin/python
-# ==================================================================
-# python script for Geant4Py
-#
-#   ExN03 : geant4/examples/novice/N03
-#        using site-module packages
-# ==================================================================
+#!/usr/bin/env python
 from Geant4 import *
-import g4py.Qmaterials, g4py.NISTmaterials
 import g4py.ExN03geom
 import g4py.ExN03pl
 import g4py.ParticleGun
 import sys
-from time import *
-from subprocess import *
-import os
+from time import sleep
+#from subprocess import *
+import ROOT
+import math
 
-# ==================================================================
-# main
-# ==================================================================
-# ------------------------------------------------------------------
-# randum number
-# ------------------------------------------------------------------
 rand_engine= Ranlux64Engine()
 HepRandom.setTheEngine(rand_engine)
 HepRandom.setTheSeed(20050830L)
 
+import my_script
 
-
-class MyEventAction(G4UserTrackingAction):
-  "My Event Action"
+class MyTrackingAction(G4UserTrackingAction):
+  "My tracking Action"
 
   def PreUserTrackingAction(self, track):
-    if track.GetDefinition().GetParticleName() == 'mu-':
-      self.start = track.GetPosition()
+    pass
   
   def PostUserTrackingAction(self, track):
-    if track.GetDefinition().GetParticleName() == 'mu-':
-      print 'dist:', track.GetPosition() - self.start
+    pass
     
 
 class MyPrimaryGeneratorAction(G4VUserPrimaryGeneratorAction):
@@ -44,137 +30,105 @@ class MyPrimaryGeneratorAction(G4VUserPrimaryGeneratorAction):
 
   def __init__(self):
     G4VUserPrimaryGeneratorAction.__init__(self)
-    self.particleGun= G4ParticleGun(1)
+    self.event_list = self.get_next_events()
+
+  def get_next_events(self):
+    f = ROOT.TFile('ntuple_neg14.root')
+    t = f.Get('gst')
+
+    n = t.GetEntries()
+
+    for i in range(n):
+      t.GetEntry(i)
+      next_events = []
+
+      lepton_event = {}
+      if t.El**2 - (t.pxl**2 + t.pyl**2 + t.pzl**2) < 1e-7:
+        lepton_event['code'] = -14
+      else:
+        lepton_event['code'] = -13
+      lepton_event['E'] = t.El
+      lepton_event['px'] = t.pxl
+      lepton_event['py'] = t.pyl
+      lepton_event['pz'] = t.pzl
+
+      next_events.append(lepton_event)
+
+
+      for j in range(t.nf):  # nf, number final hadronic states                 
+        hadron_event = {}
+        hadron_event['code'] = t.pdgf[j]
+        hadron_event['E'] = t.Ef[j]
+        
+        hadron_event['px'] = t.pxf[j]
+        hadron_event['py'] = t.pyf[j] 
+        hadron_event['pz'] = t.pzf[j] 
+
+        next_events.append(hadron_event)
+
+
+      print 'nc', t.__getattr__('nc')
+      print 'Event type:'
+      for type in ['qel', 'res', 'dis', 'coh', 'dfr', 'imd', 'nuel', 'em']:
+        print '\t', type, ':', t.__getattr__(type)
+
+      print 'Propogator:'
+      for prop in ['nc', 'cc']:
+        print '\t', prop, ':', t.__getattr__(prop)
+
+
+      print 'y:', t.y
+      try:
+        print 'm_l:', math.sqrt(t.El**2 - (t.pxl**2 + t.pyl**2 + t.pzl**2))
+      except:
+        pass
+      print lepton_event
+
+      yield next_events
 
   def GeneratePrimaries(self, event):
-    self.particleGun.SetParticleByName("mu-")
+    events = self.event_list.next()
+    for particle in events:
+      pp = G4PrimaryParticle()
+      pp.SetPDGcode(particle['code'])
+      
+      particle['px'], particle['py'], particle['pz'] = [1000*x for x in [particle['px'], particle['py'], particle['pz']]]  # GeV -> MeV
 
-    self.particleGun.SetParticleEnergy(500.*MeV)
-    self.particleGun.SetParticlePosition(G4ThreeVector(10,0.,0.)*cm) 
-    self.particleGun.SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.))  
-    #self.particleGun.SetParticleMomentumDirection(G4ThreeVector(dx, 0., 1.))
-    self.particleGun.GeneratePrimaryVertex(event)
+      temp = particle['pz']
+      particle['pz'] = particle['px']
+      particle['px'] = temp
 
-    pp = G4PrimaryParticle()
-    pp.SetPDGCode(211)
-    pp.SetMomentum(-1000, 0, 0)
-
-    v = G4PrimaryVertex()
-    v.SetPosition(0, 0, 0)
-    v.SetPrimary(pp)
-    
-    event.AddPrimaryVertex(v)
-
-    print event, v
-
-# ------------------------------------------------------------------
-# setup for materials
-# ------------------------------------------------------------------
-
-# NIST materials
-#g4py.NISTmaterials.Construct()
-
-# ------------------------------------------------------------------
-# setup for geometry
-# ------------------------------------------------------------------
-# normal way for constructing user geometry
-
+      pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
+      
+      v = G4PrimaryVertex()
+      v.SetPosition(0.0, 0.0, 0.0)
+      v.SetPrimary(pp)
+      
+      event.AddPrimaryVertex(v)
 
 exN03geom= g4py.ExN03geom.ExN03DetectorConstruction()
 gRunManager.SetUserInitialization(exN03geom)
 
-# 2nd way, short-cut way
-
-#g4py.ExN01geom.Construct()
-#g4py.ExN03geom.Construct()
-
-# magnetic field
-#exN03geom.SetMagField(0.1 * tesla)
-
-# ------------------------------------------------------------------
-# setup for physics list
-# ------------------------------------------------------------------
-# normal way for constructing user physics list
 exN03PL= g4py.ExN03pl.PhysicsList()
 gRunManager.SetUserInitialization(exN03PL)
 
-myEA= MyEventAction()
+myEA= MyTrackingAction()
 gRunManager.SetUserAction(myEA)
 
-# 2nd way, short-cut way
-#g4py.ExN01pl.Construct()
-#g4py.EMSTDpl.Construct()
-
-# ------------------------------------------------------------------
-# setup for primary generator action
-# ------------------------------------------------------------------
-# normal way for constructing user physics list
-pgPGA= MyPrimaryGeneratorAction() # g4py.ParticleGun.ParticleGunAction()
+pgPGA= MyPrimaryGeneratorAction()
 gRunManager.SetUserAction(pgPGA)
-#pg= pgPGA.GetParticleGun()
 
-# 2nd way, short-cut way
-#pg= g4py.ParticleGun.Construct()
-
-# set parameters of particle gun
-#pg.SetParticleByName("mu-")
-#pg.SetParticleEnergy(500.*MeV)
-#pg.SetParticlePosition(G4ThreeVector(10,0.,0.)*cm)
-#pg.SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.))
-
-
-# ------------------------------------------------------------------
-# go...
-# ------------------------------------------------------------------
 gRunManager.Initialize()
 
-# beamOn
-#gRunManager.BeamOn(3)
-
-
-#TEST
-#gProcessTable.SetProcessActivation("msc", 0)
-#gProcessTable.SetProcessActivation("conv", 0)
-#gProcessTable.SetProcessActivation("eBrem", 0)
-#gProcessTable.SetProcessActivation("eIoni", 0)
-#gProcessTable.SetProcessActivation("annihil", 0)
-
-
 # visualization
-# OGLSX, VRML and HEPREP sceneHandlers are all created with names
 gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")
-gApplyUICommand("/vis/sceneHandler/create VRML2FILE VRML")
-gApplyUICommand("/vis/sceneHandler/create HepRepFile HEPREP")
-
-#  OGLSX is the default so, viewer is created and volume is drawn
 gApplyUICommand("/vis/viewer/create OGLSX oglsxviewer")
 gApplyUICommand("/vis/drawVolume")
 gApplyUICommand("/vis/scene/add/trajectories")
-
 gApplyUICommand("/tracking/storeTrajectory 1")
 gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 gApplyUICommand("/vis/viewer/select  oglsxviewer")
-
-# viewers VRML and Wired are tested by their envs vars
-# if their envs var are set, then viewers are created and drawVolume
-
-global heprepViewer, heprepDir, heprepName
-heprepViewer = os.environ.get("G4HEPREPFILE_VIEWER")
-heprepDir = os.environ.get("G4HEPREPFILE_DIR")
-heprepName = os.environ.get("G4HEPREPFILE_NAME")
-if heprepViewer is not None:
-  gApplyUICommand("/vis/viewer/create HEPREP wired")
-  gApplyUICommand("/vis/drawVolume")
-
-# VRML viewers name is user defined
-vrmlDir = os.environ.get("G4VRML_DEST_DIR")
-vrmlViewer = os.environ.get("G4VRMLFILE_VIEWER")
-
-if vrmlViewer is not None:
-  gApplyUICommand("/vis/viewer/create VRML vrmlviewer")
-  gApplyUICommand("/vis/drawVolume")
-
 
 
 # creating widgets using grid layout
@@ -200,18 +154,6 @@ class App(Frame):
     layerLabel.grid(row=2, column=0, sticky=W)
     layer.grid(row=2, column=1, columnspan=5, sticky=W)
 
-#absorber material selection row=3
-    absorbermaterialLabel = Label(self, bg="green", text="Absorber Material")
-    absorbermaterialLabel.grid(row=3, column=0, sticky=W)
-    self.absorbermaterialVar = StringVar()
-    self.absorbermaterialVar.set("Iron")
-    ra1 = { }
-    pos=1
-    for i in ("Aluminium", "Iron"):
-      ra1[i] = Radiobutton(self, text=i, variable=self.absorbermaterialVar, value=i)
-      ra1[i].grid(row=3, column=pos, sticky=W)
-      pos=pos+1
-
 #absorber thickness row=4
     absorberthickLabel = Label(self, bg="green", text="Thickness (mm)")
     self.absorberthickVar = DoubleVar()
@@ -222,16 +164,9 @@ class App(Frame):
 
 
 #gap material selection row=5
-    gapmaterialLabel = Label(self, bg="green", text="Gap Material")
-    gapmaterialLabel.grid(row=5, column=0, sticky=W)
     self.gapmaterialVar = StringVar()
     self.gapmaterialVar.set("Scintillator")
-    ra2 = { }
-    pos=1
-    for i in ("liquidArgon","Scintillator", "Air", "Aerogel",  "Galactic" ):
-      ra2[i] = Radiobutton(self, text=i, variable=self.gapmaterialVar, value=i)
-      ra2[i].grid(row=5, column=pos, sticky=W)
-      pos=pos+1
+
 
 #gap thickness row=6
     gapthickLabel = Label(self, bg="green", text="Thickness (mm)")
@@ -249,54 +184,17 @@ class App(Frame):
     calorsizeYZLabel.grid(row=7, column=0, sticky=W)
     calorsizeYZ.grid(row=7, column=1, columnspan=5, sticky=W)
 
-
-#particle row=8
-    particleLabel = Label(self, bg="green",  text="Particle")
-    particleLabel.grid(row=8, column=0, sticky=W)
-    self.particleVar = StringVar()
-    self.particleVar.set("mu-")
-    ra1 = { }
-    pos1=1
-    for i in ("proton", "gamma", "e-",  "e+", "mu-", "mu+"):
-      ra1[i] = Radiobutton(self, text=i, variable=self.particleVar, value=i)
-      ra1[i].grid(row=8, column=pos1, sticky=W)
-      pos1=pos1+1
-
-#energy row=9
-    energyLabel = Label(self, bg="green",  text="Energy (MeV)")
-
-    self.energyVar=StringVar()
-    self.energyVar.set(500)
-    energy = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=1000., tickinterval=100.0, resolution=0.1, variable=self.energyVar, digits=5 )
-    energyLabel.grid(row=9, column=0, sticky=W)
-    energy.grid(row=9, column=1, columnspan=5, sticky=W)
-
 #number of event row=10
     eventLabel = Label(self, bg="green",  text="Events")
     self.eventVar=IntVar()
-    self.eventVar.set(3)
-    event = Scale(self,  orient=HORIZONTAL, length=400, from_=0, to=10**5, tickinterval=10**4, resolution=1, variable=self.eventVar )
+    self.eventVar.set(1)
+    event = Scale(self,  orient=HORIZONTAL, length=400, from_=0, to=10**4, tickinterval=10**4, resolution=1, variable=self.eventVar )
     eventLabel.grid(row=10, column=0, sticky=W)
     event.grid(row=10, column=1, columnspan=5, sticky=W)
 
 #start a run button row=0
     startBut = Button(self, bg="orange", text="Start a run", command=self.cmd_beamOn)
     startBut.grid(row=0, column=0, sticky=W)
-
-#Zoom in/out Pan X Y row=13
-#    visLabel = Label(self, text="viewer", bg="orange")
-#    expandBut = Button(self, text="Zoom in", command=self.cmd_expand)
-#    shrinkBut = Button(self, text="Zoom out", command=self.cmd_shrink)
-#    visLabel.grid(row=13, column=0, sticky=W)
-#    expandBut.grid(row=13, column=1, sticky=W)
-#    shrinkBut.grid(row=13, column=2, sticky=W)
-#    panLabel = Label(self, text="Pan X Y(mm)")
-#    self.panXYVar = StringVar()
-#    panXYEnt = Entry(self, textvariable=self.panXYVar, width=6)
-#    panBut = Button(self, bg="orange", text="OK", command=self.cmd_pan)
-#    panLabel.grid(row=13, column=3, sticky=W)
-#    panXYEnt.grid(row=13, column=4)
-#    panBut.grid(row=13, column=5)
 
 # process activate row 11 - 13
     processLabel=Label(self, text="Process on/off", bg="green")
@@ -322,7 +220,7 @@ class App(Frame):
 
     self.cutVar=DoubleVar()
     self.cutVar.set(1.)
-    cut = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=10., tickinterval=1., resolution=0.005, variable=self.cutVar, digits=5 )
+    cut = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=10., tickinterval=5., resolution=0.005, variable=self.cutVar, digits=5 )
     cutLabel.grid(row=14, column=0, sticky=W)
     cut.grid(row=14, column=1, columnspan=5, sticky=W)
 
@@ -334,23 +232,6 @@ class App(Frame):
     mag = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=5., tickinterval=1., resolution=0.1, variable=self.magVar, digits=3 )
     magLabel.grid(row=15, column=0, sticky=W)
     mag.grid(row=15, column=1, columnspan=5, sticky=W)
-
-
-# viewer selection row=16
-    viewerLabel = Label(self, bg="green", text="Viewer")
-    viewerLabel.grid(row=16, column=0, sticky=W)
-    self.viewerVar = StringVar()
-    self.viewerVar.set("")
-    stateOfViewer = {"OpenGL":"normal", "VRML":"normal", "Wired":"normal"}
-    if vrmlViewer is None: stateOfViewer["VRML"] = "disabled"
-    if heprepViewer is None: stateOfViewer["Wired"] = "disabled"
-    viewers = { }
-    pos=1
-    for i in ("OpenGL", "VRML", "Wired"):
-      viewers[i] = Radiobutton(self, text=i, variable=self.viewerVar, value=i, command=self.cmd_viewer, state=stateOfViewer[i])
-      viewers[i].grid(row=16, column=pos, sticky=W)
-      pos=pos+1
-
 
 #Geant4 command entry row = 17
     g4comLabel = Label(self, text="Geant4 command", bg="orange")
@@ -369,7 +250,7 @@ class App(Frame):
 #on Run butto do...
   def cmd_beamOn(self):
       exN03geom.SetNbOfLayers(self.layerVar.get())
-      exN03geom.SetAbsorberMaterial(self.absorbermaterialVar.get())
+      exN03geom.SetAbsorberMaterial("Iron")
       exN03geom.SetAbsorberThickness(self.absorberthickVar.get()  * mm/2.0)
       exN03geom.SetGapMaterial(self.gapmaterialVar.get())
       exN03geom.SetGapThickness(self.gapthickVar.get()  * mm/2.0)
@@ -384,11 +265,6 @@ class App(Frame):
 
       print "Now geometry updated"
 
-
-      self.cmd_particle(self.particleVar.get())
-      self.cmd_energy(self.energyVar.get())
-
-      print position
 
       eventNum = self.eventVar.get()
       for i in range(eventNum):
@@ -411,43 +287,15 @@ class App(Frame):
   def cmd_g4command(self):
     gApplyUICommand(self.g4commandVar.get())
 
-  def cmd_particle(self, particle):
-    gApplyUICommand("/gun/particle " + particle)
-
-
-  def cmd_energy(self, penergy):
-    gApplyUICommand("/gun/energy " + penergy + " MeV")
-
 
   def cmd_viewer(self):
-    if self.viewerVar.get() == "OpenGL":
-      gApplyUICommand("/vis/viewer/select oglsxviewer")
-      gApplyUICommand("/vis/scene/add/trajectories")
-
-      gApplyUICommand("/tracking/storeTrajectory 1")
-      gApplyUICommand("/vis/scene/endOfEventAction accumulate")
-      gApplyUICommand("/vis/scene/endOfRunAction accumulate")
-
-    if self.viewerVar.get() == "VRML":
-      gApplyUICommand("/vis/viewer/select vrmlviewer")
-      gApplyUICommand("/vis/scene/add/trajectories")
-
-      gApplyUICommand("/tracking/storeTrajectory 1")
-      gApplyUICommand("/vis/scene/endOfEventAction accumulate")
-      gApplyUICommand("/vis/scene/endOfRunAction accumulate")
-
-    if self.viewerVar.get() == "Wired":
-      gApplyUICommand("/vis/viewer/select wired")
-      gApplyUICommand("/vis/scene/add/trajectories")
-
-      gApplyUICommand("/tracking/storeTrajectory 1")
-      gApplyUICommand("/vis/scene/endOfEventAction accumulate")
-      gApplyUICommand("/vis/scene/endOfRunAction accumulate")
-
-      if self.g4pipe == 0:
-        Popen(heprepViewer +  " -file " + heprepDir + "/" + heprepName +".heprep", shell=True)
-        self.g4pipe = 1
-
+    gApplyUICommand("/vis/viewer/select oglsxviewer")
+    gApplyUICommand("/vis/scene/add/trajectories")
+    
+    gApplyUICommand("/tracking/storeTrajectory 1")
+    gApplyUICommand("/vis/scene/endOfEventAction accumulate")
+    gApplyUICommand("/vis/scene/endOfRunAction accumulate")
+    
 
   def cmd_expand(self):
     gApplyUICommand("/vis/viewer/zoom 1.2")

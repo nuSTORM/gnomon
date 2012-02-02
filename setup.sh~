@@ -1,4 +1,6 @@
-LIBS=/Users/tunnell/Downloads/geant4.9.5/environments/g4py/lib:/Users/tunnell/.cache/0install.net/implementations/sha1new=6335d896d140b14d4c8326776bdf4dc0eeacdcf4/./bin/../lib:`clhep-config --prefix`/lib
+source /Users/tunnell/work/genie-trunk2/env.sh
 
-export DYLD_LIBRARY_PATH=${LIBS}
-export PYTHONPATH=${LIBS}
+LIBS=`pwd`/lib:`geant4-config --prefix`/lib:`clhep-config --prefix`/lib
+
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${LIBS}
+export PYTHONPATH=$PYTHONPATH:${LIBS}
