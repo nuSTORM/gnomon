@@ -1,6 +1,0 @@
-XLIB=~/.cache/0install.net/implementations/sha1new=3467d45bed1905bf61e6f7fa6ec72d3dbcd47b02/lib
-LIBS=`pwd`/lib:`geant4-config --prefix`/lib:`clhep-config --prefix`/lib:${XLIB}
-
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${LIBS}
-export PYTHONPATH=$PYTHONPATH:${LIBS}
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${LIBS}
