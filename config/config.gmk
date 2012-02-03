@@ -11,8 +11,8 @@ Q_SYSTEM              := macosx
 Q_PREFIX              := /Users/tunnell/work/g4py
 Q_LIBDIR              := /Users/tunnell/work/g4py/lib
 
-Q_G4_INCDIR           := /Users/tunnell/work/Geant4-9.5.0-Darwin/include/Geant4
-Q_G4_LIBDIR           := /Users/tunnell/work/Geant4-9.5.0-Darwin/lib
+Q_G4_INCDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=e9242833cbd96e52803f803471f6b467b33a2ea8/bin/../include/Geant4
+Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=e9242833cbd96e52803f803471f6b467b33a2ea8/bin/../lib
 
 Q_CLHEP_INCDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=55fa32c83b83d854a2f2b6be2bbefc9abb53ae9f/include
 Q_CLHEP_LIBDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=55fa32c83b83d854a2f2b6be2bbefc9abb53ae9f/lib/
@@ -33,4 +33,6 @@ Q_ENABLE_GL2PS        := 1
 
 Q_ENABLE_PHYSICSLIST  := 1
 
-Q_ENABLE_GDML         := 0
+Q_ENABLE_GDML         := 1
+Q_XERCESC_INCDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=d89a1862c49e0613589ee865103afa0d01fa8494/include
+Q_XERCESC_LIBDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=d89a1862c49e0613589ee865103afa0d01fa8494/lib

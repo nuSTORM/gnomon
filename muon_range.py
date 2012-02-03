@@ -138,6 +138,12 @@ gApplyUICommand("/tracking/storeTrajectory 1")
 gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 
+navigator= gTransportationManager.GetNavigatorForTracking()
+world_volume= navigator.GetWorldVolume()
+
+gdml_parser = G4GDMLParser()
+gdml_parser.Write("qgeom.gdml", world_volume)
+
 # creating widgets using grid layout
 
 from Tkinter import *
