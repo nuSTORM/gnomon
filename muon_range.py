@@ -131,6 +131,13 @@ gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 gApplyUICommand("/vis/viewer/select  oglsxviewer")
 
 
+gApplyUICommand("/vis/viewer/select oglsxviewer")
+gApplyUICommand("/vis/scene/add/trajectories")
+
+gApplyUICommand("/tracking/storeTrajectory 1")
+gApplyUICommand("/vis/scene/endOfEventAction accumulate")
+gApplyUICommand("/vis/scene/endOfRunAction accumulate")
+
 # creating widgets using grid layout
 
 from Tkinter import *
@@ -288,14 +295,6 @@ class App(Frame):
     gApplyUICommand(self.g4commandVar.get())
 
 
-  def cmd_viewer(self):
-    gApplyUICommand("/vis/viewer/select oglsxviewer")
-    gApplyUICommand("/vis/scene/add/trajectories")
-    
-    gApplyUICommand("/tracking/storeTrajectory 1")
-    gApplyUICommand("/vis/scene/endOfEventAction accumulate")
-    gApplyUICommand("/vis/scene/endOfRunAction accumulate")
-    
 
   def cmd_expand(self):
     gApplyUICommand("/vis/viewer/zoom 1.2")

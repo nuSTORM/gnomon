@@ -11,11 +11,11 @@ Q_SYSTEM              := macosx
 Q_PREFIX              := /Users/tunnell/work/g4py
 Q_LIBDIR              := /Users/tunnell/work/g4py/lib
 
-Q_G4_INCDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6335d896d140b14d4c8326776bdf4dc0eeacdcf4/./bin/../include/Geant4
-Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6335d896d140b14d4c8326776bdf4dc0eeacdcf4/./bin/../lib
+Q_G4_INCDIR           := /Users/tunnell/work/Geant4-9.5.0-Darwin/include/Geant4
+Q_G4_LIBDIR           := /Users/tunnell/work/Geant4-9.5.0-Darwin/lib
 
-Q_CLHEP_INCDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=c4087b38f1ec59fb9c90212b585496af232cb700/include
-Q_CLHEP_LIBDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=c4087b38f1ec59fb9c90212b585496af232cb700/lib/
+Q_CLHEP_INCDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=55fa32c83b83d854a2f2b6be2bbefc9abb53ae9f/include
+Q_CLHEP_LIBDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=55fa32c83b83d854a2f2b6be2bbefc9abb53ae9f/lib/
 Q_CLHEP_LIB           := CLHEP
 
 Q_PYTHON_INCDIR       := /usr/include/python2.7

@@ -99,6 +99,7 @@ gRunManager.Initialize()
 
 # visualization 
 # OGLSX, VRML and HEPREP sceneHandlers are all created with names
+gApplyUICommand("/vis/viewer/list")
 gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")
 gApplyUICommand("/vis/sceneHandler/create VRML2FILE VRML")
 gApplyUICommand("/vis/sceneHandler/create HepRepFile HEPREP")
