@@ -454,7 +454,7 @@ void ExN03DetectorConstruction::SetMagField(G4double fieldValue)
   if(magField) delete magField;		//delete the existing magn field
 
   if(fieldValue!=0.)			// create a new one if non nul
-  { magField = new G4UniformMagField(G4ThreeVector(0.,0.,fieldValue));
+  { magField = new G4UniformMagField(G4ThreeVector(0.,fieldValue, 0.0));
     fieldMgr->SetDetectorField(magField);
     fieldMgr->CreateChordFinder(magField);
   } else {

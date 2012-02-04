@@ -48,6 +48,7 @@
       <solidref ref="Gap0x7fcef5330700"/>
     </volume>
     <volume name="Layer0x7fcef5330450">
+      <auxiliary auxtype="SensDet" auxvalue="Tracker"/>
       <materialref ref="Galactic0x7fcef5315b70"/>
       <solidref ref="Layer0x7fcef53303e0"/>
       <physvol name="Iron0x7fcef5330680">

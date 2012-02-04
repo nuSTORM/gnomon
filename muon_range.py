@@ -15,6 +15,31 @@ HepRandom.setTheSeed(20050830L)
 
 import my_script
 
+class MyField(G4MagneticField):
+  "My Magnetic Field"
+
+  def GetFieldValue(self, pos, time):
+    #current = 150 * 1000#  A
+    #mu0 = 4 * math.pi * 10**-7
+    r = math.sqrt( (pos.x)**2 + (pos.y )**2)
+
+    bfield= G4ThreeVector()
+
+    B = -2  * tesla # saturation
+    if r != 0.0:
+      #B += mu0 * current / (2 * math.pi * r * m) * tesla
+      bfield.x= (pos.y / r) * B
+      bfield.y= (pos.x / r) * B
+    else:
+      bfield.x= 0
+      bfield.y= 0
+    
+    bfield.z= 0.
+
+    #print pos, bfield
+      
+    return bfield
+
 class MyTrackingAction(G4UserTrackingAction):
   "My tracking Action"
 
@@ -94,19 +119,33 @@ class MyPrimaryGeneratorAction(G4VUserPrimaryGeneratorAction):
       
       particle['px'], particle['py'], particle['pz'] = [1000*x for x in [particle['px'], particle['py'], particle['pz']]]  # GeV -> MeV
 
-      temp = particle['pz']
-      particle['pz'] = particle['px']
-      particle['px'] = temp
-
       pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
       
       v = G4PrimaryVertex()
-      v.SetPosition(0.0, 0.0, 0.0)
+      v.SetPosition(20.0, 20.0, 0.0)
       v.SetPrimary(pp)
       
       event.AddPrimaryVertex(v)
 
-exN03geom= g4py.ExN03geom.ExN03DetectorConstruction()
+class MyDetectorConstruction(G4VUserDetectorConstruction):
+  "My Detector Construction"
+
+  def __init__(self):
+    G4VUserDetectorConstruction.__init__(self)
+    self.world= None
+    self.gdml_parser= G4GDMLParser()
+
+  def __del__(self):
+    pass
+
+  def Construct(self):
+    self.gdml_parser.Read("qgeom.gdml")
+    self.world= self.gdml_parser.GetWorldVolume()
+
+    return self.world
+
+#exN03geom_dead= g4py.ExN03geom.ExN03DetectorConstruction()
+exN03geom = MyDetectorConstruction()
 gRunManager.SetUserInitialization(exN03geom)
 
 exN03PL= g4py.ExN03pl.PhysicsList()
@@ -117,6 +156,15 @@ gRunManager.SetUserAction(myEA)
 
 pgPGA= MyPrimaryGeneratorAction()
 gRunManager.SetUserAction(pgPGA)
+
+fieldMgr= gTransportationManager.GetFieldManager()
+
+#print "uniform"
+#myField= G4UniformMagField(G4ThreeVector(0.,2.*tesla,0.))
+print "toroid"
+myField= MyField()                                                             
+fieldMgr.SetDetectorField(myField)
+fieldMgr.CreateChordFinder(myField)
 
 gRunManager.Initialize()
 
@@ -134,15 +182,8 @@ gApplyUICommand("/vis/viewer/select  oglsxviewer")
 gApplyUICommand("/vis/viewer/select oglsxviewer")
 gApplyUICommand("/vis/scene/add/trajectories")
 
-gApplyUICommand("/tracking/storeTrajectory 1")
 gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 gApplyUICommand("/vis/scene/endOfRunAction accumulate")
-
-navigator= gTransportationManager.GetNavigatorForTracking()
-world_volume= navigator.GetWorldVolume()
-
-gdml_parser = G4GDMLParser()
-gdml_parser.Write("qgeom.gdml", world_volume)
 
 # creating widgets using grid layout
 
@@ -159,43 +200,6 @@ class App(Frame):
     title.grid(row=0, column=1, columnspan=3)
     header = Label(self, text="empowered by \n Geant4Py")
     header.grid(row=1, column=1, columnspan=3)
-# number of layers
-    layerLabel = Label(self, bg="green",  text="No of layers")
-    self.layerVar=IntVar()
-    self.layerVar.set(50)
-    layer = Scale(self,  orient=HORIZONTAL, length=400, from_=0, to=300, tickinterval=100, resolution=1, variable=self.layerVar )
-    layerLabel.grid(row=2, column=0, sticky=W)
-    layer.grid(row=2, column=1, columnspan=5, sticky=W)
-
-#absorber thickness row=4
-    absorberthickLabel = Label(self, bg="green", text="Thickness (mm)")
-    self.absorberthickVar = DoubleVar()
-    self.absorberthickVar.set(10.0)
-    absorberthick = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=100., resolution=0.05, tickinterval=10.0, digits=4, variable=self.absorberthickVar)
-    absorberthickLabel.grid(row=4, column=0, sticky=W)
-    absorberthick.grid(row=4, column=1, columnspan=5, sticky=W)
-
-
-#gap material selection row=5
-    self.gapmaterialVar = StringVar()
-    self.gapmaterialVar.set("Scintillator")
-
-
-#gap thickness row=6
-    gapthickLabel = Label(self, bg="green", text="Thickness (mm)")
-    self.gapthickVar = DoubleVar()
-    self.gapthickVar.set(10.0)
-    gapthick = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=100., resolution=0.05, tickinterval=10.0, digits=4, variable=self.gapthickVar)
-    gapthickLabel.grid(row=6, column=0, sticky=W)
-    gapthick.grid(row=6, column=1, columnspan=5, sticky=W)
-
-#calorSizeYZ row=7
-    calorsizeYZLabel = Label(self, bg="green", text="SizeYZ (mm)")
-    self.calorsizeYZVar = DoubleVar()
-    self.calorsizeYZVar.set(1000.0)
-    calorsizeYZ = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=5000., resolution=0.05, tickinterval=1000.0, digits=4, variable=self.calorsizeYZVar)
-    calorsizeYZLabel.grid(row=7, column=0, sticky=W)
-    calorsizeYZ.grid(row=7, column=1, columnspan=5, sticky=W)
 
 #number of event row=10
     eventLabel = Label(self, bg="green",  text="Events")
@@ -246,6 +250,22 @@ class App(Frame):
     magLabel.grid(row=15, column=0, sticky=W)
     mag.grid(row=15, column=1, columnspan=5, sticky=W)
 
+    # set view, row 16
+    setviewXYBut = Button(self, bg="red", text="X-Y", command=self.cmd_setviewXY)
+    setviewXYBut.grid(row=16, column=2, sticky=W)
+
+    setviewZYBut = Button(self, bg="red", text="Z-Y", command=self.cmd_setviewZY)
+    setviewZYBut.grid(row=16, column=3, sticky=W)
+    
+    setviewZXBut = Button(self, bg="red", text="Z-X", command=self.cmd_setviewZX)
+    setviewZXBut.grid(row=16, column=4, sticky=W)
+
+    shrinkBut = Button(self, bg="red", text="shrink", command=self.cmd_shrink)
+    shrinkBut.grid(row=16, column=0, sticky=W)
+
+    expandBut = Button(self, bg="red", text="expand", command=self.cmd_expand)
+    expandBut.grid(row=16, column=1, sticky=W)
+
 #Geant4 command entry row = 17
     g4comLabel = Label(self, text="Geant4 command", bg="orange")
     self.g4commandVar = StringVar()
@@ -262,19 +282,11 @@ class App(Frame):
 
 #on Run butto do...
   def cmd_beamOn(self):
-      exN03geom.SetNbOfLayers(self.layerVar.get())
-      exN03geom.SetAbsorberMaterial("Iron")
-      exN03geom.SetAbsorberThickness(self.absorberthickVar.get()  * mm/2.0)
-      exN03geom.SetGapMaterial(self.gapmaterialVar.get())
-      exN03geom.SetGapThickness(self.gapthickVar.get()  * mm/2.0)
-      exN03geom.SetCalorSizeYZ(self.calorsizeYZVar.get() * mm)
-      position =  -self.layerVar.get()*(self.absorberthickVar.get() + self.gapthickVar.get()) * mm / 4
       position = 0
 
-      exN03geom.UpdateGeometry()
       exN03PL.SetDefaultCutValue(self.cutVar.get() * mm)
       exN03PL.SetCutsWithDefault()
-      exN03geom.SetMagField(self.magVar.get() * tesla)
+      #exN03geom_dead.SetMagField(self.magVar.get() * tesla)
 
       print "Now geometry updated"
 
@@ -300,18 +312,20 @@ class App(Frame):
   def cmd_g4command(self):
     gApplyUICommand(self.g4commandVar.get())
 
+  def cmd_setviewXY(self):
+    gApplyUICommand("/vis/viewer/set/viewpointVector 0 0 -1")
 
+  def cmd_setviewZY(self):
+    gApplyUICommand("/vis/viewer/set/viewpointVector -1 0 0")
+
+  def cmd_setviewZX(self):
+    gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
 
   def cmd_expand(self):
     gApplyUICommand("/vis/viewer/zoom 1.2")
 
-  def cmd_pan(self):
-    gApplyUICommand("/vis/viewer/pan " + self.panXYVar.get() + " "  + " mm")
-
-
   def cmd_shrink(self):
     gApplyUICommand("/vis/viewer/zoom 0.8")
-
 
 
   def __init__(self, master=None):
