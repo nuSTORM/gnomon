@@ -56,6 +56,7 @@ void export_G4StepPoint()
     .def("GetVelocity",           &G4StepPoint::GetVelocity)
     .def("GetBeta",               &G4StepPoint::GetBeta)
     .def("GetGamma",              &G4StepPoint::GetGamma)
+    .def("GetPhysicalVolume",              &G4StepPoint::GetPhysicalVolume, return_internal_reference<>())
     //.def("GetTouchable",          &G4StepPoint::GetTouchable)
     //.def("GetMaterial",           &G4StepPoint::GetMaterial)
     .def("GetPolarization",       &G4StepPoint::GetPolarization,

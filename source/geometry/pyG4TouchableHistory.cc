@@ -32,6 +32,7 @@
 // ====================================================================
 #include <boost/python.hpp>
 #include "G4TouchableHistory.hh"
+#include "G4ThreeVector.hh"
 
 using namespace boost::python;
 
@@ -41,7 +42,8 @@ using namespace boost::python;
 void export_G4TouchableHistory()
 {
   class_<G4TouchableHistory, G4TouchableHistory*, bases<G4VTouchable> >
-    ("G4TouchableHistory", "touchable history class")
+      ("G4TouchableHistory", "touchable history class")
+      .def("GetTranslation",       &G4TouchableHistory::GetTranslation,return_internal_reference<>())
     ;
 }
 

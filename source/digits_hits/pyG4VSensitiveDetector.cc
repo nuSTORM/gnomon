@@ -69,7 +69,7 @@ void export_G4VSensitiveDetector()
     // ---
     .def(init<const G4String&>())
     // ---
-    .def("Initialize",      &G4VSensitiveDetector::Initialize)
+      .def("Initialize",      pure_virtual(&G4VSensitiveDetector::Initialize))
     .def("EndOfEvent",      &G4VSensitiveDetector::EndOfEvent)
     .def("clear",           &G4VSensitiveDetector::clear)
     .def("DrawAll",         &G4VSensitiveDetector::DrawAll)

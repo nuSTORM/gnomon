@@ -23,16 +23,19 @@ class ScintSD(G4VSensitiveDetector):
 
   def ProcessHits(self, step, rohist):
     preStepPoint= step.GetPreStepPoint()
-    #if(preStepPoint.GetCharge() == 0):
-    #  return
+    if(preStepPoint.GetCharge() == 0):
+      return
+
+    print 'test:', rohist.GetTranslation()
 
     track= step.GetTrack()
-    touchable= track.GetTouchable()
-    #voxel_id= touchable.GetReplicaNumber()
+
+    pv = preStepPoint.GetPhysicalVolume()
+    print pv.GetCopyNo(), pv.GetObjectTranslation(), pv.GetTranslation(), pv.GetFrameTranslation(), pv.IsParameterised(), preStepPoint.GetPosition()
+
     dedx= step.GetTotalEnergyDeposit()
     
-    print track, dedx
-
+    print dedx
 
 class MyField(G4MagneticField):
   "My Magnetic Field"
