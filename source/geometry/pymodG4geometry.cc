@@ -44,6 +44,7 @@ void export_G4VPhysicalVolume();
 void export_G4PVPlacement();
 void export_G4PVReplica();
 void export_G4LogicalVolume();
+void export_G4LogicalVolumeStore();
 void export_G4Region();
 void export_G4VSolid();
 void export_G4Box();
@@ -87,6 +88,7 @@ BOOST_PYTHON_MODULE(G4geometry)
   export_G4PVPlacement();
   export_G4PVReplica();
   export_G4LogicalVolume();
+  export_G4LogicalVolumeStore();
   export_G4Region();
   export_G4VSolid();
   export_G4Box();

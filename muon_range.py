@@ -15,6 +15,25 @@ HepRandom.setTheSeed(20050830L)
 
 import my_script
 
+class ScintSD(G4VSensitiveDetector):
+  "SD for scint"
+
+  def __init__(self):
+    G4VSensitiveDetector.__init__(self, "Scintillator")
+
+  def ProcessHits(self, step, rohist):
+    preStepPoint= step.GetPreStepPoint()
+    #if(preStepPoint.GetCharge() == 0):
+    #  return
+
+    track= step.GetTrack()
+    touchable= track.GetTouchable()
+    #voxel_id= touchable.GetReplicaNumber()
+    dedx= step.GetTotalEnergyDeposit()
+    
+    print track, dedx
+
+
 class MyField(G4MagneticField):
   "My Magnetic Field"
 
@@ -141,7 +160,13 @@ class MyDetectorConstruction(G4VUserDetectorConstruction):
   def Construct(self):
     self.gdml_parser.Read("qgeom.gdml")
     self.world= self.gdml_parser.GetWorldVolume()
+    
 
+    #for i in range(10):
+    #  print G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
+    self.x = ScintSD()
+    G4LogicalVolumeStore.GetInstance().GetVolumeID(1).SetSensitiveDetector(self.x)
+    
     return self.world
 
 #exN03geom_dead= g4py.ExN03geom.ExN03DetectorConstruction()
@@ -184,6 +209,8 @@ gApplyUICommand("/vis/scene/add/trajectories")
 
 gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 gApplyUICommand("/vis/scene/endOfRunAction accumulate")
+
+gRunManager.BeamOn(1)
 
 # creating widgets using grid layout
 

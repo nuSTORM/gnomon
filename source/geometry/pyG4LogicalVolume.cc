@@ -113,6 +113,9 @@ void export_G4LogicalVolume()
     .def("SetFieldManager", &G4LogicalVolume::SetFieldManager)
     .def("GetSensitiveDetector", &G4LogicalVolume::GetSensitiveDetector,
 	 return_internal_reference<>())
+
+     .def("SetSensitiveDetector", &G4LogicalVolume::SetSensitiveDetector)
+
     .def("GetUserLimits",   &G4LogicalVolume::GetUserLimits,
 	 return_internal_reference<>())
     .def("SetUserLimits",   &G4LogicalVolume::SetUserLimits)

@@ -2,7 +2,6 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
   <define/>
-
   <materials>
     <material Z="26" name="Iron0x7fcef5311670" state="solid">
       <MEE unit="eV" value="286"/>
@@ -48,7 +47,7 @@
       <solidref ref="Gap0x7fcef5330700"/>
     </volume>
     <volume name="Layer0x7fcef5330450">
-      <auxiliary auxtype="SensDet" auxvalue="Tracker"/>
+      <!---<auxiliary auxtype="SensDet" auxvalue="Tracker"/>-->
       <materialref ref="Galactic0x7fcef5315b70"/>
       <solidref ref="Layer0x7fcef53303e0"/>
       <physvol name="Iron0x7fcef5330680">
@@ -63,7 +62,7 @@
     <volume name="Calorimeter0x7fcef5330300">
       <materialref ref="Galactic0x7fcef5315b70"/>
       <solidref ref="Calorimeter0x7fcef532f8d0"/>
-      <replicavol number="500">
+      <replicavol number="100">
         <volumeref ref="Layer0x7fcef5330450"/>
         <replicate_along_axis>
           <direction z="1"/>
