@@ -46,6 +46,13 @@
       <materialref ref="Scintillator0x7fcef5312530"/>
       <solidref ref="Gap0x7fcef5330700"/>
     </volume>
+    <volume name="XView">  <!-- 500 mill -->
+      
+    </volume>
+    <volume name="YView">
+
+    </volume>
+
     <volume name="Layer0x7fcef5330450">
       <!---<auxiliary auxtype="SensDet" auxvalue="Tracker"/>-->
       <materialref ref="Galactic0x7fcef5315b70"/>
