@@ -26,7 +26,7 @@ class ScintSD(G4VSensitiveDetector):
     if(preStepPoint.GetCharge() == 0):
       return
 
-    print 'test:', rohist.GetTranslation()
+    #print 'test:', rohist.GetTranslation()
 
     track= step.GetTrack()
 
