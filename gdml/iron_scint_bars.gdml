@@ -92,6 +92,7 @@
       <physvol name="ScintillatorPlaneYPhysical">
         <volumeref ref="ScintillatorPlane"/>
         <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="7.5"/>
+	<rotation z="pi/2.0"/>
       </physvol>
     </volume>
 
