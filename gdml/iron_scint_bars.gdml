@@ -17,6 +17,7 @@
     <element Z="6" name="CarbonElement">
       <atom unit="g/mole" value="12.01"/>
     </element>
+
     <element Z="1" name="HydrogenElement">
       <atom unit="g/mole" value="1.01"/>
     </element>
@@ -46,13 +47,12 @@
 
     <box lunit="mm" name="ScintillatorPlaneSolid" x="500" y="500" z="5"/>
 
-    <box lunit="mm" name="LayerSolid" x="500" y="500" z="15"/>
+    <box lunit="mm" name="LayerSolid" x="500" y="500" z="20"/>
 
     <box lunit="mm" name="WorldSolid" x="600" y="600" z="1200"/>
   </solids>
 
   <structure>
-    <!-- Steel is just Iron -->
     <volume name="SteelPlane">
       <materialref ref="IronMaterial"/>
       <solidref ref="SteelPlateSolid"/>
@@ -69,7 +69,7 @@
       <replicavol number="50">
         <volumeref ref="ScintillatorBar"/>
         <replicate_along_axis>
-          <direction x="y"/>
+          <direction y="1"/>
           <width unit="mm" value="10"/>
           <offset unit="mm" value="-250"/>
         </replicate_along_axis>
@@ -77,7 +77,7 @@
     </volume>
 
     <volume name="LayerOfPlanes">
-      <materialref ref="Galactic0x7fcef5315b70"/>
+      <materialref ref="Galactic"/>
       <solidref ref="LayerSolid"/>
       <physvol name="SteelPlanePhysical">
         <volumeref ref="SteelPlane"/>
@@ -92,11 +92,10 @@
       <physvol name="ScintillatorPlaneYPhysical">
         <volumeref ref="ScintillatorPlane"/>
         <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="7.5"/>
-	<rotationref y="pi/2.">
       </physvol>
     </volume>
 
-    <volume name="World0x7fcef532f7a0">
+    <volume name="World">
       <materialref ref="Galactic"/>
       <solidref ref="WorldSolid"/>
       
@@ -112,7 +111,7 @@
   </structure>
   
   <setup name="Default" version="1.0">
-    <world ref="ScintillatorPlane"/>
+    <world ref="World"/>
   </setup>
 
 </gdml>

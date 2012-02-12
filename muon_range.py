@@ -31,11 +31,12 @@ class ScintSD(G4VSensitiveDetector):
     track= step.GetTrack()
 
     pv = preStepPoint.GetPhysicalVolume()
-    print pv.GetCopyNo(), pv.GetObjectTranslation(), pv.GetTranslation(), pv.GetFrameTranslation(), pv.IsParameterised(), preStepPoint.GetPosition()
+    dedx= step.GetTotalEnergyDeposit()
+    print pv.GetCopyNo(), pv.GetObjectTranslation(), pv.GetTranslation(), pv.GetFrameTranslation(), pv.IsParameterised(), preStepPoint.GetPosition(),dedx
 
     dedx= step.GetTotalEnergyDeposit()
     
-    print dedx
+    #print dedx
 
 class MyField(G4MagneticField):
   "My Magnetic Field"
@@ -161,7 +162,7 @@ class MyDetectorConstruction(G4VUserDetectorConstruction):
     pass
 
   def Construct(self):
-    filename = "gdml/iron_scint.gdml"
+    filename = "gdml/iron_scint_bars.gdml"
     self.gdml_parser.Read(filename)
     self.world= self.gdml_parser.GetWorldVolume()
     
@@ -214,7 +215,7 @@ gApplyUICommand("/vis/scene/add/trajectories")
 gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 
-gRunManager.BeamOn(1)
+#gRunManager.BeamOn(1)
 
 # creating widgets using grid layout
 
