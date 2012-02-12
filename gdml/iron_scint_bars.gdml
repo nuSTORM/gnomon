@@ -42,7 +42,7 @@
        but that's just for Geant4's sake -->
   <solids>
     <box lunit="mm" name="SteelPlateSolid" x="500" y="500" z="10"/>
-    <box lunit="mm" name="ScintillatorBarSolid" x="10" y="10" z="5"/>
+    <box lunit="mm" name="ScintillatorBarSolid" x="500" y="10" z="5"/>
 
     <box lunit="mm" name="ScintillatorPlaneSolid" x="500" y="500" z="5"/>
 
@@ -89,10 +89,11 @@
         <position name="ScintillatorPlaneX_pos" unit="mm" x="0" y="0" z="2.5"/>
       </physvol>
 
-      <!--<physvol name="ScintillatorPlaneYPhysical">
+      <physvol name="ScintillatorPlaneYPhysical">
         <volumeref ref="ScintillatorPlane"/>
         <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="7.5"/>
-      </physvol>-->
+	<rotationref y="pi/2.">
+      </physvol>
     </volume>
 
     <volume name="World0x7fcef532f7a0">

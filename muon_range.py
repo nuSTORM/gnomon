@@ -161,7 +161,8 @@ class MyDetectorConstruction(G4VUserDetectorConstruction):
     pass
 
   def Construct(self):
-    self.gdml_parser.Read("qgeom.gdml")
+    filename = "gdml/iron_scint.gdml"
+    self.gdml_parser.Read(filename)
     self.world= self.gdml_parser.GetWorldVolume()
     
 

@@ -1,2 +1,1 @@
-TGeoManager::Import("iron_scint_bars.gdml");
-gGeoManager->GetTopVolume()->Draw("ogl");
+TGeoManager::Import("iron_scint_bars.gdml");gGeoManager->GetTopVolume()->Draw("ogl");
