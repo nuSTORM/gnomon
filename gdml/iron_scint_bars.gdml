@@ -1,26 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
+
   <define/>
+
+
   <materials>
-    <material Z="26" name="Iron0x7fcef5311670" state="solid">
+    <!-- Define the Iron's material properties -->
+    <material Z="26" name="IronMaterial" state="solid">
       <MEE unit="eV" value="286"/>
       <D unit="g/cm3" value="7.87"/>
       <atom unit="g/mole" value="55.85"/>
     </material>
-    <element Z="6" name="Carbon0x7fcef530c4d0">
+
+    <!-- Define the scintillator's material properties -->
+    <element Z="6" name="CarbonElement">
       <atom unit="g/mole" value="12.01"/>
     </element>
-    <element Z="1" name="Hydrogen0x7fcef530c380">
+    <element Z="1" name="HydrogenElement">
       <atom unit="g/mole" value="1.01"/>
     </element>
-    <material name="Scintillator0x7fcef5312530" state="solid">
+    <material name="ScintillatorMaterial" state="solid">
       <MEE unit="eV" value="64.6844741120544"/>
       <D unit="g/cm3" value="1.032"/>
-      <fraction n="0.914544377696929" ref="Carbon0x7fcef530c4d0"/>
-      <fraction n="0.0854556223030713" ref="Hydrogen0x7fcef530c380"/>
+      <fraction n="0.914544377696929" ref="CarbonElement"/>
+      <fraction n="0.0854556223030713" ref="HydrogenElement"/>
     </material>
-    <material Z="1" name="Galactic0x7fcef5315b70" state="gas">
+
+    <!-- Now define what's "outside" our detector -->
+    <material Z="1" name="Galactic" state="gas">
       <T unit="K" value="2.73"/>
       <P unit="pascal" value="3e-18"/>
       <MEE unit="eV" value="19.2"/>
@@ -29,67 +37,81 @@
     </material>
   </materials>
 
+  <!-- There are only two shapes we build our geometry out of: steel plates and
+       scintillator bars.  There's also the artificial shape of the world volume
+       but that's just for Geant4's sake -->
   <solids>
-    <box lunit="mm" name="Absorber0x7fcef53305a0" x="500" y="500" z="10"/>
-    <box lunit="mm" name="Gap0x7fcef5330700" x="500" y="500" z="10"/>
-    <box lunit="mm" name="Layer0x7fcef53303e0" x="500" y="500" z="20"/>
-    <box lunit="mm" name="Calorimeter0x7fcef532f8d0" x="500" y="500" z="1000"/>
-    <box lunit="mm" name="World0x7fcef532f4e0" x="600" y="600" z="1200"/>
-    <box lunit="mm" name="Bar" x="500" y="10" z="5"/>
+    <box lunit="mm" name="SteelPlateSolid" x="500" y="500" z="10"/>
+    <box lunit="mm" name="ScintillatorBarSolid" x="10" y="10" z="5"/>
+
+    <box lunit="mm" name="ScintillatorPlaneSolid" x="500" y="500" z="5"/>
+
+    <box lunit="mm" name="LayerSolid" x="500" y="500" z="15"/>
+
+    <box lunit="mm" name="WorldSolid" x="600" y="600" z="1200"/>
   </solids>
 
   <structure>
-    <volume name="Iron0x7fcef53305f0">
-      <materialref ref="Iron0x7fcef5311670"/>
-      <solidref ref="Absorber0x7fcef53305a0"/>
+    <!-- Steel is just Iron -->
+    <volume name="SteelPlane">
+      <materialref ref="IronMaterial"/>
+      <solidref ref="SteelPlateSolid"/>
     </volume>
-    <volume name="Scintillator0x7fcef5330750">
-      <materialref ref="Scintillator0x7fcef5312530"/>
-      <solidref ref="Gap0x7fcef5330700"/>
+    
+    <volume name="ScintillatorBar">
+      <materialref ref="ScintillatorMaterial"/>
+      <solidref ref="ScintillatorBarSolid"/>
     </volume>
-    <volume name="XView">  <!-- 500 mill -->
+
+    <volume name="ScintillatorPlane">
+      <materialref ref="Galactic"/>
+      <solidref ref="ScintillatorPlaneSolid"/>
+      <replicavol number="50">
+        <volumeref ref="ScintillatorBar"/>
+        <replicate_along_axis>
+          <direction x="y"/>
+          <width unit="mm" value="10"/>
+          <offset unit="mm" value="-250"/>
+        </replicate_along_axis>
+      </replicavol>
+    </volume>
+
+    <volume name="LayerOfPlanes">
+      <materialref ref="Galactic0x7fcef5315b70"/>
+      <solidref ref="LayerSolid"/>
+      <physvol name="SteelPlanePhysical">
+        <volumeref ref="SteelPlane"/>
+        <position name="SteelPlane_pos" unit="mm" x="0" y="0" z="-5.0"/>
+      </physvol>
+
+      <physvol name="ScintillatorPlaneXPhysical">
+        <volumeref ref="ScintillatorPlane"/>
+        <position name="ScintillatorPlaneX_pos" unit="mm" x="0" y="0" z="2.5"/>
+      </physvol>
+
+      <!--<physvol name="ScintillatorPlaneYPhysical">
+        <volumeref ref="ScintillatorPlane"/>
+        <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="7.5"/>
+      </physvol>-->
+    </volume>
+
+    <volume name="World0x7fcef532f7a0">
+      <materialref ref="Galactic"/>
+      <solidref ref="WorldSolid"/>
       
-    </volume>
-    <volume name="YView">
-
-    </volume>
-
-    <volume name="Layer0x7fcef5330450">
-      <!---<auxiliary auxtype="SensDet" auxvalue="Tracker"/>-->
-      <materialref ref="Galactic0x7fcef5315b70"/>
-      <solidref ref="Layer0x7fcef53303e0"/>
-      <physvol name="Iron0x7fcef5330680">
-        <volumeref ref="Iron0x7fcef53305f0"/>
-        <position name="Iron0x7fcef5330680_pos" unit="mm" x="0" y="0" z="-5.0"/>
-      </physvol>
-      <physvol name="Scintillator0x7fcef53307e0">
-        <volumeref ref="Scintillator0x7fcef5330750"/>
-        <position name="Scintillator0x7fcef53307e0_pos" unit="mm" x="0" y="0" z="5.0"/>
-      </physvol>
-    </volume>
-    <volume name="Calorimeter0x7fcef5330300">
-      <materialref ref="Galactic0x7fcef5315b70"/>
-      <solidref ref="Calorimeter0x7fcef532f8d0"/>
       <replicavol number="100">
-        <volumeref ref="Layer0x7fcef5330450"/>
+        <volumeref ref="LayerOfPlanes"/>
         <replicate_along_axis>
           <direction z="1"/>
-          <width unit="mm" value="10"/>
+          <width unit="mm" value="20"/>
           <offset unit="mm" value="0"/>
         </replicate_along_axis>
       </replicavol>
     </volume>
-    <volume name="World0x7fcef532f7a0">
-      <materialref ref="Galactic0x7fcef5315b70"/>
-      <solidref ref="World0x7fcef532f4e0"/>
-      <physvol name="Calorimeter0x7fcef5330390">
-        <volumeref ref="Calorimeter0x7fcef5330300"/>
-      </physvol>
-    </volume>
   </structure>
-
+  
   <setup name="Default" version="1.0">
-    <world ref="World0x7fcef532f7a0"/>
+    <world ref="ScintillatorPlane"/>
   </setup>
 
 </gdml>
