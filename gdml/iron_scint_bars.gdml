@@ -35,6 +35,7 @@
     <box lunit="mm" name="Layer0x7fcef53303e0" x="500" y="500" z="20"/>
     <box lunit="mm" name="Calorimeter0x7fcef532f8d0" x="500" y="500" z="1000"/>
     <box lunit="mm" name="World0x7fcef532f4e0" x="600" y="600" z="1200"/>
+    <box lunit="mm" name="Bar" x="500" y="10" z="5"/>
   </solids>
 
   <structure>
