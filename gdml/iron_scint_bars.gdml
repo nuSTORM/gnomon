@@ -48,8 +48,8 @@
     <box lunit="mm" name="ScintillatorPlaneSolid" x="5000" y="5000" z="5"/>
 
     <box lunit="mm" name="LayerSolid" x="5000" y="5000" z="20"/>
-
-    <box lunit="mm" name="WorldSolid" x="6000" y="6000" z="9000"/> <!-- note units-->
+    <box lunit="mm" name="CalorimeterSolid" x="5000" y="5000" z="8880"/> 
+    <box lunit="m" name="WorldSolid" x="6" y="6" z="10"/> <!-- note units-->
   </solids>
 
   <structure>
@@ -96,19 +96,28 @@
       </physvol>
     </volume>
 
-    <volume name="World">
-      <materialref ref="IronMaterial"/>
-      <solidref ref="WorldSolid"/>
+    <volume name="Calorimeter">
+      <materialref ref="Galactic"/>
+      <solidref ref="CalorimeterSolid"/>
 
       <!--444 repeats, (8.8 m), is 1 kt actual mass-->
-      <replicavol number="1">
-        <volumeref ref="ScintillatorBar"/> <!--"LayerOfPlanes"/>-->
+      <replicavol number="444">
+        <volumeref ref="LayerOfPlanes"/> 
         <replicate_along_axis>
           <direction z="1"/>
-          <width unit="mm" value="20"/>
+          <width unit="cm" value="2"/>
           <offset unit="mm" value="0"/>
         </replicate_along_axis>
-      </replicavol>
+      </replicavol> 
+    </volume>
+
+    <volume name="World">
+      <materialref ref="Galactic"/>
+      <solidref ref="WorldSolid"/>
+      <physvol name="CalorimeterPhys">
+        <volumeref ref="Calorimeter"/>
+        <position name="Calorimeter_pos" unit="mm" x="0" y="0" z="0.0"/>
+      </physvol>
     </volume>
   </structure>
   

@@ -48,7 +48,7 @@
 PhysicsList::PhysicsList():  G4VUserPhysicsList()
 {
   defaultCutValue = 1.0*mm;
-  SetVerboseLevel(1);
+  SetVerboseLevel(0);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
