@@ -32,11 +32,19 @@ class ScintSD(G4VSensitiveDetector):
 
     pv = preStepPoint.GetPhysicalVolume()
     dedx= step.GetTotalEnergyDeposit()
-    print pv.GetCopyNo(), pv.GetObjectTranslation(), pv.GetTranslation(), pv.GetFrameTranslation(), pv.IsParameterised(), preStepPoint.GetPosition(),dedx
+    print 'copy:',pv.GetCopyNo()
+    print '\tobjectTranslation:', pv.GetObjectTranslation()
+    print '\ttranslation:', pv.GetTranslation()
+    print '\tframeTranslation:', pv.GetFrameTranslation()
+    print '\tposition:', preStepPoint.GetPosition()
+    print '\tdedx:', dedx
 
-    dedx= step.GetTotalEnergyDeposit()
-    
-    #print dedx
+    lv = pv.GetMotherLogical()
+    print lv.GetName()
+
+    print '\trotation:', pv.GetRotation()
+    print '\tobjectRotationValue:', pv.GetObjectRotationValue()
+    print '\tframeRotation:', pv.GetFrameRotation()
 
 class MyField(G4MagneticField):
   "My Magnetic Field"
@@ -170,7 +178,9 @@ class MyDetectorConstruction(G4VUserDetectorConstruction):
     #for i in range(10):
     #  print G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
     self.x = ScintSD()
-    G4LogicalVolumeStore.GetInstance().GetVolumeID(1).SetSensitiveDetector(self.x)
+    lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
+    print 'using sd as %s' % lv.GetName()
+    lv.SetSensitiveDetector(self.x)
     
     return self.world
 
