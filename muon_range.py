@@ -175,12 +175,13 @@ class MyDetectorConstruction(G4VUserDetectorConstruction):
     self.world= self.gdml_parser.GetWorldVolume()
     
 
-    #for i in range(10):
-    #  print G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
+    for i in range(6):
+      print i, G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
     self.x = ScintSD()
-    lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
+    #lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
+    lv = G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
     print 'using sd as %s' % lv.GetName()
-    #lv.SetSensitiveDetector(self.x)
+    lv.SetSensitiveDetector(self.x)
     
     return self.world
 
@@ -216,14 +217,12 @@ gApplyUICommand("/vis/scene/add/trajectories")
 gApplyUICommand("/tracking/storeTrajectory 1")
 gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 gApplyUICommand("/vis/scene/endOfRunAction accumulate")
-gApplyUICommand("/vis/viewer/select  oglsxviewer")
-
-
 gApplyUICommand("/vis/viewer/select oglsxviewer")
+
 gApplyUICommand("/vis/scene/add/trajectories")
 
-gApplyUICommand("/vis/scene/endOfEventAction accumulate")
-gApplyUICommand("/vis/scene/endOfRunAction accumulate")
+#gApplyUICommand("/vis/scene/endOfEventAction accumulate")
+#gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 
 gRunManager.BeamOn(1)
 
