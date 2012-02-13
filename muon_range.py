@@ -180,7 +180,7 @@ class MyDetectorConstruction(G4VUserDetectorConstruction):
     self.x = ScintSD()
     lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
     print 'using sd as %s' % lv.GetName()
-    lv.SetSensitiveDetector(self.x)
+    #lv.SetSensitiveDetector(self.x)
     
     return self.world
 
@@ -225,7 +225,7 @@ gApplyUICommand("/vis/scene/add/trajectories")
 gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 
-#gRunManager.BeamOn(1)
+gRunManager.BeamOn(1)
 
 # creating widgets using grid layout
 

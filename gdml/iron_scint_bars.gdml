@@ -42,14 +42,14 @@
        scintillator bars.  There's also the artificial shape of the world volume
        but that's just for Geant4's sake -->
   <solids>
-    <box lunit="mm" name="SteelPlateSolid" x="500" y="500" z="10"/>
-    <box lunit="mm" name="ScintillatorBarSolid" x="500" y="10" z="5"/>
+    <box lunit="mm" name="SteelPlateSolid" x="5000" y="5000" z="10"/>
+    <box lunit="mm" name="ScintillatorBarSolid" x="5000" y="10" z="5"/>
 
-    <box lunit="mm" name="ScintillatorPlaneSolid" x="500" y="500" z="5"/>
+    <box lunit="mm" name="ScintillatorPlaneSolid" x="5000" y="5000" z="5"/>
 
-    <box lunit="mm" name="LayerSolid" x="500" y="500" z="20"/>
+    <box lunit="mm" name="LayerSolid" x="5000" y="5000" z="20"/>
 
-    <box lunit="m" name="WorldSolid" x="6" y="6" z="9"/> <!-- note units-->
+    <box lunit="mm" name="WorldSolid" x="6000" y="6000" z="9000"/> <!-- note units-->
   </solids>
 
   <structure>
@@ -66,12 +66,12 @@
     <volume name="ScintillatorPlane">
       <materialref ref="Galactic"/>
       <solidref ref="ScintillatorPlaneSolid"/>
-      <replicavol number="50">
+      <replicavol number="500">
         <volumeref ref="ScintillatorBar"/>
         <replicate_along_axis>
           <direction y="1"/>
           <width unit="mm" value="10"/>
-          <offset unit="mm" value="-250"/>
+          <offset unit="mm" value="0"/>
         </replicate_along_axis>
       </replicavol>
     </volume>
@@ -97,16 +97,16 @@
     </volume>
 
     <volume name="World">
-      <materialref ref="Galactic"/>
+      <materialref ref="IronMaterial"/>
       <solidref ref="WorldSolid"/>
 
       <!--444 repeats, (8.8 m), is 1 kt actual mass-->
-      <replicavol number="444">
-        <volumeref ref="LayerOfPlanes"/>
+      <replicavol number="1">
+        <volumeref ref="ScintillatorBar"/> <!--"LayerOfPlanes"/>-->
         <replicate_along_axis>
           <direction z="1"/>
           <width unit="mm" value="20"/>
-          <offset unit="m" value="0"/>
+          <offset unit="mm" value="0"/>
         </replicate_along_axis>
       </replicavol>
     </volume>
