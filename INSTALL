@@ -1,0 +1,7 @@
+We use phyton 3.2
+
+# Mac
+sudo port install boost +python32
+
+# Dev
+easy_install -U Sphinx

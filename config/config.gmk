@@ -11,20 +11,20 @@ Q_SYSTEM              := macosx
 Q_PREFIX              := /Users/tunnell/work/g4py
 Q_LIBDIR              := /Users/tunnell/work/g4py/lib
 
-Q_G4_INCDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=e9242833cbd96e52803f803471f6b467b33a2ea8/bin/../include/Geant4
-Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=e9242833cbd96e52803f803471f6b467b33a2ea8/bin/../lib
+Q_G4_INCDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../include/Geant4
+Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../lib/
 
-Q_CLHEP_INCDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=55fa32c83b83d854a2f2b6be2bbefc9abb53ae9f/include
-Q_CLHEP_LIBDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=55fa32c83b83d854a2f2b6be2bbefc9abb53ae9f/lib/
+Q_CLHEP_INCDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=92e2a9e826b92da40b6b0817738a358dcb3503af/include
+Q_CLHEP_LIBDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=92e2a9e826b92da40b6b0817738a358dcb3503af/lib/
 Q_CLHEP_LIB           := CLHEP
 
-Q_PYTHON_INCDIR       := /usr/include/python2.7
-Q_PYTHON_LIBDIR       := /usr/lib
-Q_PYTHON              := python
-Q_WITH_PYTHON3        := 0
+Q_PYTHON_INCDIR       := /Users/tunnell/.cache/0install.net/implementations/sha1new=4acc3af86d4a7c72a006c4de96b99e1baec66525/include/python3.2m
+Q_PYTHON_LIBDIR       := /Users/tunnell/.cache/0install.net/implementations/sha1new=4acc3af86d4a7c72a006c4de96b99e1baec66525/lib/python3.2
+Q_PYTHON              := python3
+Q_WITH_PYTHON3        := 1
 Q_BOOST_INCDIR        := /opt/local/include
 Q_BOOST_LIBDIR        := /opt/local/lib
-Q_BOOST_PYTHON_LIB    := boost_python
+Q_BOOST_PYTHON_LIB    := boost_python3
 
 Q_ENABLE_OPENGLX      := 1
 Q_ENABLE_OPENGLXM     := 0
@@ -34,5 +34,5 @@ Q_ENABLE_GL2PS        := 1
 Q_ENABLE_PHYSICSLIST  := 1
 
 Q_ENABLE_GDML         := 1
-Q_XERCESC_INCDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=d89a1862c49e0613589ee865103afa0d01fa8494/include
-Q_XERCESC_LIBDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=d89a1862c49e0613589ee865103afa0d01fa8494/lib
+Q_XERCESC_INCDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=7b74a95224b4470762beb7f4de4a3a14a021e47d/include
+Q_XERCESC_LIBDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=7b74a95224b4470762beb7f4de4a3a14a021e47d/lib
