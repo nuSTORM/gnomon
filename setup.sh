@@ -1,4 +1,6 @@
-XLIB=~/.cache/0install.net/implementations/sha1new=d89a1862c49e0613589ee865103afa0d01fa8494/lib
+source /Users/tunnell/work/genie-trunk2/root/bin/thisroot.sh
+
+XLIB=~/.cache/0install.net/implementations/sha1new=7b74a95224b4470762beb7f4de4a3a14a021e47d/lib
 LIBS=`pwd`/lib:`geant4-config --prefix`/lib:`clhep-config --prefix`/lib:${XLIB}
 
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${LIBS}

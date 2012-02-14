@@ -12,7 +12,7 @@ Q_PREFIX              := /Users/tunnell/work/g4py
 Q_LIBDIR              := /Users/tunnell/work/g4py/lib
 
 Q_G4_INCDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../include/Geant4
-Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../lib/
+Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../lib
 
 Q_CLHEP_INCDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=92e2a9e826b92da40b6b0817738a358dcb3503af/include
 Q_CLHEP_LIBDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=92e2a9e826b92da40b6b0817738a358dcb3503af/lib/
