@@ -1,7 +1,7 @@
-#$Id: emcalculator.py,v 1.1 2008-12-01 07:04:08 kmura Exp $
+#$Id: emcalculator.py,v 1.1 2010-12-02 08:43:22 kmura Exp $
 """
 # ==================================================================
-#   Python module
+#   Python module (Python3)
 #
 #   Calculation of photon cross section and stopping power for
 #   chared particles
@@ -46,12 +46,12 @@ def CalculatePhotonCrossSection(mat, elist, verbose=0,
     value= xsec_list[energy_index]["compt"]
   """
   if(verbose>0):
-    print "-------------------------------------------------------------------"
-    print "                  Photon Cross Section (", mat, ")"
-    print "Energy      Compton     Raleigh     Photo-      Pair        Total"
-    print "            Scattering  Scattering  electric    Creation"
-    print "(MeV)       (cm2/g)     (cm2/g)     (cm2/g)     (cm2/g)     (cm2/g)"
-    print "-------------------------------------------------------------------"
+    print("-------------------------------------------------------------------")
+    print("                  Photon Cross Section (", mat, ")")
+    print("Energy      Compton     Raleigh     Photo-      Pair        Total")
+    print("            Scattering  Scattering  electric    Creation")
+    print("(MeV)       (cm2/g)     (cm2/g)     (cm2/g)     (cm2/g)     (cm2/g)")
+    print("-------------------------------------------------------------------")
 
   xsection_list= []
   for ekin in elist:
@@ -75,9 +75,9 @@ def CalculatePhotonCrossSection(mat, elist, verbose=0,
     xsection_list.append((ekin, xsec))
 
     if(verbose>0):    
-      print " %8.3e   %8.3e   %8.3e   %8.3e   %8.3e   %8.3e" \
+      print(" %8.3e   %8.3e   %8.3e   %8.3e   %8.3e   %8.3e" \
             % (ekin/MeV, xsec["compt"]/(cm2/g), xsec["rayleigh"]/(cm2/g), 
-               xsec["phot"]/(cm2/g), xsec["conv"]/(cm2/g), xsec["tot"]/(cm2/g))
+               xsec["phot"]/(cm2/g), xsec["conv"]/(cm2/g), xsec["tot"]/(cm2/g)))
       
   return xsection_list
 
@@ -111,11 +111,11 @@ def CalculateDEDX(part, mat, elist, verbose=0,
     value= dedx_list[energy_index]["ioni"]    
   """
   if(verbose>0):
-    print "------------------------------------------------------"
-    print "       Stopping Power (", part, ",", mat, ")"
-    print "  Energy       Ionization    Radiation     Total"
-    print "  (MeV)        (MeVcm2/g)    (MeVcm2/g)    (MeVcm2/g)"
-    print "------------------------------------------------------"  
+    print("------------------------------------------------------")
+    print("       Stopping Power (", part, ",", mat, ")")
+    print("  Energy       Ionization    Radiation     Total")
+    print("  (MeV)        (MeVcm2/g)    (MeVcm2/g)    (MeVcm2/g)")
+    print("------------------------------------------------------")  
 
   procname_brems= ""
   procname_ioni= ""
@@ -138,10 +138,10 @@ def CalculateDEDX(part, mat, elist, verbose=0,
     = gEmCalculator.ComputeDEDX(ekin, part, procname_brems, mat) * MeV*cm2/g
     dedx["tot"]= dedx["ioni"]+ dedx["brems"]
 
-    if(verbose>0):    
-      print " %8.3e     %8.3e     %8.3e     %8.3e" \
+    if(verbose>0):
+      print(" %8.3e     %8.3e     %8.3e     %8.3e" \
             % (ekin/MeV, dedx["ioni"]/(MeV*cm2/g), 
-               dedx["brems"]/(MeV*cm2/g), dedx["tot"]/(MeV*cm2/g) )
+               dedx["brems"]/(MeV*cm2/g), dedx["tot"]/(MeV*cm2/g) ))
         
 
     dedx_list.append((ekin, dedx))    

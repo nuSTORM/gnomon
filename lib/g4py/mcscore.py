@@ -1,5 +1,5 @@
 """
-Python module
+Python module (Python3)
 
 This module provides classes and functions for scoring reactions
 
@@ -37,8 +37,8 @@ class MCParticle:
     self.pz = apz
 
   def printout(self):
-    print "--- particle: %s, Z=%2d, A=%2d, kE=%g" % \
-          (self.name, self.Z, self.A, self.kineticE/MeV)
+    print("--- particle: %s, Z=%2d, A=%2d, kE=%g" % \
+          (self.name, self.Z, self.A, self.kineticE/MeV))
 
 # ------------------------------------------------------------------
 # MCVertex
@@ -57,8 +57,8 @@ class MCVertex :
     self.nparticle= self.nparticle+1
 
   def printout(self):
-    print "@@@ vertex: x=(%g,%g,%g) Nsec=%3d" % \
-          (self.x/cm, self.y/cm, self.z/cm, self.nparticle)
+    print("@@@ vertex: x=(%g,%g,%g) Nsec=%3d" % \
+          (self.x/cm, self.y/cm, self.z/cm, self.nparticle))
     for p in self.particle_list:
       p.printout()
   
@@ -125,7 +125,7 @@ def test():
     vertex.printout()
     del vertex
   f.close()
-  print ">>> EOF"
+  print(">>> EOF")
 
 
 # ==================================================================

@@ -7,40 +7,40 @@
 #  This package contains a set of Python interface with Geant4.
 # ==================================================================
 """
-# $Id: __init__.py,v 1.23 2010-12-02 08:24:22 kmura Exp $
+# $Id: __init__.py,v 1.1 2010-12-02 08:22:21 kmura Exp $
 __version__ ='9.5.0'
 __date__ = '02/December/2011'
 __author__ = 'K.Murakami (Koichi.Murakami@kek.jp)'
 
 # import submodules
-from G4interface import *
-from G4intercoms import *
-from G4global import *
-from G4run import *
-from G4event import *
-from G4tracking import *
-from G4track import *
-from G4particles import *
-from G4processes import *
-from G4geometry import *
-from G4materials import *
-from G4physicslists import *
-from G4digits_hits import *
-from G4visualization import *
-from G4gdml import *
-from G4graphics_reps import *
-from hepunit import *
-from colortable import *
+from .G4interface import *
+from .G4intercoms import *
+from .G4global import *
+from .G4run import *
+from .G4event import *
+from .G4tracking import *
+from .G4track import *
+from .G4particles import *
+from .G4processes import *
+from .G4geometry import *
+from .G4materials import *
+from .G4physicslists import *
+from .G4digits_hits import *
+from .G4visualization import *
+from .G4gdml import *
+from .G4graphics_reps import *
+from .hepunit import *
+from .colortable import *
 
 def print_version():
-  print """=============================================================
+  print("""=============================================================
   Welcome to Geant4Py (A Geant4-Python Bridge)
   
   Version : %s
   Date    : %s
   Contact : %s
 =============================================================
-""" % ( __version__, __date__, __author__)
+""" % ( __version__, __date__, __author__) )
 
 # ==================================================================
 # initialize
@@ -189,14 +189,14 @@ G4RunManager.OneEvent = _one_event
 def _list_material(self):
   "list materials."
   n_materials = len(gMaterialTable)
-  print " +------------------------------------------------------------------"
-  print " |       Table of G4Material-s (%d materails defined)" % (n_materials)
+  print(" +------------------------------------------------------------------")
+  print(" |       Table of G4Material-s (%d materails defined)" % (n_materials))
   for i in range(0, n_materials) :
     material = gMaterialTable[i]
-    print " |--------------------------------------------------------"\
-          "----------"
-    print " | %s: %s" % (material.GetName(),
-                         G4BestUnit(material.GetDensity(),"Volumic Mass"))
+    print(" |--------------------------------------------------------"\
+          "----------")
+    print(" | %s: %s" % (material.GetName(),
+                         G4BestUnit(material.GetDensity(),"Volumic Mass")))
 
     elementVec = material.GetElementVector()
     fractionVec = material.GetFractionVector()
@@ -205,15 +205,15 @@ def _list_material(self):
 
     n_elements = len(elementVec)
     for j in range(0, n_elements):
-      print " | + (%1d) %s(%s): A=%4.1f, N=%5.1f, " \
+      print(" | + (%1d) %s(%s): A=%4.1f, N=%5.1f, " \
             "Frac.=(%4.1f%%m,%4.1f%%a)" % \
             (j+1, elementVec[j].GetName(), elementVec[j].GetSymbol(),
              elementVec[j].GetZ(),
              elementVec[j].GetN(),
              fractionVec[j]/hepunit.perCent,
-             abundanceVec[j]/totNAtoms/hepunit.perCent)
+             abundanceVec[j]/totNAtoms/hepunit.perCent))
 
-  print " +------------------------------------------------------------------"
+  print(" +------------------------------------------------------------------")
 
 G4MaterialTable.ListMaterial = _list_material
 
@@ -236,12 +236,10 @@ def _run_abort(signum, frame):
 
   if(state == G4ApplicationState.G4State_GeomClosed or
      state == G4ApplicationState.G4State_EventProc):
-    print "aborting Run ..."
+    print("aborting Run ...")
     gRunManager.AbortRun(True)
   else:
     raise KeyboardInterrupt
 
 if (threading.activeCount() == 1):
   signal.signal(signal.SIGINT, _run_abort)
-
-

@@ -11,7 +11,7 @@ import math
 
 rand_engine= Ranlux64Engine()
 HepRandom.setTheEngine(rand_engine)
-HepRandom.setTheSeed(20050830L)
+HepRandom.setTheSeed(20050830)
 
 import my_script
 
@@ -32,19 +32,19 @@ class ScintSD(G4VSensitiveDetector):
 
     pv = preStepPoint.GetPhysicalVolume()
     dedx= step.GetTotalEnergyDeposit()
-    print 'copy:',pv.GetCopyNo()
-    print '\tobjectTranslation:', pv.GetObjectTranslation()
-    print '\ttranslation:', pv.GetTranslation()
-    print '\tframeTranslation:', pv.GetFrameTranslation()
-    print '\tposition:', preStepPoint.GetPosition()
-    print '\tdedx:', dedx
+    print('copy:',pv.GetCopyNo())
+    print('\tobjectTranslation:', pv.GetObjectTranslation())
+    print('\ttranslation:', pv.GetTranslation())
+    print('\tframeTranslation:', pv.GetFrameTranslation())
+    print('\tposition:', preStepPoint.GetPosition())
+    print('\tdedx:', dedx)
 
     lv = pv.GetMotherLogical()
-    print lv.GetName()
+    print(lv.GetName())
 
-    print '\trotation:', pv.GetRotation()
-    print '\tobjectRotationValue:', pv.GetObjectRotationValue()
-    print '\tframeRotation:', pv.GetFrameRotation()
+    print('\trotation:', pv.GetRotation())
+    print('\tobjectRotationValue:', pv.GetObjectRotationValue())
+    print('\tframeRotation:', pv.GetFrameRotation())
 
 class MyField(G4MagneticField):
   "My Magnetic Field"
@@ -123,27 +123,27 @@ class MyPrimaryGeneratorAction(G4VUserPrimaryGeneratorAction):
         next_events.append(hadron_event)
 
 
-      print 'nc', t.__getattr__('nc')
-      print 'Event type:'
+      print('nc', t.__getattr__('nc'))
+      print('Event type:')
       for type in ['qel', 'res', 'dis', 'coh', 'dfr', 'imd', 'nuel', 'em']:
-        print '\t', type, ':', t.__getattr__(type)
+        print('\t', type, ':', t.__getattr__(type))
 
-      print 'Propogator:'
+      print('Propogator:')
       for prop in ['nc', 'cc']:
-        print '\t', prop, ':', t.__getattr__(prop)
+        print('\t', prop, ':', t.__getattr__(prop))
 
 
-      print 'y:', t.y
+      print('y:', t.y)
       try:
-        print 'm_l:', math.sqrt(t.El**2 - (t.pxl**2 + t.pyl**2 + t.pzl**2))
+        print('m_l:', math.sqrt(t.El**2 - (t.pxl**2 + t.pyl**2 + t.pzl**2)))
       except:
         pass
-      print lepton_event
+      print(lepton_event)
 
       yield next_events
 
   def GeneratePrimaries(self, event):
-    events = self.event_list.next()
+    events = next(self.event_list)
     for particle in events:
       pp = G4PrimaryParticle()
       pp.SetPDGcode(particle['code'])
@@ -176,11 +176,11 @@ class MyDetectorConstruction(G4VUserDetectorConstruction):
     
 
     for i in range(6):
-      print i, G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
+      print(i, G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName())
     self.x = ScintSD()
     #lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
     lv = G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
-    print 'using sd as %s' % lv.GetName()
+    print('using sd as %s' % lv.GetName())
     lv.SetSensitiveDetector(self.x)
     
     return self.world
@@ -202,7 +202,7 @@ fieldMgr= gTransportationManager.GetFieldManager()
 
 #print "uniform"
 #myField= G4UniformMagField(G4ThreeVector(0.,2.*tesla,0.))
-print "toroid"
+print("toroid")
 myField= MyField()                                                             
 fieldMgr.SetDetectorField(myField)
 fieldMgr.CreateChordFinder(myField)
@@ -228,7 +228,7 @@ gRunManager.BeamOn(1)
 
 # creating widgets using grid layout
 
-from Tkinter import *
+from tkinter import *
 
 class App(Frame):
 
@@ -329,7 +329,7 @@ class App(Frame):
       exN03PL.SetCutsWithDefault()
       #exN03geom_dead.SetMagField(self.magVar.get() * tesla)
 
-      print "Now geometry updated"
+      print("Now geometry updated")
 
 
       eventNum = self.eventVar.get()
@@ -345,10 +345,10 @@ class App(Frame):
     for i in self.processList:
       if self.processVar[i].get() == 0:
          gProcessTable.SetProcessActivation(i, 0)
-         print "Process " + i + " inactivated"
+         print("Process " + i + " inactivated")
       else:
          gProcessTable.SetProcessActivation(i, 1)
-         print "Process " + i + " activated"
+         print("Process " + i + " activated")
 
   def cmd_g4command(self):
     gApplyUICommand(self.g4commandVar.get())
