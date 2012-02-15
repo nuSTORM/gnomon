@@ -4,7 +4,7 @@
 #   Makefile for building Geant4Py site-modules
 # ===========================================================
 
-SUBDIR := Qgeom ExN01geom ExN03geom ezgeom
+SUBDIR := ExN03geom
 
 .PHONY: all install clean cleanlib
 

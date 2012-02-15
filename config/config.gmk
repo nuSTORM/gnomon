@@ -4,12 +4,12 @@
 #
 # Makefile definitions included by the top Makefile
 
-G4PY_INSTALL          := /Users/tunnell/work/g4py
+G4PY_INSTALL          := /shared/work/gnomon2
 
 Q_SYSTEM              := macosx
 
-Q_PREFIX              := /Users/tunnell/work/g4py
-Q_LIBDIR              := /Users/tunnell/work/g4py/lib
+Q_PREFIX              := /shared/work/gnomon2
+Q_LIBDIR              := /shared/work/gnomon2/lib
 
 Q_G4_INCDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../include/Geant4
 Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../lib

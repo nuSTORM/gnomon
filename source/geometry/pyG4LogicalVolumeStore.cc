@@ -23,57 +23,48 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: ExN01PhysicsList.cc,v 1.4 2006-06-29 15:29:52 gunter Exp $
+// $Id: pyG4LogicalVolume.cc,v 1.5 2008-03-13 07:32:18 kmura Exp $
 // $Name: not supported by cvs2svn $
 // ====================================================================
-//   ExN01PhysicsList.cc
+//   pyG4LogicalVolume.cc
 //
 //                                         2005 Q
 // ====================================================================
-#include "ExN01PhysicsList.hh"
-#include "G4ParticleTypes.hh"
+#include <boost/python.hpp>
+#include "G4Version.hh"
+#include "G4LogicalVolume.hh"
+#include "G4Material.hh"
+#include "G4VSolid.hh"
+#include "G4FieldManager.hh"
+#include "G4VSensitiveDetector.hh"
+#include "G4UserLimits.hh"
+#include "G4SmartVoxelHeader.hh"
+#include "G4GeometryManager.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4MaterialCutsCouple.hh"
+#include "G4FastSimulationManager.hh"
 
-// ====================================================================
-//
-// class description
-//
-// ====================================================================
+#include "pyG4indexing.hh"
 
-////////////////////////////////////
-ExN01PhysicsList::ExN01PhysicsList()
-////////////////////////////////////
-{
+using namespace boost::python;
+
+
+namespace pyG4LogicalVolumeStore {
+
+G4LogicalVolume* fetchVolumeNumber(G4LogicalVolumeStore* my_instance, int i) {
+  return my_instance->at(i);
 }
+};
 
-/////////////////////////////////////
-ExN01PhysicsList::~ExN01PhysicsList()
-/////////////////////////////////////
+void export_G4LogicalVolumeStore()
 {
+  class_<G4LogicalVolumeStore, G4LogicalVolumeStore*, boost::noncopyable>
+    ("G4LogicalVolumeStore", "logical volume store class", no_init)
+      .def("GetInstance",           &G4LogicalVolumeStore::GetInstance,
+           return_value_policy<reference_existing_object>())
+      .staticmethod("GetInstance")
+      .def("GetVolumeID",     &pyG4LogicalVolumeStore::fetchVolumeNumber,     return_internal_reference<>())
+      .def("GetVolume",     &G4LogicalVolumeStore::GetVolume,     return_internal_reference<>())
+      ;
 }
-
-//////////////////////////////////////////
-void ExN01PhysicsList::ConstructParticle()
-//////////////////////////////////////////
-{
-  G4Geantino::GeantinoDefinition();
-}
-
-/////////////////////////////////////////
-void ExN01PhysicsList::ConstructProcess()
-/////////////////////////////////////////
-{
-  AddTransportation();
-}
-
-////////////////////////////////
-void ExN01PhysicsList::SetCuts()
-////////////////////////////////
-{
-  G4int temp = GetVerboseLevel();
-  SetVerboseLevel(0);
-
-  SetCutsWithDefault();   
-
-  SetVerboseLevel(temp);  
-}
-
+//}

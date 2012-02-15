@@ -4,7 +4,7 @@
 #   Makefile for building Geant4Py site-modules
 # ===========================================================
 
-SUBDIR := ParticleGun MedicalBeam
+SUBDIR := ParticleGun
 
 .PHONY: all install clean cleanlib
 

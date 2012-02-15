@@ -4,7 +4,7 @@
 #   Makefile for building Geant4Py site-modules
 # ===========================================================
 
-SUBDIR := Qmaterials NISTmaterials
+SUBDIR := NISTmaterials
 
 .PHONY: all install clean cleanlib
 

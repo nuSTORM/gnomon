@@ -4,7 +4,7 @@
 #   Makefile for building Geant4Py site-modules
 # ===========================================================
 
-SUBDIR := ExN01pl ExN03pl EMSTDpl
+SUBDIR := ExN03pl
 
 .PHONY: all install clean
 

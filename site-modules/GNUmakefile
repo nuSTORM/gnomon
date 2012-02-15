@@ -5,8 +5,7 @@
 # ===========================================================
 include  ../config/config.gmk
 
-SUBDIR := geometries materials processes physics_lists primaries
-SUBDIR += utils python
+SUBDIR := geometries materials physics_lists primaries python
 
 .PHONY: all install clean
 

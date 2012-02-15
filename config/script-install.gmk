@@ -14,7 +14,7 @@ all: $(pycs) $(pyos)
 install: $(pycs) $(pyos)
 	@echo ... intall "*.py" into $(install_dir)
 	@if [ ! -d $(install_dir) ]; then install -d $(install_dir); fi
-	@install -m 644 $(pys) $(pycs) $(pyos) $(install_dir)
+	@install -m 644 $(pys)  $(install_dir)
 
 clean:
 	@-\rm -f $(pycs) $(pyos)
