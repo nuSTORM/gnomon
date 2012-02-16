@@ -45,9 +45,6 @@ Installation directories:
 Fine tuning of the library path:
   --with-g4-incdir=DIR      Geant4 header dir [\$G4INSTALL/include]
   --with-g4-libdir=DIR      Geant4 library dir [\$G4INSTALL/lib/\$G4SYSTEM]
-  --with-clhep-incdir=DIR   CLHEP header dir [\$CLHEP_BASE_DIR/include]
-  --with-clhep-libdir=DIR   CLHEP library dir [\$CLHEP_BASE_DIR/lib]
-  --with-clhep-lib=LIB      library name of libCLHEP.so [CLHEP|\$CLHEP_LIB]
 
   --with-python-incdir=DIR  Python header dir [/usr/include/python(2.#)],
                             (location of pyconfig.h)
@@ -92,10 +89,6 @@ current_dir=`pwd`
 
 g4_incdir=/zzz
 g4_libdir=/zzz
-
-clhep_incdir=/zzz
-clhep_libdir=/zzz
-clhep_lib=${CLHEP_LIB:-CLHEP}
 
 python_incdir=/zzz
 python_exe=python
@@ -162,14 +155,9 @@ do
     --prefix=*)                prefix=$optarg                    ;;
     --libdir=*)                libdir=$optarg                    ;;
     --with-package-dir=*)      g4_incdir=$optarg/include/Geant4
-                               g4_libdir=$optarg/lib
-                               clhep_incdir=$optarg/include
-                               clhep_libdir=$optarg/lib          ;;
+                               g4_libdir=$optarg/lib             ;;
     --with-g4-incdir=*)        g4_incdir=$optarg                 ;;
     --with-g4-libdir=*)        g4_libdir=$optarg                 ;;
-    --with-clhep-incdir=*)     clhep_incdir=$optarg              ;;
-    --with-clhep-libdir=*)     clhep_libdir=$optarg              ;;
-    --with-clhep-lib=*)        clhep_lib=$optarg                 ;;
     --with-extra-dir=*)        extra_dir=$optarg                 ;;
     --with-python-incdir=*)    python_incdir=$optarg             ;;
     --with-python-libdir=*)    python_libdir=$optarg             ;;
@@ -275,57 +263,6 @@ if [ ! -f ${g4_libdir}/libG4run.${shlib} ]; then
   exit -1
 fi
 echo "ok"
-
-# ---
-clhep_incdir1=${CLHEP_INCLUDE_DIR:-/zzz}
-clhep_incdir2=${CLHEP_BASE_DIR:+$CLHEP_BASE_DIR/include}
-set $clhep_incdir $clhep_incdir1 $clhep_incdir2
-for adir in $*
-do
-  if [ -d "$adir" ]; then
-    clhep_incdir=$adir
-    break
-  fi
-done
-
-echo $ac_n "Checking for CLHEP include dir ... $ac_c"
-if [ ! -d "$clhep_incdir" ]; then
-  echo "no"
-  echo $ac_n "### $clhep_incdir (clhep-incdir) does not exist. $ac_c"
-  echo "Try --with-clhep-incdir option."
-  exit -1
-fi
-echo "$clhep_incdir"
-
-# ---
-clhep_libdir1=${CLHEP_LIB_DIR:-/zzz}
-clhep_libdir2=${CLHEP_BASE_DIR:+$CLHEP_BASE_DIR/lib}
-set $clhep_libdir $clhep_libdir1 $clhep_libdir2
-for adir in $*
-do
-  if [ -d "$adir" ]; then
-    clhep_libdir=$adir
-    break
-  fi
-done
-
-echo $ac_n "Checking for CLHEP lib dir ... $ac_c"
-if [ ! -d "$clhep_libdir" ]; then
-  echo "no"
-  echo $ac_n "### $clhep_libdir (clhep-libdir) does not exist. $ac_c"
-  echo "Try --with-clhep-libdir option."
-  exit -1
-fi
-echo "$clhep_libdir"
-
-echo $ac_n "Checking for CLHEP lib name ... $ac_c"
-if [ ! -f "$clhep_libdir"/lib${clhep_lib}.${shlib} ]; then
-  echo "no"
-  echo $ac_n "### lib${clhep_lib}.${shlib} (clhep-lib) does not exist. $ac_c"
-  echo "Try --with-clhep-lib option."
-  exit -1
-fi
-echo "lib${clhep_lib}.${shlib}"
 
 # ---
 echo $ac_n "Checking for Python include dir (pyconfig.h) ... $ac_c"
