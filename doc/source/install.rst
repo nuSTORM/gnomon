@@ -166,7 +166,7 @@ Gnomon, so for now you will need to use our fork of g4py::
   hg clone https://bitbucket.org/tunnell/g4py
   cd g4py
   # select system name from linux, linux64, macosx as appropriate
-  ./configure linux64 --with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib --with-python-libdir=/usr/lib --with-boost-libdir=/usr/lib --with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib --prefix=$VIRTUAL_ENV
+  ./configure linux64 --with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib --with-python-libdir=$VIRTUAL_ENV/lib --with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-boost-libdir=/usr/lib --with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib --prefix=$VIRTUAL_ENV
   make
   make install
 
