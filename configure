@@ -275,7 +275,7 @@ fi
 for aincdir in $*
 do
   if [ -d /usr/include/"$aincdir" ]; then
-    python_incdir=/usr/include/$aincdir
+    #python_incdir=/usr/include/$aincdir
     break
   fi
 done
