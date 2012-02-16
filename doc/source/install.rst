@@ -96,21 +96,21 @@ Gnomon uses the ROOT I/O system to record event information to disk
 for access later.  In addition, we expect many Gnomon users will
 want to use ROOT to analyze the output of Gnomon.
 
-Begin by downloading the ROOT 5.30 tarball from `the ROOT download
-page <http://root.cern.ch/drupal/content/production-version-530>`_.
-As of this writing, the latest version is 5.30.04.  Then, from the
+Begin by downloading the ROOT 5.32 tarball from `the ROOT download
+page <http://root.cern.ch/drupal/content/production-version-532>`_.
+As of this writing, the latest version is 5.32.00.  Then, from the
 download directory, execute the following commands::
 
-  tar xvf root_v5.30.04.source.tar.gz
+  tar xvf root_v5.32.00.source.tar.gz
   mkdir $VIRTUAL_ENV/src/
-  mv root $VIRTUAL_ENV/src/root-5.30.04
-  cd $VIRTUAL_ENV/src/root-5.30.04
+  mv root $VIRTUAL_ENV/src/root-5.32.00
+  cd $VIRTUAL_ENV/src/root-5.32.00
   ./configure
   make
 
 We also need to append a ``source`` line to ``$VIRTUAL_ENV/bin/activate``::
 
-  source $VIRTUAL_ENV/src/root-5.30.04/bin/thisroot.sh
+  source $VIRTUAL_ENV/src/root-5.32.00/bin/thisroot.sh
 
 Step 4: xerces c++
 ^^^^^^^^^^^^^^^^^^^^^^^^
