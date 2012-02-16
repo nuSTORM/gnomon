@@ -163,7 +163,7 @@ had to fix a few bugs and add wrapper a few additional classes for
 Gnomon, so for now you will need to use our fork of g4py::
 
   cd $VIRTUAL_ENV/src
-  hg clone https://bitbucket.org/tunnell/g4py
+  hg clone https://bitbucket.org/gnomon/g4py
   cd g4py
   # select system name from linux, linux64, macosx as appropriate
   ./configure linux64 --with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib --with-python-libdir=$VIRTUAL_ENV/lib --with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-boost-libdir=/usr/lib --with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib --prefix=$VIRTUAL_ENV
@@ -177,3 +177,12 @@ Now you can enable the Gnomon environment whenever you want by typing
 ``source $HOME/env/gnomon/bin/activate``, or by placing that line in the
 ``.bashrc`` login script.
 
+Step 7: gnomon
+^^^^^^^^^^^^
+
+Now you are ready to get gnomon.  One can currently work only from the developer's version.  To get the code, run::
+
+  cd $VIRTUAL_ENV/src
+  hg clone https://bitbucket.org/gnomon/gnomon
+
+Then you are ready to move to the tutorial.
