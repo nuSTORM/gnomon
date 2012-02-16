@@ -13,8 +13,6 @@ rand_engine= Ranlux64Engine()
 HepRandom.setTheEngine(rand_engine)
 HepRandom.setTheSeed(20050830)
 
-import my_script
-
 class ScintSD(G4VSensitiveDetector):
   "SD for scint"
 
