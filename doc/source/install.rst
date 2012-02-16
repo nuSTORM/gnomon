@@ -14,6 +14,7 @@ Gnomon depends on several software packages:
 * Python 2.7.X (Python 3 is not currently supported)
 * Boost::Python
 * Matplotlib
+* xerces C++ 3.1.1
 * GEANT4.9.5
 * g4py
 * ROOT 5.32
@@ -88,7 +89,7 @@ This will put the appropriate version of python in the path and also
 set the ``$VIRTUAL_ENV`` environment variable we will use in the
 remainder of the directions.
 
-Step 4: ROOT
+Step 3: ROOT
 ^^^^^^^^^^^^
 
 Gnomon uses the ROOT I/O system to record event information to disk
@@ -111,8 +112,28 @@ We also need to append a ``source`` line to ``$VIRTUAL_ENV/bin/activate``::
 
   source $VIRTUAL_ENV/src/root-5.30.04/bin/thisroot.sh
 
+Step 4: xerces c++
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-Step 5: CLHEP and GEANT4
+Gnomon uses xerces to help Geant4 with parsing XML that is
+used in our GDML geometry representation.  Proceed to the `xerces
+C++ download page <http://xerces.apache.org/xerces-c/download.cgi>`_
+and get version 3.1.1.
+
+Proceed to your download directory then run the following commands::
+
+  tar xvf xerces-c-3.1.1.tar.gz
+  mv xerces-c-3.1.1 $VIRTUAL_ENV/src/
+  cd $VIRTUAL_ENV/src/xerces-c-3.1.1
+  ./configure --prefix=$VIRTUAL_ENV
+  make install
+
+
+.. warning:: If using Mac OS X, then xerces gets confused about the architecture.  It may be necessary to append CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64" to the configure command.
+
+
+
+Step 5: GEANT4
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Gnomon uses GEANT4 to model particle interactions with matter. These
