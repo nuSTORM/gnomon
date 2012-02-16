@@ -25,6 +25,7 @@ Subscribe to the mailing list for update announcements!
    :maxdepth: 2
 
    install
+   faq
 
 Authors
 -------

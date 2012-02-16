@@ -228,7 +228,7 @@ gRunManager.BeamOn(1)
 
 # creating widgets using grid layout
 
-from tkinter import *
+from Tkinter import *
 
 class App(Frame):
 
