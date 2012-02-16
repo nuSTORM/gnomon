@@ -166,10 +166,12 @@ Gnomon, so for now you will need to use our fork of g4py::
   hg clone https://bitbucket.org/tunnell/g4py
   cd g4py
   # select system name from linux, linux64, macosx as appropriate
-  ./configure linux64 --with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib --with-python-libdir=/usr/lib --with-boost-libdir=/usr/lib
+  ./configure linux64 --with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib --with-python-libdir=/usr/lib --with-boost-libdir=/usr/lib --with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib --prefix=$VIRTUAL_ENV
   make
   make install
 
+
+.. warning:: If using Mac OS X, then one must make sure that the Macports boost::python is found:  ``--with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib``
 
 Now you can enable the Gnomon environment whenever you want by typing
 ``source $HOME/env/gnomon/bin/activate``, or by placing that line in the
