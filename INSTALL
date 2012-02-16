@@ -2,6 +2,115 @@ We use phyton 3.2
 
 # Mac
 sudo port install boost +python32
+sudo port install python3.2
 
 # Dev
-easy_install -U Sphinx
+#easy_install -U Sphinx
+
+
+
+
+
+virtualenv --python=python3.2 gnomon_env
+cd gnomon_env
+export GNOMONDIR=`pwd`
+
+cd $GNOMONDIR/bin/
+ln -s /usr/bin/gcc-mp-4.7 gcc
+ln -s /usr/bin/g++-mp-4.7 g++
+ln -s /usr/bin/cpp-mp-4.7 cpp
+ln -s /usr/bin/gcov-mp-4.7 gcov
+ln -s /usr/bin/gfortran-mp-4.7 gfortran
+
+cd $GNOMONDIR
+
+
+emacs bin/activate
+
+add to end:
+
+export DYLD_LIBRARY_PATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
+
+(ld for linux)_
+
+
+mkdir $VIRTUAL_ENV/src/
+
+get
+
+tar xvfz root_v5.32.00.source.tar.gz 
+
+mv root root_v5.32.00
+
+cd root_v5.32.00
+
+./configure --with-python-incdir=$VIRTUAL_ENV/include/python3.2m/ --with-python-incdir=$VIRTUAL_ENV/lib/
+export NCORES=5
+make -j$NCORES
+
+OR:
+cd src
+svn co http://root.cern.ch/svn/root/branches/v5-32-00-patches root_v5.32.00-patches
+
+mkdir $VIRTUAL_ENV/build/root_v5.32.00-patches
+cd $VIRTUAL_ENV/build/root_v5.32.00-patches
+cmake $VIRTUAL_ENV/src/root_v5.32.00-patches
+
+
+#########
+try 2
+##########
+
+sudo port install python31
+virtualenv --python=python3.1 gnomon
+cd gnomon/
+source  bin/activate
+mkdir src
+cd src
+svn co http://root.cern.ch/svn/root/branches/v5-32-00-patches root_v5.32.00-patches
+
+
+###
+try 3
+###
+export NCORES=5
+
+cd env
+mkdir src
+cd src
+find Python-3.1.4.tgz and place here
+tar xvfz Python-3.1.4.tgz
+./configure --enable-shared --prefix=/Users/tunnell/env/build
+make -j${NCORES}
+make install
+
+cd ~/env
+
+virtualenv --python=/Users/tunnell/env/build/bin/python3 gnomon
+cd gnomon
+source bin/activate
+cd lib
+ln -s /Users/tunnell/env/build/lib/libpython3.1.dylib libpython3.1.dylib
+cd ..
+mkdir src
+cd src
+get root patches svn
+cd root_v5.32.00-patches/
+./configure --with-python-libdir=$VIRTUAL_ENV/lib/
+make -j${NCORES}
+
+add:
+source $VIRTUAL_ENV/src/root_v5.32.00-patches/bin/thisroot.sh
+to bin/activate end.
+
+mkdir ${VIRTUAL_ENV}/src
+cd ${VIRTUAL_ENV}/src
+wget ftp://root.cern.ch/root/root_v5.32.00.macosx64-10.7-i386.tar.gz
+tar xvfz root_v5.32.00.macosx64-10.7-i386.tar.gz
+
+add to bin/activate:
+source ${VIRTUAL_ENV}/src/root-v5-32-00/bin/thisroot.sh
+
+
+found wrong include directory, but so what?
+./configure macosx --with-g4-libdir=${GEANT_PREFIX}/lib --with-clhep-incdir=`clhep-config --prefix`/include --with-clhep-libdir=`clhep-config --prefix`/lib/ --with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib --with-g4-incdir=${GEANT_PREFIX}/include/Geant4 --with-xercesc-incdir=${XD}/include --with-xercesc-libdir=${XD}/lib --with-python-incdir=$VIRTUAL_ENV/include/python2.7/ --with-python-libdir=${PYTHON_PREFIX}/lib

@@ -4,27 +4,27 @@
 #
 # Makefile definitions included by the top Makefile
 
-G4PY_INSTALL          := /shared/work/gnomon2
+G4PY_INSTALL          := /Users/tunnell/work/gnomon2
 
 Q_SYSTEM              := macosx
 
-Q_PREFIX              := /shared/work/gnomon2
-Q_LIBDIR              := /shared/work/gnomon2/lib
+Q_PREFIX              := /Users/tunnell/work/gnomon2
+Q_LIBDIR              := /Users/tunnell/work/gnomon2/lib
 
-Q_G4_INCDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../include/Geant4
-Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=6f83dd075b55d429af809d04eff0560d1e5fc15c/bin/../lib
+Q_G4_INCDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=5a19d01c3ce348cd48f85cbf20eea0957efbae9e/bin/../include/Geant4
+Q_G4_LIBDIR           := /Users/tunnell/.cache/0install.net/implementations/sha1new=5a19d01c3ce348cd48f85cbf20eea0957efbae9e/bin/../lib/
 
-Q_CLHEP_INCDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=92e2a9e826b92da40b6b0817738a358dcb3503af/include
-Q_CLHEP_LIBDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=92e2a9e826b92da40b6b0817738a358dcb3503af/lib/
+Q_CLHEP_INCDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=365582916fc4e82f478113ee0c606b737c211dc7/include
+Q_CLHEP_LIBDIR        := /Users/tunnell/.cache/0install.net/implementations/sha1new=365582916fc4e82f478113ee0c606b737c211dc7/lib/
 Q_CLHEP_LIB           := CLHEP
 
-Q_PYTHON_INCDIR       := /Users/tunnell/.cache/0install.net/implementations/sha1new=4acc3af86d4a7c72a006c4de96b99e1baec66525/include/python3.2m
-Q_PYTHON_LIBDIR       := /Users/tunnell/.cache/0install.net/implementations/sha1new=4acc3af86d4a7c72a006c4de96b99e1baec66525/lib/python3.2
-Q_PYTHON              := python3
-Q_WITH_PYTHON3        := 1
+Q_PYTHON_INCDIR       := /usr/include/python2.7
+Q_PYTHON_LIBDIR       := /Users/tunnell/env/gnomon/lib
+Q_PYTHON              := python
+Q_WITH_PYTHON3        := 0
 Q_BOOST_INCDIR        := /opt/local/include
 Q_BOOST_LIBDIR        := /opt/local/lib
-Q_BOOST_PYTHON_LIB    := boost_python3
+Q_BOOST_PYTHON_LIB    := boost_python
 
 Q_ENABLE_OPENGLX      := 1
 Q_ENABLE_OPENGLXM     := 0
@@ -34,5 +34,5 @@ Q_ENABLE_GL2PS        := 1
 Q_ENABLE_PHYSICSLIST  := 1
 
 Q_ENABLE_GDML         := 1
-Q_XERCESC_INCDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=7b74a95224b4470762beb7f4de4a3a14a021e47d/include
-Q_XERCESC_LIBDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=7b74a95224b4470762beb7f4de4a3a14a021e47d/lib
+Q_XERCESC_INCDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=3e6859300df7f1a7458a61613d21ee2d0cbe3f0a/lib//../include
+Q_XERCESC_LIBDIR      := /Users/tunnell/.cache/0install.net/implementations/sha1new=3e6859300df7f1a7458a61613d21ee2d0cbe3f0a/lib//../lib
