@@ -111,6 +111,48 @@ tar xvfz root_v5.32.00.macosx64-10.7-i386.tar.gz
 add to bin/activate:
 source ${VIRTUAL_ENV}/src/root-v5-32-00/bin/thisroot.sh
 
+# geant4
+wget http://geant4.cern.ch/support/source/geant4.9.5.tar.gz
+tar xvfz geant4.9.5.tar.gz
+mkdir geant4.9.5-build
+cd geant4.9.5-build
+cmake ../geant4.9.5 -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV
 
 found wrong include directory, but so what?
 ./configure macosx --with-g4-libdir=${GEANT_PREFIX}/lib --with-clhep-incdir=`clhep-config --prefix`/include --with-clhep-libdir=`clhep-config --prefix`/lib/ --with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib --with-g4-incdir=${GEANT_PREFIX}/include/Geant4 --with-xercesc-incdir=${XD}/include --with-xercesc-libdir=${XD}/lib --with-python-incdir=$VIRTUAL_ENV/include/python2.7/ --with-python-libdir=${PYTHON_PREFIX}/lib
+
+hg clone gnomon
+
+source reconfigure.sh 
+
+cd config
+
+emacs config.gmk
+
+Q_PYTHON_INCDIR       := /Users/tunnell/env/gnomon/include/python2.7
+cd ..
+
+make
+
+sudo port install boost +python27
+
+source ${VIRTUAL_ENV}/src/root-v5-32-00/bin/thisroot.sh
+export PYTHONPATH=${VIRTUAL_ENV}/src:$PYTHONPATH
+export LD_LIBRARY_PATH=${VIRTUAL_ENV}/lib:$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=${VIRTUAL_ENV}/lib:$DYLD_LIBRARY_PATH
+
+
+sudo apt-get install build-essential xorg-dev python-dev gcc-4.4 gfortran-4.4 \
+     g++-4.4 python-virtualenv python-numpy python-pygame libglu1-mesa-dev \
+     glutg3-dev cmake uuid-dev liblapack-dev mercurial git subversion \
+     libboost-all-dev
+
+I did:
+
+sudo apt-get install libboost-all-dev
+
+source bin/activate
+cd src/geant4.9.5-build
+cmake ../geant4.9.5 -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -DGEANT4_INSTALL_DATA=True
+
+./configure linux64 --with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib --with-python-libdir=/usr/lib --with-boost-libdir=/usr/lib
