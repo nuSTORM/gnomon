@@ -222,10 +222,11 @@ gApplyUICommand("/vis/scene/add/trajectories")
 #gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 #gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 
-gRunManager.BeamOn(1)
+gRunManager.BeamOn(1000)
 
 # creating widgets using grid layout
 
+"""
 from Tkinter import *
 
 class App(Frame):
@@ -375,3 +376,4 @@ class App(Frame):
 
 app = App()
 app.mainloop()
+"""

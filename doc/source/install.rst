@@ -58,7 +58,7 @@ To be able to generate the documentation, we also need these tools::
 
   sudo apt-get install texlive dvipng
 
-.. hint:: **Mac users:** sudo port install cmake, sudo easy_install virtualenv mercurial, sudo port install boost +python27
+.. hint:: **Mac users:** sudo port install cmake, sudo easy_install virtualenv mercurial, sudo port install boost +python27; py27-tkinter
 
 
 Step 2: virtualenv
