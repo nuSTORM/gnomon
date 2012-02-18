@@ -222,7 +222,7 @@ gApplyUICommand("/vis/scene/add/trajectories")
 #gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 #gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 
-gRunManager.BeamOn(1000)
+gRunManager.BeamOn(1)
 
 # creating widgets using grid layout
 
