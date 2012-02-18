@@ -78,7 +78,7 @@ Next, append the following lines to the end of
 
   # For Macs: Change LD_LIBRARY_PATH -> DYLD_LIBRARY_PATH
   export LD_LIBRARY_PATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
-  export PYTHONPATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
+  export PYTHONPATH=$VIRTUAL_ENV/lib:$PYTHONPATH
 
 Finally, we can enable the virtual environment::
 
