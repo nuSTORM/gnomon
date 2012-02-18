@@ -58,7 +58,7 @@ To be able to generate the documentation, we also need these tools::
 
   sudo apt-get install texlive dvipng
 
-.. hint:: **Mac users:** sudo port install cmake, sudo easy_install virtualenv mercurial, sudo port install boost +python27; py27-tkinter
+.. hint:: **Mac users:** Get macports and install xcode.  sudo port install cmake, sudo easy_install virtualenv mercurial, sudo port install boost +python27; py27-tkinter
 
 
 Step 2: virtualenv
@@ -76,10 +76,9 @@ inside of a virtualenv in your ``$HOME`` directory::
 Next, append the following lines to the end of
 ``$HOME/env/gnomon/bin/activate`` to allow codes to see locally installed libraries::
 
+  # For Macs: Change LD_LIBRARY_PATH -> DYLD_LIBRARY_PATH
   export LD_LIBRARY_PATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
-  export DYLD_LIBRARY_PATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
   export PYTHONPATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
-
 
 Finally, we can enable the virtual environment::
 
@@ -88,6 +87,16 @@ Finally, we can enable the virtual environment::
 This will put the appropriate version of python in the path and also
 set the ``$VIRTUAL_ENV`` environment variable we will use in the
 remainder of the directions.
+
+And create a directory where all the source codes will go::
+
+  mkdir $VIRTUAL_ENV/src/
+
+where the instructions below will tell you where the files can be located.  At the time of writing, one should just be able to run the following commands to fetch some of the various files::
+
+   wget ftp://root.cern.ch/root/root_v5.32.00.source.tar.gz
+   wget http://mirror.ox.ac.uk/sites/rsync.apache.org/xerces/c/3/sources/xerces-c-3.1.1.tar.gz
+   wget http://geant4.cern.ch/support/source/geant4.9.5.tar.gz
 
 .. caution:: Mainly for **Mac users** but others may want to read:  ``ln -s /opt/local/lib/libpython2.7.dylib $VIRTUAL_ENV/lib``.  This will specify the version of python to be the one that you can find by doing ``sudo port select --list python``.  It's very easy to get version mismatches for python.  It is *strongly* advised to append the following to every ``./configure`` command: ``--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib``
 
@@ -104,7 +113,6 @@ As of this writing, the latest version is 5.32.00.  Then, from the
 download directory, execute the following commands::
 
   tar xvf root_v5.32.00.source.tar.gz
-  mkdir $VIRTUAL_ENV/src/
   mv root $VIRTUAL_ENV/src/root-5.32.00
   cd $VIRTUAL_ENV/src/root-5.32.00
   ./configure
@@ -133,7 +141,7 @@ Proceed to your download directory then run the following commands::
   make install
 
 
-.. hint:: **Mac users:** then xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.
+.. hint:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  Please check the output of `./configure` to make sure that it agrees with the output of `uname -m`.
 
 
 
