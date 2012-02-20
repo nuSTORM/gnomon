@@ -44,7 +44,7 @@ class ScintSD(G4VSensitiveDetector):
     z0 = preStepPoint.GetPosition().z
     y0 = pv.GetTranslation().x
     y1 = pv.GetTranslation().y
-    string_to_print = '%f %f %f %f %f\n' % (x0,y0,z0,y0,y1)
+    string_to_print = '%f %f %f %f %f %f\n' % (float(pv.GetCopyNo()), x0,y0,z0,y0,y1)
     f.write(string_to_print)
 
     lv = pv.GetMotherLogical()
