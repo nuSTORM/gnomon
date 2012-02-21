@@ -2,7 +2,13 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
 
 
-  <define/>
+  <define>
+    <!-- bar info.  units are 'mm' -->
+    <variable name="length" value="5000"/>
+    <variable name="width" value="10"/>
+    <variable name="thickness" value="5"/>  <!-- z -->
+
+  </define>
 
 
   <materials>
@@ -42,12 +48,16 @@
        scintillator bars.  There's also the artificial shape of the world volume
        but that's just for Geant4's sake -->
   <solids>
-    <box lunit="mm" name="SteelPlateSolid" x="5000" y="5000" z="10"/>
-    <box lunit="mm" name="ScintillatorBarSolid" x="5000" y="10" z="5"/>
+    <box lunit="mm" name="SteelPlateSolid" x="5000" y="5000" z="2*thickness"/>
+    
+    <!-- x means x-view, etc. -->
+    <box lunit="mm" name="ScintillatorXBarSolid" x="width" y="length" z="thickness"/>
+    <box lunit="mm" name="ScintillatorYBarSolid" x="length" y="width" z="thickness"/>
 
-    <box lunit="mm" name="ScintillatorPlaneSolid" x="5000" y="5000" z="5"/>
+    <box lunit="mm" name="ScintillatorPlaneXSolid" x="5000" y="5000" z="thickness"/>
+    <box lunit="mm" name="ScintillatorPlaneYSolid" x="5000" y="5000" z="thickness"/>
 
-    <box lunit="mm" name="LayerSolid" x="5000" y="5000" z="20"/>
+    <box lunit="mm" name="LayerSolid" x="5000" y="5000" z="4*thickness"/>
     <box lunit="mm" name="CalorimeterSolid" x="5000" y="5000" z="8880"/> 
     <box lunit="m" name="WorldSolid" x="6" y="6" z="10"/> <!-- note units-->
   </solids>
@@ -58,23 +68,42 @@
       <solidref ref="SteelPlateSolid"/>
     </volume>
     
-    <volume name="ScintillatorBar">
+    <!-- define bars -->
+    <volume name="ScintillatorBarX">
       <materialref ref="ScintillatorMaterial"/>
-      <solidref ref="ScintillatorBarSolid"/>
+      <solidref ref="ScintillatorXBarSolid"/>
+    </volume>
+    <volume name="ScintillatorBarY">
+      <materialref ref="ScintillatorMaterial"/>
+      <solidref ref="ScintillatorYBarSolid"/>
     </volume>
 
-    <volume name="ScintillatorPlane">
+    <!-- define scintillator planes -->
+    <volume name="ScintillatorPlaneX">
       <materialref ref="Galactic"/>
-      <solidref ref="ScintillatorPlaneSolid"/>
+      <solidref ref="ScintillatorPlaneXSolid"/>
       <replicavol number="500">
-        <volumeref ref="ScintillatorBar"/>
+        <volumeref ref="ScintillatorBarX"/>
         <replicate_along_axis>
-          <direction y="1"/>
-          <width unit="mm" value="10"/>
+          <direction x="1"/>
+          <width unit="mm" value="width"/>
           <offset unit="mm" value="0"/>
         </replicate_along_axis>
       </replicavol>
     </volume>
+    <volume name="ScintillatorPlaneY">
+      <materialref ref="Galactic"/>
+      <solidref ref="ScintillatorPlaneYSolid"/>
+      <replicavol number="500">
+        <volumeref ref="ScintillatorBarY"/>
+        <replicate_along_axis>
+          <direction y="1"/>
+          <width unit="mm" value="width"/>
+          <offset unit="mm" value="0"/>
+	  </replicate_along_axis>
+      </replicavol>
+    </volume>
+    
 
     <volume name="LayerOfPlanes">
       <materialref ref="Galactic"/>
@@ -85,14 +114,13 @@
       </physvol>
 
       <physvol name="ScintillatorPlaneXPhysical">
-        <volumeref ref="ScintillatorPlane"/>
+        <volumeref ref="ScintillatorPlaneX"/>
         <position name="ScintillatorPlaneX_pos" unit="mm" x="0" y="0" z="2.5"/>
       </physvol>
 
       <physvol name="ScintillatorPlaneYPhysical">
-        <volumeref ref="ScintillatorPlane"/>
+        <volumeref ref="ScintillatorPlaneY"/>
         <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="7.5"/>
-	<rotation name="ScintillatorPlaneY_rotation" z="pi/2.0"/>
       </physvol>
     </volume>
 

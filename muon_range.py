@@ -16,186 +16,224 @@ HepRandom.setTheSeed(20050830)
 f = open('my_output', 'w')
 
 class ScintSD(G4VSensitiveDetector):
-  "SD for scint"
+    "SD for scint"
 
-  def __init__(self):
-    G4VSensitiveDetector.__init__(self, "Scintillator")
+    def __init__(self):
+        G4VSensitiveDetector.__init__(self, "Scintillator")
+        self.pos = {}
+        self.pos['X'] = []
+        self.pos['Y'] = []
 
-  def ProcessHits(self, step, rohist):
-    preStepPoint= step.GetPreStepPoint()
-    if(preStepPoint.GetCharge() == 0):
-      return
+    def getView(self, lv):
+        view = None
+        if str(lv.GetName())[-1] == 'X':
+            view = 'X'
+        elif str(lv.GetName())[-1] == 'Y':
+            view = 'Y'
 
-    #print 'test:', rohist.GetTranslation()
+        return view
 
-    track= step.GetTrack()
+    def getMCHitPos(self, position, translation, view, width=10, thickness=5):
+        diff = None
+        if view == 'X':
+            diff = position.x - translation.x
+        elif view == 'Y':
+            diff = position.y - translation.y
+        else:
+            raise TypeError
 
-    pv = preStepPoint.GetPhysicalVolume()
-    dedx= step.GetTotalEnergyDeposit()
-    print 'copy:',pv.GetCopyNo()
-    print '\tobjectTranslation:', pv.GetObjectTranslation()
-    print '\ttranslation:', pv.GetTranslation()
-    print '\tframeTranslation:', pv.GetFrameTranslation()
-    print '\tposition:', preStepPoint.GetPosition()
-    print '\tdedx:', dedx
-    
-    x0 = preStepPoint.GetPosition().x
-    y0 = preStepPoint.GetPosition().y
-    z0 = preStepPoint.GetPosition().z
-    y0 = pv.GetTranslation().x
-    y1 = pv.GetTranslation().y
-    string_to_print = '%f %f %f %f %f %f\n' % (float(pv.GetCopyNo()), x0,y0,z0,y0,y1)
-    f.write(string_to_print)
+        self.pos[view].append(diff)
 
-    lv = pv.GetMotherLogical()
-    print lv.GetName()
+        if len(self.pos['X']) and len(self.pos['Y']):
+            print 'X: [%f, %f], Y: [%f, %f]' % (min(self.pos['X']), max(self.pos['X']), min(self.pos['Y']), max(self.pos['Y']))
 
-    print '\trotation:', pv.GetRotation()
-    print '\tobjectRotationValue:', pv.GetObjectRotationValue()
-    print '\tframeRotation:', pv.GetFrameRotation()
+        if math.fabs(diff) > float(width)/2:
+            raise ValueError
+
+        return diff
+
+    def ProcessHits(self, step, rohist):
+        preStepPoint= step.GetPreStepPoint()
+        if(preStepPoint.GetCharge() == 0):
+            return
+
+        track= step.GetTrack()
+
+        pv = preStepPoint.GetPhysicalVolume()
+        dedx= step.GetTotalEnergyDeposit()
+        lv = pv.GetMotherLogical()
+
+        print '\tcopy:',pv.GetCopyNo()
+        print '\ttranslation:', pv.GetTranslation()
+        print '\tposition:', preStepPoint.GetPosition()
+        print '\tdedx:', dedx
+
+        position = step.GetPostStepPoint().GetPosition()
+        translation = pv.GetTranslation()
+        view = self.getView(lv)
+
+        print self.getMCHitPos(position, translation, view)
+
+        print "*********" , (pv.GetTranslation() - preStepPoint.GetPosition())
+
+        if str(lv.GetName())[-1] == 'Y':
+            f.write('Y %d %f\n' % (pv.GetCopyNo(), preStepPoint.GetPosition().y - pv.GetTranslation().y))
+        else:
+            f.write('X %d %f\n' % (pv.GetCopyNo(), preStepPoint.GetPosition().x - pv.GetTranslation().x))
+
+        #print '\trotation:', pv.GetRotation()
+        #print '\tobjectRotationValue:', pv.GetObjectRotationValue()
+        #print '\tframeRotation:', pv.GetFrameRotation()
 
 class MyField(G4MagneticField):
-  "My Magnetic Field"
+    "My Magnetic Field"
 
-  def GetFieldValue(self, pos, time):
-    #current = 150 * 1000#  A
-    #mu0 = 4 * math.pi * 10**-7
-    r = math.sqrt( (pos.x)**2 + (pos.y )**2)
+    def GetFieldValue(self, pos, time):
+        #current = 150 * 1000#  A
+        #mu0 = 4 * math.pi * 10**-7
+        r = math.sqrt( (pos.x)**2 + (pos.y )**2)
 
-    bfield= G4ThreeVector()
+        bfield= G4ThreeVector()
 
-    B = -2  * tesla # saturation
-    if r != 0.0:
-      #B += mu0 * current / (2 * math.pi * r * m) * tesla
-      bfield.x= (pos.y / r) * B
-      bfield.y= (pos.x / r) * B
-    else:
-      bfield.x= 0
-      bfield.y= 0
-    
-    bfield.z= 0.
+        B = -2  * tesla # saturation
+        if r != 0.0:
+            #B += mu0 * current / (2 * math.pi * r * m) * tesla
+            bfield.x= (pos.y / r) * B
+            bfield.y= (pos.x / r) * B
+        else:
+            bfield.x= 0
+            bfield.y= 0
 
-    #print pos, bfield
-      
-    return bfield
+        bfield.z= 0.
+
+        #print pos, bfield
+
+        return bfield
 
 class MyTrackingAction(G4UserTrackingAction):
-  "My tracking Action"
+    "My tracking Action"
 
-  def PreUserTrackingAction(self, track):
-    pass
-  
-  def PostUserTrackingAction(self, track):
-    pass
-    
+    def PreUserTrackingAction(self, track):
+        pass
+
+    def PostUserTrackingAction(self, track):
+        pass
+
 
 class MyPrimaryGeneratorAction(G4VUserPrimaryGeneratorAction):
-  "My Primary Generator Action"
+    "My Primary Generator Action"
 
-  def __init__(self):
-    G4VUserPrimaryGeneratorAction.__init__(self)
-    self.event_list = self.get_next_events()
+    def __init__(self):
+        G4VUserPrimaryGeneratorAction.__init__(self)
+        self.event_list = self.get_next_events()
 
-  def get_next_events(self):
-    f = ROOT.TFile('ntuple_neg14.root')
-    t = f.Get('gst')
+    def get_next_events(self):
+        f = ROOT.TFile('ntuple_neg14.root')
+        t = f.Get('gst')
 
-    n = t.GetEntries()
+        n = t.GetEntries()
 
-    for i in range(n):
-      t.GetEntry(i)
-      next_events = []
+        for i in range(n):
+            t.GetEntry(i)
+            next_events = []
 
-      lepton_event = {}
-      if t.El**2 - (t.pxl**2 + t.pyl**2 + t.pzl**2) < 1e-7:
-        lepton_event['code'] = -14
-      else:
-        lepton_event['code'] = -13
-      lepton_event['E'] = t.El
-      lepton_event['px'] = t.pxl
-      lepton_event['py'] = t.pyl
-      lepton_event['pz'] = t.pzl
+            lepton_event = {}
+            if t.El**2 - (t.pxl**2 + t.pyl**2 + t.pzl**2) < 1e-7:
+                lepton_event['code'] = -14
+            else:
+                lepton_event['code'] = -13
+            lepton_event['E'] = t.El
+            lepton_event['px'] = t.pxl
+            lepton_event['py'] = t.pyl
+            lepton_event['pz'] = t.pzl
 
-      next_events.append(lepton_event)
-
-
-      for j in range(t.nf):  # nf, number final hadronic states                 
-        hadron_event = {}
-        hadron_event['code'] = t.pdgf[j]
-        hadron_event['E'] = t.Ef[j]
-        
-        hadron_event['px'] = t.pxf[j]
-        hadron_event['py'] = t.pyf[j] 
-        hadron_event['pz'] = t.pzf[j] 
-
-        next_events.append(hadron_event)
+            next_events.append(lepton_event)
 
 
-      print 'nc', t.__getattr__('nc')
-      print 'Event type:'
-      for type in ['qel', 'res', 'dis', 'coh', 'dfr', 'imd', 'nuel', 'em']:
-        print '\t', type, ':', t.__getattr__(type)
+            for j in range(t.nf):  # nf, number final hadronic states
+                hadron_event = {}
+                hadron_event['code'] = t.pdgf[j]
+                hadron_event['E'] = t.Ef[j]
 
-      print 'Propogator:'
-      for prop in ['nc', 'cc']:
-        print '\t', prop, ':', t.__getattr__(prop)
+                hadron_event['px'] = t.pxf[j]
+                hadron_event['py'] = t.pyf[j]
+                hadron_event['pz'] = t.pzf[j]
+
+                next_events.append(hadron_event)
 
 
-      print 'y:', t.y
-      try:
-        print 'm_l:', math.sqrt(t.El**2 - (t.pxl**2 + t.pyl**2 + t.pzl**2))
-      except:
-        pass
-      print lepton_event
+            print 'nc', t.__getattr__('nc')
+            print 'Event type:'
+            for type in ['qel', 'res', 'dis', 'coh', 'dfr', 'imd', 'nuel', 'em']:
+                print '\t', type, ':', t.__getattr__(type)
 
-      yield next_events
+            print 'Propogator:'
+            for prop in ['nc', 'cc']:
+                print '\t', prop, ':', t.__getattr__(prop)
 
-  def GeneratePrimaries(self, event):
-    events = next(self.event_list)
-    for particle in events:
-      pp = G4PrimaryParticle()
-      pp.SetPDGcode(particle['code'])
-      
-      particle['px'], particle['py'], particle['pz'] = [1000*x for x in [particle['px'], particle['py'], particle['pz']]]  # GeV -> MeV
 
-      pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
-      
-      v = G4PrimaryVertex()
-      v.SetPosition(20.0, 20.0, 0.0)
-      v.SetPrimary(pp)
-      
-      event.AddPrimaryVertex(v)
+            print 'y:', t.y
+            try:
+                print 'm_l:', math.sqrt(t.El**2 - (t.pxl**2 + t.pyl**2 + t.pzl**2))
+            except:
+                pass
+            print lepton_event
+
+            yield next_events
+
+    def GeneratePrimaries(self, event):
+        events = next(self.event_list)
+        for particle in events:
+            pp = G4PrimaryParticle()
+            pp.SetPDGcode(particle['code'])
+
+            particle['px'], particle['py'], particle['pz'] = [1000*x for x in [particle['px'], particle['py'], particle['pz']]]  # GeV -> MeV
+
+            pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
+
+            v = G4PrimaryVertex()
+            v.SetPosition(20.0, 20.0, 0.0)
+            v.SetPrimary(pp)
+
+            event.AddPrimaryVertex(v)
 
 class MyDetectorConstruction(G4VUserDetectorConstruction):
-  "My Detector Construction"
+    "My Detector Construction"
 
-  def __init__(self):
-    G4VUserDetectorConstruction.__init__(self)
-    self.world= None
-    self.gdml_parser= G4GDMLParser()
+    def __init__(self):
+        G4VUserDetectorConstruction.__init__(self)
+        self.world= None
+        self.gdml_parser= G4GDMLParser()
+        self.sd = None
 
-  def __del__(self):
-    pass
+    def __del__(self):
+        pass
 
-  def Construct(self):
-    filename = "gdml/iron_scint_bars.gdml"
-    self.gdml_parser.Read(filename)
-    self.world= self.gdml_parser.GetWorldVolume()
-    
+    def Construct(self):
+        filename = "gdml/iron_scint_bars.gdml"
+        self.gdml_parser.Read(filename)
+        self.world= self.gdml_parser.GetWorldVolume()
 
-    for i in range(6):
-      print i, G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
-    self.x = ScintSD()
-    #lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
-    lv = G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
-    print 'using sd as %s' % lv.GetName()
-    lv.SetSensitiveDetector(self.x)
-    
-    return self.world
+        for i in range(6):
+            print i, G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
+        self.sd = ScintSD()
+        #lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
+        lv = G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
+        assert lv.GetName() == "ScintillatorBarX"
+        print 'using sd as %s' % lv.GetName()
+        lv.SetSensitiveDetector(self.sd)
+
+        lv = G4LogicalVolumeStore.GetInstance().GetVolumeID(2)
+        assert lv.GetName() == "ScintillatorBarY"
+        lv.SetSensitiveDetector(self.sd)
+
+        return self.world
 
 #exN03geom_dead= g4py.ExN03geom.ExN03DetectorConstruction()
 exN03geom = MyDetectorConstruction()
 gRunManager.SetUserInitialization(exN03geom)
+
+print 'test'
 
 exN03PL= g4py.ExN03pl.PhysicsList()
 gRunManager.SetUserInitialization(exN03PL)
@@ -211,7 +249,7 @@ fieldMgr= gTransportationManager.GetFieldManager()
 #print "uniform"
 #myField= G4UniformMagField(G4ThreeVector(0.,2.*tesla,0.))
 print "toroid"
-myField= MyField()                                                             
+myField= MyField()
 fieldMgr.SetDetectorField(myField)
 fieldMgr.CreateChordFinder(myField)
 
@@ -240,149 +278,149 @@ from Tkinter import *
 
 class App(Frame):
 
-  g4pipe = 0
+    g4pipe = 0
 
-  def init(self):
+    def init(self):
 
 #title and header    row=0, 1
-    title = Label(self, text="VLENFsim")
-    title.grid(row=0, column=1, columnspan=3)
-    header = Label(self, text="empowered by \n Geant4Py")
-    header.grid(row=1, column=1, columnspan=3)
+        title = Label(self, text="VLENFsim")
+        title.grid(row=0, column=1, columnspan=3)
+        header = Label(self, text="empowered by \n Geant4Py")
+        header.grid(row=1, column=1, columnspan=3)
 
 #number of event row=10
-    eventLabel = Label(self, bg="green",  text="Events")
-    self.eventVar=IntVar()
-    self.eventVar.set(1)
-    event = Scale(self,  orient=HORIZONTAL, length=400, from_=0, to=10**4, tickinterval=10**4, resolution=1, variable=self.eventVar )
-    eventLabel.grid(row=10, column=0, sticky=W)
-    event.grid(row=10, column=1, columnspan=5, sticky=W)
+        eventLabel = Label(self, bg="green",  text="Events")
+        self.eventVar=IntVar()
+        self.eventVar.set(1)
+        event = Scale(self,  orient=HORIZONTAL, length=400, from_=0, to=10**4, tickinterval=10**4, resolution=1, variable=self.eventVar )
+        eventLabel.grid(row=10, column=0, sticky=W)
+        event.grid(row=10, column=1, columnspan=5, sticky=W)
 
 #start a run button row=0
-    startBut = Button(self, bg="orange", text="Start a run", command=self.cmd_beamOn)
-    startBut.grid(row=0, column=0, sticky=W)
+        startBut = Button(self, bg="orange", text="Start a run", command=self.cmd_beamOn)
+        startBut.grid(row=0, column=0, sticky=W)
 
 # process activate row 11 - 13
-    processLabel=Label(self, text="Process on/off", bg="green")
-    processLabel.grid(row=11, column=0, sticky=W)
-    procTab = {}
+        processLabel=Label(self, text="Process on/off", bg="green")
+        processLabel.grid(row=11, column=0, sticky=W)
+        procTab = {}
 
-    self.processList = ["phot", "compt", "conv", "msc", "eIoni", "eBrem", "annihil","muIoni", "muBrems", "hIoni"]
-    pos=1
-    self.processVar = {}
-    for i in self.processList:
-      self.processVar[i] = IntVar()
-      procTab[i] = Checkbutton(self, text=i, variable=self.processVar[i], command=self.cmd_setProcess)
-      if pos <= 3:
-        procTab[i].grid(row=11, column=pos, sticky=W)
-      if 4<= pos <= 7:
-        procTab[i].grid(row=12, column=pos-3, sticky=W)
-      if pos >= 8:
-        procTab[i].grid(row=13, column=pos-7, sticky=W)
-      pos=pos+1
-      procTab[i].select()
+        self.processList = ["phot", "compt", "conv", "msc", "eIoni", "eBrem", "annihil","muIoni", "muBrems", "hIoni"]
+        pos=1
+        self.processVar = {}
+        for i in self.processList:
+            self.processVar[i] = IntVar()
+            procTab[i] = Checkbutton(self, text=i, variable=self.processVar[i], command=self.cmd_setProcess)
+            if pos <= 3:
+                procTab[i].grid(row=11, column=pos, sticky=W)
+            if 4<= pos <= 7:
+                procTab[i].grid(row=12, column=pos-3, sticky=W)
+            if pos >= 8:
+                procTab[i].grid(row=13, column=pos-7, sticky=W)
+            pos=pos+1
+            procTab[i].select()
 # set cuts row 14
-    cutLabel = Label(self, bg="green",  text="Cut (mm)")
+        cutLabel = Label(self, bg="green",  text="Cut (mm)")
 
-    self.cutVar=DoubleVar()
-    self.cutVar.set(1.)
-    cut = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=10., tickinterval=5., resolution=0.005, variable=self.cutVar, digits=5 )
-    cutLabel.grid(row=14, column=0, sticky=W)
-    cut.grid(row=14, column=1, columnspan=5, sticky=W)
+        self.cutVar=DoubleVar()
+        self.cutVar.set(1.)
+        cut = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=10., tickinterval=5., resolution=0.005, variable=self.cutVar, digits=5 )
+        cutLabel.grid(row=14, column=0, sticky=W)
+        cut.grid(row=14, column=1, columnspan=5, sticky=W)
 
 # set mag field row 15
-    magLabel = Label(self, bg="green",  text="Magnetic (T)")
+        magLabel = Label(self, bg="green",  text="Magnetic (T)")
 
-    self.magVar=DoubleVar()
-    self.magVar.set(2.)
-    mag = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=5., tickinterval=1., resolution=0.1, variable=self.magVar, digits=3 )
-    magLabel.grid(row=15, column=0, sticky=W)
-    mag.grid(row=15, column=1, columnspan=5, sticky=W)
+        self.magVar=DoubleVar()
+        self.magVar.set(2.)
+        mag = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=5., tickinterval=1., resolution=0.1, variable=self.magVar, digits=3 )
+        magLabel.grid(row=15, column=0, sticky=W)
+        mag.grid(row=15, column=1, columnspan=5, sticky=W)
 
-    # set view, row 16
-    setviewXYBut = Button(self, bg="red", text="X-Y", command=self.cmd_setviewXY)
-    setviewXYBut.grid(row=16, column=2, sticky=W)
+        # set view, row 16
+        setviewXYBut = Button(self, bg="red", text="X-Y", command=self.cmd_setviewXY)
+        setviewXYBut.grid(row=16, column=2, sticky=W)
 
-    setviewZYBut = Button(self, bg="red", text="Z-Y", command=self.cmd_setviewZY)
-    setviewZYBut.grid(row=16, column=3, sticky=W)
-    
-    setviewZXBut = Button(self, bg="red", text="Z-X", command=self.cmd_setviewZX)
-    setviewZXBut.grid(row=16, column=4, sticky=W)
+        setviewZYBut = Button(self, bg="red", text="Z-Y", command=self.cmd_setviewZY)
+        setviewZYBut.grid(row=16, column=3, sticky=W)
 
-    shrinkBut = Button(self, bg="red", text="shrink", command=self.cmd_shrink)
-    shrinkBut.grid(row=16, column=0, sticky=W)
+        setviewZXBut = Button(self, bg="red", text="Z-X", command=self.cmd_setviewZX)
+        setviewZXBut.grid(row=16, column=4, sticky=W)
 
-    expandBut = Button(self, bg="red", text="expand", command=self.cmd_expand)
-    expandBut.grid(row=16, column=1, sticky=W)
+        shrinkBut = Button(self, bg="red", text="shrink", command=self.cmd_shrink)
+        shrinkBut.grid(row=16, column=0, sticky=W)
+
+        expandBut = Button(self, bg="red", text="expand", command=self.cmd_expand)
+        expandBut.grid(row=16, column=1, sticky=W)
 
 #Geant4 command entry row = 17
-    g4comLabel = Label(self, text="Geant4 command", bg="orange")
-    self.g4commandVar = StringVar()
-    commandEntry = Entry(self, textvariable=self.g4commandVar, width=15)
-    self.g4commandVar.set("/vis/viewer/zoom 1.2")
-    comBut = Button(self, bg="orange", text="Execute", command=self.cmd_g4command)
-    g4comLabel.grid(row=17, column=0, sticky=W)
-    commandEntry.grid(row=17, column=1, columnspan=3, sticky=E+W)
-    comBut.grid(row=17, column=5)
+        g4comLabel = Label(self, text="Geant4 command", bg="orange")
+        self.g4commandVar = StringVar()
+        commandEntry = Entry(self, textvariable=self.g4commandVar, width=15)
+        self.g4commandVar.set("/vis/viewer/zoom 1.2")
+        comBut = Button(self, bg="orange", text="Execute", command=self.cmd_g4command)
+        g4comLabel.grid(row=17, column=0, sticky=W)
+        commandEntry.grid(row=17, column=1, columnspan=3, sticky=E+W)
+        comBut.grid(row=17, column=5)
 
 #exit row = 0
-    exitBut = Button(self, bg="red", text="End all", command=sys.exit)
-    exitBut.grid(row=0, column=5, sticky=W)
+        exitBut = Button(self, bg="red", text="End all", command=sys.exit)
+        exitBut.grid(row=0, column=5, sticky=W)
 
 #on Run butto do...
-  def cmd_beamOn(self):
-      position = 0
+    def cmd_beamOn(self):
+        position = 0
 
-      exN03PL.SetDefaultCutValue(self.cutVar.get() * mm)
-      exN03PL.SetCutsWithDefault()
-      #exN03geom_dead.SetMagField(self.magVar.get() * tesla)
+        exN03PL.SetDefaultCutValue(self.cutVar.get() * mm)
+        exN03PL.SetCutsWithDefault()
+        #exN03geom_dead.SetMagField(self.magVar.get() * tesla)
 
-      print "Now geometry updated"
-
-
-      eventNum = self.eventVar.get()
-      for i in range(eventNum):
-
-        #pg.SetParticlePosition(G4ThreeVector(position*mm, 0.*mm, 0.*cm))
-        gRunManager.BeamOn(1)
-        gApplyUICommand("/vis/viewer/flush")
-        sleep(0.01)
-      gApplyUICommand("/vis/viewer/update")
-
-      f.close()
-
-  def cmd_setProcess(self):
-    for i in self.processList:
-      if self.processVar[i].get() == 0:
-         gProcessTable.SetProcessActivation(i, 0)
-         print "Process " + i + " inactivated"
-      else:
-         gProcessTable.SetProcessActivation(i, 1)
-         print "Process " + i + " activated"
-
-  def cmd_g4command(self):
-    gApplyUICommand(self.g4commandVar.get())
-
-  def cmd_setviewXY(self):
-    gApplyUICommand("/vis/viewer/set/viewpointVector 0 0 -1")
-
-  def cmd_setviewZY(self):
-    gApplyUICommand("/vis/viewer/set/viewpointVector -1 0 0")
-
-  def cmd_setviewZX(self):
-    gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
-
-  def cmd_expand(self):
-    gApplyUICommand("/vis/viewer/zoom 1.2")
-
-  def cmd_shrink(self):
-    gApplyUICommand("/vis/viewer/zoom 0.8")
+        print "Now geometry updated"
 
 
-  def __init__(self, master=None):
-    Frame.__init__(self, master)
-    self.init()
-    self.grid()
+        eventNum = self.eventVar.get()
+        for i in range(eventNum):
+
+                #pg.SetParticlePosition(G4ThreeVector(position*mm, 0.*mm, 0.*cm))
+            gRunManager.BeamOn(1)
+            gApplyUICommand("/vis/viewer/flush")
+            sleep(0.01)
+        gApplyUICommand("/vis/viewer/update")
+
+        f.close()
+
+    def cmd_setProcess(self):
+        for i in self.processList:
+            if self.processVar[i].get() == 0:
+                gProcessTable.SetProcessActivation(i, 0)
+                print "Process " + i + " inactivated"
+            else:
+                gProcessTable.SetProcessActivation(i, 1)
+                print "Process " + i + " activated"
+
+    def cmd_g4command(self):
+        gApplyUICommand(self.g4commandVar.get())
+
+    def cmd_setviewXY(self):
+        gApplyUICommand("/vis/viewer/set/viewpointVector 0 0 -1")
+
+    def cmd_setviewZY(self):
+        gApplyUICommand("/vis/viewer/set/viewpointVector -1 0 0")
+
+    def cmd_setviewZX(self):
+        gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
+
+    def cmd_expand(self):
+        gApplyUICommand("/vis/viewer/zoom 1.2")
+
+    def cmd_shrink(self):
+        gApplyUICommand("/vis/viewer/zoom 0.8")
+
+
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.init()
+        self.grid()
 
 
 app = App()
