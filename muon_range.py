@@ -2,7 +2,7 @@
 #from Geant4 import *
 import Geant4 as G4
 from Geant4 import HepRandom, gRunManager, gTransportationManager, gApplyUICommand
-from Geant4 import tesla, mm
+from Geant4 import mm
 import g4py.ExN03geom
 import g4py.ExN03pl
 import g4py.ParticleGun
@@ -12,38 +12,11 @@ import ROOT
 import math
 
 import SD
+import ToroidField
 
 rand_engine = G4.Ranlux64Engine()
 HepRandom.setTheEngine(rand_engine)
 HepRandom.setTheSeed(20050830)
-
-f = open('my_output', 'w')
-
-
-class MyField(G4.G4MagneticField):
-    "My Magnetic Field"
-
-    def GetFieldValue(self, pos, time):
-        #current = 150 * 1000#  A
-        #mu0 = 4 * math.pi * 10**-7
-        r = math.sqrt( (pos.x)**2 + (pos.y )**2)
-
-        bfield = G4.G4ThreeVector()
-
-        B = -2  * tesla # saturation
-        if r != 0.0:
-            #B += mu0 * current / (2 * math.pi * r * m) * tesla
-            bfield.x = (pos.y / r) * B
-            bfield.y = (pos.x / r) * B
-        else:
-            bfield.x = 0
-            bfield.y = 0
-
-        bfield.z = 0.
-
-        #print pos, bfield
-
-        return bfield
 
 class MyTrackingAction(G4.G4UserTrackingAction):
     "My tracking Action"
@@ -184,7 +157,7 @@ fieldMgr = gTransportationManager.GetFieldManager()
 #print "uniform"
 #myField= G4UniformMagField(G4ThreeVector(0.,2.*tesla,0.))
 print "toroid"
-myField = MyField()
+myField = ToroidField.ToroidField()
 fieldMgr.SetDetectorField(myField)
 fieldMgr.CreateChordFinder(myField)
 
@@ -316,8 +289,6 @@ class App(Frame):
             gApplyUICommand("/vis/viewer/flush")
             sleep(0.01)
         gApplyUICommand("/vis/viewer/update")
-
-        f.close()
 
     def cmd_setProcess(self):
         for i in self.processList:
