@@ -11,7 +11,7 @@ from time import sleep
 import ROOT
 import math
 
-rand_engine= G4.Ranlux64Engine()
+rand_engine = G4.Ranlux64Engine()
 HepRandom.setTheEngine(rand_engine)
 HepRandom.setTheSeed(20050830)
 
@@ -55,14 +55,14 @@ class ScintSD(G4.G4VSensitiveDetector):
         return diff
 
     def ProcessHits(self, step, rohist):
-        preStepPoint= step.GetPreStepPoint()
+        preStepPoint = step.GetPreStepPoint()
         if(preStepPoint.GetCharge() == 0):
             return
 
-        track= step.GetTrack()
+        track = step.GetTrack()
 
         pv = preStepPoint.GetPhysicalVolume()
-        dedx= step.GetTotalEnergyDeposit()
+        dedx = step.GetTotalEnergyDeposit()
         lv = pv.GetMotherLogical()
 
         print '\tcopy:',pv.GetCopyNo()
@@ -100,13 +100,13 @@ class MyField(G4.G4MagneticField):
         B = -2  * tesla # saturation
         if r != 0.0:
             #B += mu0 * current / (2 * math.pi * r * m) * tesla
-            bfield.x= (pos.y / r) * B
-            bfield.y= (pos.x / r) * B
+            bfield.x = (pos.y / r) * B
+            bfield.y = (pos.x / r) * B
         else:
-            bfield.x= 0
-            bfield.y= 0
+            bfield.x = 0
+            bfield.y = 0
 
-        bfield.z= 0.
+        bfield.z = 0.
 
         #print pos, bfield
 
@@ -204,8 +204,8 @@ class MyDetectorConstruction(G4.G4VUserDetectorConstruction):
 
     def __init__(self):
         G4.G4VUserDetectorConstruction.__init__(self)
-        self.world= None
-        self.gdml_parser= G4.G4GDMLParser()
+        self.world = None
+        self.gdml_parser = G4.G4GDMLParser()
         self.sd = None
 
     def __del__(self):
@@ -214,7 +214,7 @@ class MyDetectorConstruction(G4.G4VUserDetectorConstruction):
     def Construct(self):
         filename = "gdml/iron_scint_bars.gdml"
         self.gdml_parser.Read(filename)
-        self.world= self.gdml_parser.GetWorldVolume()
+        self.world = self.gdml_parser.GetWorldVolume()
 
         for i in range(6):
             print i, G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
@@ -237,21 +237,21 @@ gRunManager.SetUserInitialization(exN03geom)
 
 print 'test'
 
-exN03PL= g4py.ExN03pl.PhysicsList()
+exN03PL = g4py.ExN03pl.PhysicsList()
 gRunManager.SetUserInitialization(exN03PL)
 
-myEA= MyTrackingAction()
+myEA = MyTrackingAction()
 gRunManager.SetUserAction(myEA)
 
-pgPGA= MyPrimaryGeneratorAction()
+pgPGA = MyPrimaryGeneratorAction()
 gRunManager.SetUserAction(pgPGA)
 
-fieldMgr= gTransportationManager.GetFieldManager()
+fieldMgr = gTransportationManager.GetFieldManager()
 
 #print "uniform"
 #myField= G4UniformMagField(G4ThreeVector(0.,2.*tesla,0.))
 print "toroid"
-myField= MyField()
+myField = MyField()
 fieldMgr.SetDetectorField(myField)
 fieldMgr.CreateChordFinder(myField)
 
@@ -292,7 +292,7 @@ class App(Frame):
 
 #number of event row=10
         eventLabel = Label(self, bg="green",  text="Events")
-        self.eventVar= IntVar()
+        self.eventVar = IntVar()
         self.eventVar.set(1)
         event = Scale(self,  orient=HORIZONTAL, length=400, from_=0, to=10**4, tickinterval=10**4, resolution=1, variable=self.eventVar )
         eventLabel.grid(row=10, column=0, sticky=W)
@@ -303,12 +303,12 @@ class App(Frame):
         startBut.grid(row=0, column=0, sticky=W)
 
 # process activate row 11 - 13
-        processLabel=Label(self, text="Process on/off", bg="green")
+        processLabel = Label(self, text="Process on/off", bg="green")
         processLabel.grid(row=11, column=0, sticky=W)
         procTab = {}
 
         self.processList = ["phot", "compt", "conv", "msc", "eIoni", "eBrem", "annihil","muIoni", "muBrems", "hIoni"]
-        pos=1
+        pos = 1
         self.processVar = {}
         for i in self.processList:
             self.processVar[i] = IntVar()
@@ -319,12 +319,12 @@ class App(Frame):
                 procTab[i].grid(row=12, column=pos-3, sticky=W)
             if pos >= 8:
                 procTab[i].grid(row=13, column=pos-7, sticky=W)
-            pos=pos+1
+            pos = pos+1
             procTab[i].select()
 # set cuts row 14
         cutLabel = Label(self, bg="green",  text="Cut (mm)")
 
-        self.cutVar=DoubleVar()
+        self.cutVar = DoubleVar()
         self.cutVar.set(1.)
         cut = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=10., tickinterval=5., resolution=0.005, variable=self.cutVar, digits=5 )
         cutLabel.grid(row=14, column=0, sticky=W)
@@ -333,7 +333,7 @@ class App(Frame):
 # set mag field row 15
         magLabel = Label(self, bg="green",  text="Magnetic (T)")
 
-        self.magVar=DoubleVar()
+        self.magVar = DoubleVar()
         self.magVar.set(2.)
         mag = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=5., tickinterval=1., resolution=0.1, variable=self.magVar, digits=3 )
         magLabel.grid(row=15, column=0, sticky=W)
