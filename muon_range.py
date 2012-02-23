@@ -1,25 +1,27 @@
 #!/usr/bin/env python
-from Geant4 import *
+#from Geant4 import *
+import Geant4 as G4
+from Geant4 import HepRandom, gRunManager, gTransportationManager, gApplyUICommand
+from Geant4 import tesla, mm
 import g4py.ExN03geom
 import g4py.ExN03pl
 import g4py.ParticleGun
 import sys
 from time import sleep
-#from subprocess import *
 import ROOT
 import math
 
-rand_engine= Ranlux64Engine()
+rand_engine= G4.Ranlux64Engine()
 HepRandom.setTheEngine(rand_engine)
 HepRandom.setTheSeed(20050830)
 
 f = open('my_output', 'w')
 
-class ScintSD(G4VSensitiveDetector):
+class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint"
 
     def __init__(self):
-        G4VSensitiveDetector.__init__(self, "Scintillator")
+        G4.G4VSensitiveDetector.__init__(self, "Scintillator")
         self.pos = {}
         self.pos['X'] = []
         self.pos['Y'] = []
@@ -85,7 +87,7 @@ class ScintSD(G4VSensitiveDetector):
         #print '\tobjectRotationValue:', pv.GetObjectRotationValue()
         #print '\tframeRotation:', pv.GetFrameRotation()
 
-class MyField(G4MagneticField):
+class MyField(G4.G4MagneticField):
     "My Magnetic Field"
 
     def GetFieldValue(self, pos, time):
@@ -93,7 +95,7 @@ class MyField(G4MagneticField):
         #mu0 = 4 * math.pi * 10**-7
         r = math.sqrt( (pos.x)**2 + (pos.y )**2)
 
-        bfield= G4ThreeVector()
+        bfield = G4.G4ThreeVector()
 
         B = -2  * tesla # saturation
         if r != 0.0:
@@ -110,7 +112,7 @@ class MyField(G4MagneticField):
 
         return bfield
 
-class MyTrackingAction(G4UserTrackingAction):
+class MyTrackingAction(G4.G4UserTrackingAction):
     "My tracking Action"
 
     def PreUserTrackingAction(self, track):
@@ -120,11 +122,11 @@ class MyTrackingAction(G4UserTrackingAction):
         pass
 
 
-class MyPrimaryGeneratorAction(G4VUserPrimaryGeneratorAction):
+class MyPrimaryGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     "My Primary Generator Action"
 
     def __init__(self):
-        G4VUserPrimaryGeneratorAction.__init__(self)
+        G4.G4VUserPrimaryGeneratorAction.__init__(self)
         self.event_list = self.get_next_events()
 
     def get_next_events(self):
@@ -184,26 +186,26 @@ class MyPrimaryGeneratorAction(G4VUserPrimaryGeneratorAction):
     def GeneratePrimaries(self, event):
         events = next(self.event_list)
         for particle in events:
-            pp = G4PrimaryParticle()
+            pp = G4.G4PrimaryParticle()
             pp.SetPDGcode(particle['code'])
 
             particle['px'], particle['py'], particle['pz'] = [1000*x for x in [particle['px'], particle['py'], particle['pz']]]  # GeV -> MeV
 
             pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
 
-            v = G4PrimaryVertex()
+            v = G4.G4PrimaryVertex()
             v.SetPosition(20.0, 20.0, 0.0)
             v.SetPrimary(pp)
 
             event.AddPrimaryVertex(v)
 
-class MyDetectorConstruction(G4VUserDetectorConstruction):
+class MyDetectorConstruction(G4.G4VUserDetectorConstruction):
     "My Detector Construction"
 
     def __init__(self):
-        G4VUserDetectorConstruction.__init__(self)
+        G4.G4VUserDetectorConstruction.__init__(self)
         self.world= None
-        self.gdml_parser= G4GDMLParser()
+        self.gdml_parser= G4.G4GDMLParser()
         self.sd = None
 
     def __del__(self):
@@ -215,15 +217,15 @@ class MyDetectorConstruction(G4VUserDetectorConstruction):
         self.world= self.gdml_parser.GetWorldVolume()
 
         for i in range(6):
-            print i, G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
+            print i, G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
         self.sd = ScintSD()
         #lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
-        lv = G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
+        lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
         assert lv.GetName() == "ScintillatorBarX"
         print 'using sd as %s' % lv.GetName()
         lv.SetSensitiveDetector(self.sd)
 
-        lv = G4LogicalVolumeStore.GetInstance().GetVolumeID(2)
+        lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(2)
         assert lv.GetName() == "ScintillatorBarY"
         lv.SetSensitiveDetector(self.sd)
 
