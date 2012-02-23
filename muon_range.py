@@ -272,11 +272,11 @@ gApplyUICommand("/vis/scene/add/trajectories")
 #gApplyUICommand("/vis/scene/endOfEventAction accumulate")
 #gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 
-gRunManager.BeamOn(1)
+#gRunManager.BeamOn(1)
 
 # creating widgets using grid layout
 
-from Tkinter import *
+from Tkinter import Frame, Label, IntVar, Scale, Button, W, Checkbutton, DoubleVar, HORIZONTAL, StringVar, Entry, E
 
 class App(Frame):
 
@@ -292,7 +292,7 @@ class App(Frame):
 
 #number of event row=10
         eventLabel = Label(self, bg="green",  text="Events")
-        self.eventVar=IntVar()
+        self.eventVar= IntVar()
         self.eventVar.set(1)
         event = Scale(self,  orient=HORIZONTAL, length=400, from_=0, to=10**4, tickinterval=10**4, resolution=1, variable=self.eventVar )
         eventLabel.grid(row=10, column=0, sticky=W)
