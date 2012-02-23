@@ -1,8 +1,9 @@
 import math
 import Geant4 as G4
 
+
 class ScintSD(G4.G4VSensitiveDetector):
-    "SD for scint"
+    "SD for scint bar"
 
     def __init__(self):
         G4.G4VSensitiveDetector.__init__(self, "Scintillator")
@@ -18,6 +19,7 @@ class ScintSD(G4.G4VSensitiveDetector):
             view = 'Y'
 
         return view
+
     def getMCHitPos(self, position, translation, view, width=10, thickness=5):
         diff = None
         if view == 'X':
@@ -32,11 +34,11 @@ class ScintSD(G4.G4VSensitiveDetector):
         if len(self.pos['X']) and len(self.pos['Y']):
             print 'X: [%f, %f], Y: [%f, %f]' % (min(self.pos['X']), max(self.pos['X']), min(self.pos['Y']), max(self.pos['Y']))
 
-        if math.fabs(diff) > float(width)/2:
+        if math.fabs(diff) > float(width) / 2:
             raise ValueError
 
         return diff
-    
+
     def ProcessHits(self, step, rohist):
         preStepPoint = step.GetPreStepPoint()
         if(preStepPoint.GetCharge() == 0):
@@ -48,7 +50,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         dedx = step.GetTotalEnergyDeposit()
         lv = pv.GetMotherLogical()
 
-        print '\tcopy:',pv.GetCopyNo()
+        print '\tcopy:', pv.GetCopyNo()
         print '\ttranslation:', pv.GetTranslation()
         print '\tposition:', preStepPoint.GetPosition()
         print '\tdedx:', dedx
@@ -59,13 +61,13 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         print self.getMCHitPos(position, translation, view)
 
-        print "*********" , (pv.GetTranslation() - preStepPoint.GetPosition())
+        print "*********", (pv.GetTranslation() - preStepPoint.GetPosition())
 
         #if str(lv.GetName())[-1] == 'Y':
         #    f.write('Y %d %f\n' % (pv.GetCopyNo(), preStepPoint.GetPosition().y - pv.GetTranslation().y))
         #else:
         #    f.write('X %d %f\n' % (pv.GetCopyNo(), preStepPoint.GetPosition().x - pv.GetTranslation().x))
 
-        #print '\trotation:', pv.GetRotation()                                                                                  
-        #print '\tobjectRotationValue:', pv.GetObjectRotationValue()                                                            
-        #print '\tframeRotation:', pv.GetFrameRotation()   
+        #print '\trotation:', pv.GetRotation()
+        #print '\tobjectRotationValue:', pv.GetObjectRotationValue()
+        #print '\tframeRotation:', pv.GetFrameRotation()

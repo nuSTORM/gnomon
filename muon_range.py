@@ -18,6 +18,7 @@ rand_engine = G4.Ranlux64Engine()
 HepRandom.setTheEngine(rand_engine)
 HepRandom.setTheSeed(20050830)
 
+
 class MyTrackingAction(G4.G4UserTrackingAction):
     "My tracking Action"
 
@@ -102,8 +103,8 @@ gApplyUICommand("/vis/scene/add/trajectories")
 
 from Tkinter import Frame, Label, IntVar, Scale, Button, W, Checkbutton, DoubleVar, HORIZONTAL, StringVar, Entry, E
 
-class App(Frame):
 
+class App(Frame):
     g4pipe = 0
 
     def init(self):
@@ -118,7 +119,7 @@ class App(Frame):
         eventLabel = Label(self, bg="green",  text="Events")
         self.eventVar = IntVar()
         self.eventVar.set(1)
-        event = Scale(self,  orient=HORIZONTAL, length=400, from_=0, to=10**4, tickinterval=10**4, resolution=1, variable=self.eventVar )
+        event = Scale(self, orient=HORIZONTAL, length=400, from_=0, to=10**4, tickinterval=10**4, resolution=1, variable=self.eventVar)
         eventLabel.grid(row=10, column=0, sticky=W)
         event.grid(row=10, column=1, columnspan=5, sticky=W)
 
@@ -131,7 +132,7 @@ class App(Frame):
         processLabel.grid(row=11, column=0, sticky=W)
         procTab = {}
 
-        self.processList = ["phot", "compt", "conv", "msc", "eIoni", "eBrem", "annihil","muIoni", "muBrems", "hIoni"]
+        self.processList = ["phot", "compt", "conv", "msc", "eIoni", "eBrem", "annihil", "muIoni", "muBrems", "hIoni"]
         pos = 1
         self.processVar = {}
         for i in self.processList:
@@ -150,18 +151,9 @@ class App(Frame):
 
         self.cutVar = DoubleVar()
         self.cutVar.set(1.)
-        cut = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=10., tickinterval=5., resolution=0.005, variable=self.cutVar, digits=5 )
+        cut = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=10., tickinterval=5., resolution=0.005, variable=self.cutVar, digits=5)
         cutLabel.grid(row=14, column=0, sticky=W)
         cut.grid(row=14, column=1, columnspan=5, sticky=W)
-
-# set mag field row 15
-        magLabel = Label(self, bg="green",  text="Magnetic (T)")
-
-        self.magVar = DoubleVar()
-        self.magVar.set(2.)
-        mag = Scale(self, orient=HORIZONTAL, length=400, from_=0., to=5., tickinterval=1., resolution=0.1, variable=self.magVar, digits=3 )
-        magLabel.grid(row=15, column=0, sticky=W)
-        mag.grid(row=15, column=1, columnspan=5, sticky=W)
 
         # set view, row 16
         setviewXYBut = Button(self, bg="red", text="X-Y", command=self.cmd_setviewXY)
@@ -203,7 +195,6 @@ class App(Frame):
 
         print "Now geometry updated"
 
-
         eventNum = self.eventVar.get()
         for i in range(eventNum):
 
@@ -240,12 +231,10 @@ class App(Frame):
     def cmd_shrink(self):
         gApplyUICommand("/vis/viewer/zoom 0.8")
 
-
     def __init__(self, master=None):
         Frame.__init__(self, master)
         self.init()
         self.grid()
-
 
 app = App()
 app.mainloop()
