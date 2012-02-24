@@ -73,7 +73,7 @@ class GenieGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
             pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
 
             v = G4.G4PrimaryVertex()
-            v.SetPosition(20.0, 20.0, 0.0)
+            v.SetPosition(0.0, 1000.0 * G4.mm, 0)
             v.SetPrimary(pp)
 
             event.AddPrimaryVertex(v)

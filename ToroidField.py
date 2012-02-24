@@ -25,8 +25,8 @@ class ToroidField(G4.G4MagneticField):
         # Paremeterization from talk above
         bfield = G4.G4ThreeVector()
 
-        B = self.sign * self.PhenomModel(r)
         if r != 0.0:
+            B = self.sign * self.PhenomModel(r)
             bfield.x = (pos.y / r) * B
             bfield.y = (pos.x / r) * B
         else:

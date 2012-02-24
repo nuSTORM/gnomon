@@ -6,13 +6,15 @@ import Geant4 as G4
 class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint bar"
 
-    def __init__(self, layers, bars, width, thickness):
+    def __init__(self, layers, bars, width, thickness_layer, thickness_bar):
         G4.G4VSensitiveDetector.__init__(self, "Scintillator")
 
+        # todo: just pass gdml object
         self.layers = layers
         self.bars = bars
         self.width = width
-        self.thickness = thickness
+        self.thickness_layer = thickness_layer
+        self.thickness_bar = thickness_bar
 
         self.pos = {}
         self.pos['X'] = []
@@ -25,6 +27,14 @@ class ScintSD(G4.G4VSensitiveDetector):
             self.couch.delete(db_name)
         self.db = self.couch.create(db_name)
 
+        self.hit_buffer = []
+
+    def getHits(self):
+        return self.hit_buffer
+
+    def clearHits(self):
+        self.hit_buffer = []
+
     def getView(self, lv):
         view = None
         if str(lv.GetName())[-1] == 'X':
@@ -34,26 +44,34 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         return view
 
-    # These should come from G4GDMLParser!! thickness, width
-    def getMCHitPos(self, position, trans, long, translation, view, width=10, thickness=5):
-        diff = None
+    def getMCHitBarPosition(self, layer_number, bar_number, view, position):
+        doc = {}
+        
+        guess_z = self.thickness_layer * (layer_number - self.layers/2)
+
         if view == 'X':
-            diff = position.x - translation.x
-        elif view == 'Y':
-            diff = position.y - translation.y
+            guess_z += self.thickness_bar/2
         else:
-            raise TypeError
+            guess_z += 3 * self.thickness_bar/2
+        guess_z += (self.thickness_layer - 2 * self.thickness_bar)
 
-        self.pos[view].append(diff)
+        doc['z'] = guess_z
 
-        if len(self.pos['X']) and len(self.pos['Y']):
-            print 'X: [%f, %f], Y: [%f, %f]' % (min(self.pos['X']), max(self.pos['X']), min(self.pos['Y']), max(self.pos['Y']))
+        assert math.fabs(guess_z - position.z) <= self.thickness_bar/2
 
+        guess_trans = bar_number
+        guess_trans = self.width * (guess_trans - self.bars/2) + self.width/2
+        if view == 'X':
+            trans = position.x
+            doc['x'] = guess_trans
+        elif view == 'Y':
+            trans = position.y
+            doc['y'] = guess_trans
 
-        if math.fabs(diff) > float(width) / 2:
-            raise ValueError
-
-        return translation
+        assert math.fabs(trans-guess_trans) <= self.width/2
+        
+        return doc
+        
 
     def ProcessHits(self, step, rohist):
         preStepPoint = step.GetPreStepPoint()
@@ -63,31 +81,13 @@ class ScintSD(G4.G4VSensitiveDetector):
         theTouchable = preStepPoint.GetTouchable()
         copyNo = theTouchable.GetCopyNumber(0)
         motherCopyNo = theTouchable.GetCopyNumber(1)
-        depth = theTouchable.GetHistoryDepth()
-        print 'depth', depth
-
-        for i in range(depth+1):
-            print '\t', i, theTouchable.GetCopyNumber(i), theTouchable.GetReplicaNumber(i)
-
-        trans = theTouchable.GetCopyNumber(0)
-        long = theTouchable.GetCopyNumber(2)
-
-        track = step.GetTrack()
 
         pv = preStepPoint.GetPhysicalVolume()
         dedx = step.GetTotalEnergyDeposit()
         lv = pv.GetMotherLogical()
 
-        print '\tcopy:', pv.GetCopyNo()
-        print '\ttranslation:', pv.GetTranslation()
-        print '\tposition:', preStepPoint.GetPosition()
-        print '\tdedx:', dedx
-
         position = step.GetPostStepPoint().GetPosition()
-        translation = pv.GetTranslation()
         view = self.getView(lv)
-
-        print self.getMCHitPos(position, translation, view)
 
         doc = {}
         doc['type'] = 'mchit'
@@ -96,9 +96,13 @@ class ScintSD(G4.G4VSensitiveDetector):
                            'y' : position.y,
                            'z' : position.z}
 
-        doc['copy0'] = theTouchable.GetCopyNumber(0)
-        doc['copy2'] = theTouchable.GetCopyNumber(2)
+        doc['bar'] = theTouchable.GetCopyNumber(0)
+        doc['layer'] = theTouchable.GetCopyNumber(2)
         doc['view'] = view
+
+        doc['position_bar'] = self.getMCHitBarPosition(doc['layer'], doc['bar'],
+                                                       doc['view'], position)
         
         self.db.save(doc)
 
+        self.hit_buffer.append(doc)

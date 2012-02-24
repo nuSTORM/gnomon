@@ -10,6 +10,7 @@ import sys
 from time import sleep
 import math
 
+import EventAction
 import SD
 import ToroidField
 from GenieGeneratorAction import GenieGeneratorAction
@@ -41,6 +42,9 @@ class MyDetectorConstruction(G4.G4VUserDetectorConstruction):
     def __del__(self):
         pass
 
+    def getSD(self):
+        return self.sd
+
     def Construct(self):
         filename = "gdml/iron_scint_bars.gdml"
         self.gdml_parser.Read(filename)
@@ -52,11 +56,10 @@ class MyDetectorConstruction(G4.G4VUserDetectorConstruction):
         layers = self.gdml_parser.GetConstant("layers")
         bars = self.gdml_parser.GetConstant("bars")
         width = self.gdml_parser.GetConstant("width")
-        thickness = self.gdml_parser.GetConstant("thickness_layer")
+        thickness_layer = self.gdml_parser.GetConstant("thickness_layer")
+        thickness_bar = self.gdml_parser.GetConstant("thickness_bar")
 
-        print 'thick', thickness
-
-        self.sd = SD.ScintSD(layers, bars, width, thickness)
+        self.sd = SD.ScintSD(layers, bars, width, thickness_layer, thickness_bar)
 
         #lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
         lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
@@ -82,6 +85,9 @@ gRunManager.SetUserInitialization(exN03PL)
 myEA = MyTrackingAction()
 gRunManager.SetUserAction(myEA)
 
+myEA2 = EventAction.EventAction(exN03geom.getSD())
+gRunManager.SetUserAction(myEA2)
+
 pgPGA = GenieGeneratorAction()
 gRunManager.SetUserAction(pgPGA)
 
@@ -96,6 +102,9 @@ fieldMgr.CreateChordFinder(myField)
 
 gRunManager.Initialize()
 
+gRunManager.BeamOn(1)
+
+sys.exit()
 # visualization
 gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")
 gApplyUICommand("/vis/viewer/create OGLSX oglsxviewer")
@@ -107,6 +116,7 @@ gApplyUICommand("/vis/scene/endOfRunAction accumulate")
 gApplyUICommand("/vis/viewer/select oglsxviewer")
 
 gApplyUICommand("/vis/scene/add/trajectories")
+
 
 # creating widgets using grid layout
 
