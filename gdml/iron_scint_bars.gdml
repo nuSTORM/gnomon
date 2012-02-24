@@ -4,10 +4,18 @@
 
   <define>
     <!-- bar info.  units are 'mm' -->
-    <variable name="length" value="5000"/>
-    <variable name="width" value="10"/>
-    <variable name="thickness" value="5"/>  <!-- z -->
+    <constant name="length" value="5000"/>
+    <constant name="width" value="10"/>
+    <constant name="thickness_bar" value="5"/>  <!-- z -->
+    <constant name="thickness_steel" value="10"/>  <!-- z -->
 
+    <constant name="thickness_layer" value="2*thickness_bar + thickness_steel"/>  <!-- z -->
+    
+    <!-- This is not automatically caught below.  Please make sure it agrees!-->
+    <constant name="layers" value="444"/> 
+
+    <!-- This is not automatically caught below.  Please make sure it agrees!-->
+    <constant name="bars" value="500"/>
   </define>
 
 
@@ -48,16 +56,16 @@
        scintillator bars.  There's also the artificial shape of the world volume
        but that's just for Geant4's sake -->
   <solids>
-    <box lunit="mm" name="SteelPlateSolid" x="5000" y="5000" z="2*thickness"/>
+    <box lunit="mm" name="SteelPlateSolid" x="5000" y="5000" z="thickness_steel"/>
     
     <!-- x means x-view, etc. -->
-    <box lunit="mm" name="ScintillatorXBarSolid" x="width" y="length" z="thickness"/>
-    <box lunit="mm" name="ScintillatorYBarSolid" x="length" y="width" z="thickness"/>
+    <box lunit="mm" name="ScintillatorXBarSolid" x="width" y="length" z="thickness_bar"/>
+    <box lunit="mm" name="ScintillatorYBarSolid" x="length" y="width" z="thickness_bar"/>
 
-    <box lunit="mm" name="ScintillatorPlaneXSolid" x="5000" y="5000" z="thickness"/>
-    <box lunit="mm" name="ScintillatorPlaneYSolid" x="5000" y="5000" z="thickness"/>
+    <box lunit="mm" name="ScintillatorPlaneXSolid" x="5000" y="5000" z="thickness_bar"/>
+    <box lunit="mm" name="ScintillatorPlaneYSolid" x="5000" y="5000" z="thickness_bar"/>
 
-    <box lunit="mm" name="LayerSolid" x="5000" y="5000" z="4*thickness"/>
+    <box lunit="mm" name="LayerSolid" x="5000" y="5000" z="thickness_layer"/>
     <box lunit="mm" name="CalorimeterSolid" x="5000" y="5000" z="8880"/> 
     <box lunit="m" name="WorldSolid" x="6" y="6" z="10"/> <!-- note units-->
   </solids>
@@ -110,17 +118,17 @@
       <solidref ref="LayerSolid"/>
       <physvol name="SteelPlanePhysical">
         <volumeref ref="SteelPlane"/>
-        <position name="SteelPlane_pos" unit="mm" x="0" y="0" z="-5.0"/>
+        <position name="SteelPlane_pos" unit="mm" x="0" y="0" z="-1*thickness_steel/2"/>
       </physvol>
 
       <physvol name="ScintillatorPlaneXPhysical">
         <volumeref ref="ScintillatorPlaneX"/>
-        <position name="ScintillatorPlaneX_pos" unit="mm" x="0" y="0" z="2.5"/>
+        <position name="ScintillatorPlaneX_pos" unit="mm" x="0" y="0" z="thickness_bar/2"/>
       </physvol>
 
       <physvol name="ScintillatorPlaneYPhysical">
         <volumeref ref="ScintillatorPlaneY"/>
-        <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="7.5"/>
+        <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="3*thickness_bar/2"/>
       </physvol>
     </volume>
 
@@ -133,7 +141,7 @@
         <volumeref ref="LayerOfPlanes"/> 
         <replicate_along_axis>
           <direction z="1"/>
-          <width unit="cm" value="2"/>
+          <width unit="mm" value="thickness_layer"/>
           <offset unit="mm" value="0"/>
         </replicate_along_axis>
       </replicavol> 

@@ -1,15 +1,29 @@
 import math
+import couchdb
 import Geant4 as G4
 
 
 class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint bar"
 
-    def __init__(self):
+    def __init__(self, layers, bars, width, thickness):
         G4.G4VSensitiveDetector.__init__(self, "Scintillator")
+
+        self.layers = layers
+        self.bars = bars
+        self.width = width
+        self.thickness = thickness
+
         self.pos = {}
         self.pos['X'] = []
         self.pos['Y'] = []
+
+        self.couch = couchdb.Server()
+
+        db_name = 'mc_hit'
+        if db_name in self.couch:
+            self.couch.delete(db_name)
+        self.db = self.couch.create(db_name)
 
     def getView(self, lv):
         view = None
@@ -20,7 +34,8 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         return view
 
-    def getMCHitPos(self, position, translation, view, width=10, thickness=5):
+    # These should come from G4GDMLParser!! thickness, width
+    def getMCHitPos(self, position, trans, long, translation, view, width=10, thickness=5):
         diff = None
         if view == 'X':
             diff = position.x - translation.x
@@ -34,15 +49,28 @@ class ScintSD(G4.G4VSensitiveDetector):
         if len(self.pos['X']) and len(self.pos['Y']):
             print 'X: [%f, %f], Y: [%f, %f]' % (min(self.pos['X']), max(self.pos['X']), min(self.pos['Y']), max(self.pos['Y']))
 
+
         if math.fabs(diff) > float(width) / 2:
             raise ValueError
 
-        return diff
+        return translation
 
     def ProcessHits(self, step, rohist):
         preStepPoint = step.GetPreStepPoint()
         if(preStepPoint.GetCharge() == 0):
             return
+
+        theTouchable = preStepPoint.GetTouchable()
+        copyNo = theTouchable.GetCopyNumber(0)
+        motherCopyNo = theTouchable.GetCopyNumber(1)
+        depth = theTouchable.GetHistoryDepth()
+        print 'depth', depth
+
+        for i in range(depth+1):
+            print '\t', i, theTouchable.GetCopyNumber(i), theTouchable.GetReplicaNumber(i)
+
+        trans = theTouchable.GetCopyNumber(0)
+        long = theTouchable.GetCopyNumber(2)
 
         track = step.GetTrack()
 
@@ -61,13 +89,16 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         print self.getMCHitPos(position, translation, view)
 
-        print "*********", (pv.GetTranslation() - preStepPoint.GetPosition())
+        doc = {}
+        doc['type'] = 'mchit'
+        doc['dedx'] = dedx
+        doc['position'] = {'x' : position.x,
+                           'y' : position.y,
+                           'z' : position.z}
 
-        #if str(lv.GetName())[-1] == 'Y':
-        #    f.write('Y %d %f\n' % (pv.GetCopyNo(), preStepPoint.GetPosition().y - pv.GetTranslation().y))
-        #else:
-        #    f.write('X %d %f\n' % (pv.GetCopyNo(), preStepPoint.GetPosition().x - pv.GetTranslation().x))
+        doc['copy0'] = theTouchable.GetCopyNumber(0)
+        doc['copy2'] = theTouchable.GetCopyNumber(2)
+        doc['view'] = view
+        
+        self.db.save(doc)
 
-        #print '\trotation:', pv.GetRotation()
-        #print '\tobjectRotationValue:', pv.GetObjectRotationValue()
-        #print '\tframeRotation:', pv.GetFrameRotation()

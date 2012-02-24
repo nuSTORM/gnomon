@@ -48,7 +48,16 @@ class MyDetectorConstruction(G4.G4VUserDetectorConstruction):
 
         for i in range(6):
             print i, G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(i).GetName()
-        self.sd = SD.ScintSD()
+
+        layers = self.gdml_parser.GetConstant("layers")
+        bars = self.gdml_parser.GetConstant("bars")
+        width = self.gdml_parser.GetConstant("width")
+        thickness = self.gdml_parser.GetConstant("thickness_layer")
+
+        print 'thick', thickness
+
+        self.sd = SD.ScintSD(layers, bars, width, thickness)
+
         #lv = G4LogicalVolumeStore.GetInstance().GetVolume("ScintillatorPlane",True)
         lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
         assert lv.GetName() == "ScintillatorBarX"
