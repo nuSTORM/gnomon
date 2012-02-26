@@ -26,6 +26,7 @@ Subscribe to the mailing list for update announcements!
 
    install
    faq
+   code
 
 Authors
 -------
