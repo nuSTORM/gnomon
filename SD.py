@@ -20,7 +20,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.pos['X'] = []
         self.pos['Y'] = []
 
-        self.couch = couchdb.Server()
+        self.couch = couchdb.Server('http://gnomon:VK0K1QMQ@localhost:5984/')
 
         db_name = 'mc_hit'
         if db_name in self.couch:
@@ -57,7 +57,8 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         doc['z'] = guess_z
 
-        assert math.fabs(guess_z - position.z) <= self.thickness_bar/2
+        # 0.1 mm tolerance
+        assert math.fabs(guess_z - position.z) <= self.thickness_bar/2 + 0.1 * G4.mm
 
         guess_trans = bar_number
         guess_trans = self.width * (guess_trans - self.bars/2) + self.width/2
@@ -68,7 +69,8 @@ class ScintSD(G4.G4VSensitiveDetector):
             trans = position.y
             doc['y'] = guess_trans
 
-        assert math.fabs(trans-guess_trans) <= self.width/2
+        # 0.1 mm tolerance 
+        assert math.fabs(trans-guess_trans) <= self.width/2 + 1 * G4.mm
         
         return doc
         

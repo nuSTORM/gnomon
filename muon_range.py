@@ -104,7 +104,6 @@ gRunManager.Initialize()
 
 gRunManager.BeamOn(1)
 
-sys.exit()
 # visualization
 gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")
 gApplyUICommand("/vis/viewer/create OGLSX oglsxviewer")
