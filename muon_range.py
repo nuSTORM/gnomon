@@ -22,16 +22,6 @@ HepRandom.setTheEngine(rand_engine)
 HepRandom.setTheSeed(20050830)
 
 
-class MyTrackingAction(G4.G4UserTrackingAction):
-    "My tracking Action"
-
-    def PreUserTrackingAction(self, track):
-        pass
-
-    def PostUserTrackingAction(self, track):
-        pass
-
-
 class MyDetectorConstruction(G4.G4VUserDetectorConstruction):
     "My Detector Construction"
 
@@ -75,19 +65,13 @@ class MyDetectorConstruction(G4.G4VUserDetectorConstruction):
 
         return self.world
 
-#exN03geom_dead= g4py.ExN03geom.ExN03DetectorConstruction()
 exN03geom = MyDetectorConstruction()
 gRunManager.SetUserInitialization(exN03geom)
-
-print 'test'
 
 exN03PL = g4py.ExN03pl.PhysicsList()
 gRunManager.SetUserInitialization(exN03PL)
 exN03PL.SetDefaultCutValue(1.0 * mm)
 exN03PL.SetCutsWithDefault()
-
-myEA = MyTrackingAction()
-gRunManager.SetUserAction(myEA)
 
 myEA2 = EventAction.EventAction(exN03geom.getSD())
 gRunManager.SetUserAction(myEA2)
@@ -97,9 +81,6 @@ gRunManager.SetUserAction(pgPGA)
 
 fieldMgr = gTransportationManager.GetFieldManager()
 
-#print "uniform"
-#myField= G4UniformMagField(G4ThreeVector(0.,2.*tesla,0.))
-print "toroid"
 myField = ToroidField.ToroidField()
 fieldMgr.SetDetectorField(myField)
 fieldMgr.CreateChordFinder(myField)
@@ -108,14 +89,15 @@ gRunManager.Initialize()
 
 #gRunManager.BeamOn(1)
 
-# visualization
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
-    parser.add_argument('--foo', help='foo help', type=int)
+    parser.add_argument('--number_events', help='how many events to simulate', type=int, default=1)
 
     parser.add_argument('--gui', action='store_true')
     parser.add_argument('--event_display', action='store_true')
+    parser.add_argument('--view', choices=['XY', 'ZY', 'ZX'], default='ZX')
+
+    parser.add_argument('--pause', help='pause after each event, require return')
     args = parser.parse_args()
 
     if args.event_display:
@@ -127,9 +109,22 @@ if __name__ == "__main__":
         gApplyUICommand("/vis/scene/endOfEventAction accumulate")
         gApplyUICommand("/vis/scene/endOfRunAction accumulate")
         gApplyUICommand("/vis/viewer/select oglsxviewer")
-    
         gApplyUICommand("/vis/scene/add/trajectories")
+
+        if args.view == 'XY':
+            gApplyUICommand("/vis/viewer/set/viewpointVector 0 0 -1")
+        elif args.view == 'ZY':
+            gApplyUICommand("/vis/viewer/set/viewpointVector -1 0 0")
+        elif args.view == 'ZX':
+            gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
     
     if args.gui:
         app = VlenfApp()
         app.mainloop()
+
+    if args.pause:
+        for i in range(args.number_events):
+            gRunManager.BeamOn(1)
+            raw_input()
+    else:
+        gRunManager.BeamOn(args.number_events)
