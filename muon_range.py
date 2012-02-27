@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 #from Geant4 import *
 import Geant4 as G4
-from Geant4 import HepRandom, gRunManager, gTransportationManager, gApplyUICommand
+from Geant4 import HepRandom, gRunManager
+from Geant4 import gTransportationManager, gApplyUICommand
 from Geant4 import mm
 import g4py.ExN03geom
 import g4py.ExN03pl
@@ -44,13 +45,15 @@ gRunManager.Initialize()
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
     parser.add_argument('--name', help='name for the simulation output')
-    parser.add_argument('--number_events', help='how many events to simulate', type=int, default=1)
+    parser.add_argument('--number_events', help='how many events to simulate',
+                        type=int, default=1)
 
     parser.add_argument('--gui', action='store_true')
     parser.add_argument('--event_display', action='store_true')
     parser.add_argument('--view', choices=['XY', 'ZY', 'ZX'], default='ZX')
 
-    parser.add_argument('--pause', help='pause after each event, require return')
+    parser.add_argument('--pause',
+                        help='pause after each event, require return')
     args = parser.parse_args()
 
     if args.event_display:
@@ -70,7 +73,7 @@ if __name__ == "__main__":
             gApplyUICommand("/vis/viewer/set/viewpointVector -1 0 0")
         elif args.view == 'ZX':
             gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
-    
+
     if args.gui:
         app = VlenfApp()
         app.mainloop()

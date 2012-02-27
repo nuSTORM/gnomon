@@ -46,7 +46,7 @@ class ScintSD(G4.G4VSensitiveDetector):
 
     def getMCHitBarPosition(self, layer_number, bar_number, view, position):
         doc = {}
-        
+
         guess_z = self.thickness_layer * (layer_number - self.layers/2)
 
         if view == 'X':
@@ -58,7 +58,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['z'] = guess_z
 
         # 0.1 mm tolerance
-        assert math.fabs(guess_z - position.z) <= self.thickness_bar/2 + 0.1 * G4.mm
+        diff = math.fabs(guess_z - position.z)
+        assert diff <= self.thickness_bar/2 + 0.1 * G4.mm
 
         guess_trans = bar_number
         guess_trans = self.width * (guess_trans - self.bars/2) + self.width/2
@@ -69,11 +70,11 @@ class ScintSD(G4.G4VSensitiveDetector):
             trans = position.y
             doc['y'] = guess_trans
 
-        # 0.1 mm tolerance 
-        assert math.fabs(trans-guess_trans) <= self.width/2 + 1 * G4.mm
-        
+        # 0.1 mm tolerance
+        diff = math.fabs(trans-guess_trans)
+        assert diff <= self.width/2 + 1 * G4.mm
+
         return doc
-        
 
     def ProcessHits(self, step, rohist):
         preStepPoint = step.GetPreStepPoint()
@@ -94,17 +95,19 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc = {}
         doc['type'] = 'mchit'
         doc['dedx'] = dedx
-        doc['position'] = {'x' : position.x,
-                           'y' : position.y,
-                           'z' : position.z}
+        doc['position'] = {'x': position.x,
+                           'y': position.y,
+                           'z': position.z}
 
         doc['bar'] = theTouchable.GetCopyNumber(0)
         doc['layer'] = theTouchable.GetCopyNumber(2)
         doc['view'] = view
 
-        doc['position_bar'] = self.getMCHitBarPosition(doc['layer'], doc['bar'],
-                                                       doc['view'], position)
-        
+        doc['position_bar'] = self.getMCHitBarPosition(doc['layer'],
+                                                       doc['bar'],
+                                                       doc['view'],
+                                                       position)
+
         self.db.save(doc)
 
         self.hit_buffer.append(doc)

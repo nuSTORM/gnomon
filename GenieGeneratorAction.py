@@ -54,7 +54,8 @@ class GenieGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
             print 'y:', t.y
             try:
-                print 'm_l:', math.sqrt(t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2))
+                print 'm_l:', math.sqrt(t.El ** 2 -
+                                        (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2))
             except:
                 pass
             print lepton_event
@@ -68,7 +69,8 @@ class GenieGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
             pp.SetPDGcode(particle['code'])
 
             particle['px'], particle['py'], particle['pz'] = \
-                [1000 * x for x in [particle['px'], particle['py'], particle['pz']]]  # GeV -> MeV
+                [1000 * x for x in [particle['px'], particle['py'],
+                                    particle['pz']]]  # GeV -> MeV
 
             pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
 
