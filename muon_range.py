@@ -6,8 +6,6 @@ from Geant4 import mm
 import g4py.ExN03geom
 import g4py.ExN03pl
 import g4py.ParticleGun
-import sys
-import math
 
 import argparse
 
@@ -20,8 +18,6 @@ from DetectorConstruction import VlenfDetectorConstruction
 rand_engine = G4.Ranlux64Engine()
 HepRandom.setTheEngine(rand_engine)
 HepRandom.setTheSeed(20050830)
-
-
 
 exN03geom = VlenfDetectorConstruction()
 gRunManager.SetUserInitialization(exN03geom)
