@@ -10,42 +10,19 @@ import g4py.ParticleGun
 
 import argparse
 
+import Configuration
 import EventAction
 import ToroidField
 from GenieGeneratorAction import GenieGeneratorAction
 from GUI import VlenfApp
 from DetectorConstruction import VlenfDetectorConstruction
 
-rand_engine = G4.Ranlux64Engine()
-HepRandom.setTheEngine(rand_engine)
-HepRandom.setTheSeed(20050830)
-
-exN03geom = VlenfDetectorConstruction()
-gRunManager.SetUserInitialization(exN03geom)
-
-exN03PL = g4py.ExN03pl.PhysicsList()
-gRunManager.SetUserInitialization(exN03PL)
-exN03PL.SetDefaultCutValue(1.0 * mm)
-exN03PL.SetCutsWithDefault()
-
-myEA = EventAction.VlenfEventAction()
-gRunManager.SetUserAction(myEA)
-
-pgPGA = GenieGeneratorAction()
-gRunManager.SetUserAction(pgPGA)
-
-fieldMgr = gTransportationManager.GetFieldManager()
-
-myField = ToroidField.ToroidField()
-fieldMgr.SetDetectorField(myField)
-fieldMgr.CreateChordFinder(myField)
-
-gRunManager.Initialize()
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
     parser.add_argument('--name', help='name for the simulation output')
     parser.add_argument('--number_events', help='how many events to simulate',
+                        type=int, default=0)
+    parser.add_argument('--run', help='run number',
                         type=int, default=1)
 
     parser.add_argument('--gui', action='store_true')
@@ -55,6 +32,34 @@ if __name__ == "__main__":
     parser.add_argument('--pause',
                         help='pause after each event, require return')
     args = parser.parse_args()
+
+    Configuration.run = args.run
+
+    rand_engine = G4.Ranlux64Engine()
+    HepRandom.setTheEngine(rand_engine)
+    HepRandom.setTheSeed(20050830)
+
+    exN03geom = VlenfDetectorConstruction()
+    gRunManager.SetUserInitialization(exN03geom)
+
+    exN03PL = g4py.ExN03pl.PhysicsList()
+    gRunManager.SetUserInitialization(exN03PL)
+    exN03PL.SetDefaultCutValue(1.0 * mm)
+    exN03PL.SetCutsWithDefault()
+
+    myEA = EventAction.VlenfEventAction()
+    gRunManager.SetUserAction(myEA)
+
+    pgPGA = GenieGeneratorAction()
+    gRunManager.SetUserAction(pgPGA)
+
+    fieldMgr = gTransportationManager.GetFieldManager()
+
+    myField = ToroidField.ToroidField()
+    fieldMgr.SetDetectorField(myField)
+    fieldMgr.CreateChordFinder(myField)
+
+    gRunManager.Initialize()
 
     if args.event_display:
         gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")

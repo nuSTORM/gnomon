@@ -11,16 +11,22 @@ class VlenfSimpleDigitizer():
     def __init__(self):
         self.config = Configuration.DEFAULT()
 
-        self.keep_mc_hits = True
+        self.keep_mc_hits = False
         self.energy_scale = 20 # pe / MeV
+        
+        self.map_fun = """
+function(doc) {
+  if (doc.type == 'mchit')
+    emit(doc.type, doc);
+ }"""
 
+        self.db = self.config.getCurrentDB()
 
     def FetchThenProcess(self, run, event):
-        db = self.config.getCurrentDB()
-
         hits_dict = {}
-        for key in db:
-            doc = db[key]
+
+        for row in self.db.query(self.map_fun):
+            doc = row.value
             i = doc['layer']
             j = doc['bar']
 
@@ -30,7 +36,7 @@ class VlenfSimpleDigitizer():
             hits_dict[(i,j)].append(dict(doc))
 
             if not self.keep_mc_hits:
-                db.delete(doc)
+                self.db.delete(doc)
 
         for key in hits_dict:
             self.Process(key, hits_dict[key])
@@ -48,11 +54,13 @@ class VlenfSimpleDigitizer():
             counts_adc += hit['dedx'] * self.energy_scale
         
         digit = {}
+        digit['type'] = 'digit'
         digit['layer'] = index_layer
         digit['bar'] = index_bar
         digit['number_run'] = hit['number_run']
         digit['number_event'] = hit['number_event']
+        digit['view'] = hit['view']
         
-        
-        print 'counts', counts_adc
+        self.db.save(digit)
+        #print 'counts', counts_adc
 

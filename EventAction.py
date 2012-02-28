@@ -30,4 +30,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         for processor in self.processors:
             processor.FetchThenProcess(run_number, event.GetEventID())
 
+        # Helps if we've deletected MChits
+        self.config.getCurrentDB().compact()
+
         
