@@ -41,8 +41,11 @@ will be done in your home directory without administrator
 intervention.
 
 
-Step 1: ``apt-get`` packages from Ubuntu package manager
+Step 1: Prereqs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``apt-get`` packages from Ubuntu package manager
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Many packages are required to setup your build environment to compile
 GEANT4 and ROOT.  Fortunately, they can be installed with one very
@@ -58,27 +61,40 @@ To be able to generate the documentation, we also need these tools::
 
   sudo apt-get install texlive dvipng
 
-.. hint:: **Mac users:** Get macports and install xcode.  sudo port install cmake, sudo easy_install virtualenv mercurial, sudo port install boost +python27; py27-tkinter
+``port`` packages from MacPorts package manager OSX
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. hint:: **SL users:** yum install mercurial; 
+**Unsupported**. Get macports and install XCode.  Then::
+    
+    sudo port install cmake
+    sudo easy_install virtualenv mercurial
+    sudo port install boost +python27
+    sudo port install py27-tkinter
 
-mkdir ~/gnomon
-cd ~/gnomon
-mkdir local
-wget http://python.org/ftp/python/2.7.2/Python-2.7.2.tgz
-tar xvfz Python-2.7.2.tgz
-cd Python-2.7.2
-./configure --prefix=/home/tunnell/gnomon/local --enable-shared CXXFLAGS="-fPIC" CFLAGS="-fPIC"
-make install
-export PATH=/home/tunnell/gnomon/local/bin:$PATH
-cd ..
-wget http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11-py2.7.egg
-sh setuptools-0.6c11-py2.7.egg
-now you have easy_install
-easy_install virtualenv
-cd
-virtualenv -p `which python` $HOME/env/gnomon
-cd $HOME/env/gnomon
+``yum`` packages from the Redhat based distributions (SL5)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Unsupported**.  Command dump::
+
+  yum install mercurial
+  mkdir ~/gnomon
+  cd ~/gnomon
+  mkdir local
+  wget http://python.org/ftp/python/2.7.2/Python-2.7.2.tgz
+  tar xvfz Python-2.7.2.tgz
+  cd Python-2.7.2
+  ./configure --prefix=/home/tunnell/gnomon/local --enable-shared CXXFLAGS="-fPIC" CFLAGS="-fPIC"
+  make install
+  export PATH=/home/tunnell/gnomon/local/bin:$PATH
+  cd ..
+  wget http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11-py2.7.egg
+  sh setuptools-0.6c11-py2.7.egg
+  # now you have easy_install
+  easy_install virtualenv
+  cd
+  virtualenv -p `which python` $HOME/env/gnomon
+  cd $HOME/env/gnomon
+
 Then follow normal instructions.  Note ``--with-python-incdir=/home/tunnell/gnomon/local/include/python2.7 --with-python-libdir=/home/tunnell/gnomon/local/lib``
 
 
