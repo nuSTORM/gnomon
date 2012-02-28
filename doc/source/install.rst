@@ -86,6 +86,7 @@ To be able to generate the documentation, we also need these tools::
   ./configure --prefix=/home/tunnell/gnomon/local --enable-shared CXXFLAGS="-fPIC" CFLAGS="-fPIC"
   make install
   export PATH=/home/tunnell/gnomon/local/bin:$PATH
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/tunnell/gnomon/local/lib
   cd ..
   wget http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11-py2.7.egg
   sh setuptools-0.6c11-py2.7.egg
@@ -94,8 +95,7 @@ To be able to generate the documentation, we also need these tools::
   cd
   virtualenv -p `which python` $HOME/env/gnomon
   cd $HOME/env/gnomon
-
-Then follow normal instructions.  Note ``--with-python-incdir=/home/tunnell/gnomon/local/include/python2.7 --with-python-libdir=/home/tunnell/gnomon/local/lib``
+  export EXTRAS="--with-python-incdir=/home/tunnell/gnomon/local/include/python2.7 --with-python-libdir=/home/tunnell/gnomon/local/lib"
 
 
 Step 2: virtualenv
@@ -135,7 +135,7 @@ where the instructions below will tell you where the files can be located.  At t
    wget http://mirror.ox.ac.uk/sites/rsync.apache.org/xerces/c/3/sources/xerces-c-3.1.1.tar.gz
    wget http://geant4.cern.ch/support/source/geant4.9.5.tar.gz
 
-.. caution:: Mainly for **Mac users** but others may want to read:  ``ln -s /opt/local/lib/libpython2.7.dylib $VIRTUAL_ENV/lib``.  This will specify the version of python to be the one that you can find by doing ``sudo port select --list python``.  It's very easy to get version mismatches for python.  It is *strongly* advised to append the following to every ``./configure`` command: ``--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib``
+.. caution:: Mainly for **Mac users** but others may want to read:  ``ln -s /opt/local/lib/libpython2.7.dylib $VIRTUAL_ENV/lib``.  This will specify the version of python to be the one that you can find by doing ``sudo port select --list python``.  It's very easy to get version mismatches for python.  It is *strongly* advised to append the following to every ``./configure`` by running: ``export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"``
 
 Step 3: ROOT
 ^^^^^^^^^^^^
@@ -152,7 +152,7 @@ download directory, execute the following commands::
   tar xvf root_v5.32.00.source.tar.gz
   mv root $VIRTUAL_ENV/src/root-5.32.00
   cd $VIRTUAL_ENV/src/root-5.32.00
-  ./configure
+  ./configure ${EXTRAS}
   make
 
 .. tip:: When running the command ``make`` above, one can multithread the build by doing ``make -jN`` for an N-core machine.  For example, in a four core laptop, one could do ``make -j4``.  This is true for all the ``make`` commands on this page.
