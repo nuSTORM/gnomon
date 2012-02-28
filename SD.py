@@ -22,18 +22,25 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         self.couch = couchdb.Server('http://gnomon:VK0K1QMQ@localhost:5984/')
 
-        db_name = 'mc_hit'
+    def setNextEventDBName(self, db_name):
+        """Set the run number and event number for the next event.  This is used
+        to avoid collisions in CouchDB."""
         if db_name in self.couch:
+            print 'WARNING: Already found DB %s' % db_name
             self.couch.delete(db_name)
         self.db = self.couch.create(db_name)
 
-        self.hit_buffer = []
+    def getCurrentDBName(self):
+        return self.db_name
 
-    def getHits(self):
-        return self.hit_buffer
+    def getNumberOfBars(self):
+        """Return the number of bars per view"""
+        return self.bars
 
-    def clearHits(self):
-        self.hit_buffer = []
+    def getNumberOfLayers(self):
+        """Return the number of layers in z, where a layer is steel plus
+        two views"""
+        return self.layers
 
     def getView(self, lv):
         view = None
@@ -109,5 +116,3 @@ class ScintSD(G4.G4VSensitiveDetector):
                                                        position)
 
         self.db.save(doc)
-
-        self.hit_buffer.append(doc)

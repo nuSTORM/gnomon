@@ -26,8 +26,8 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.world = self.gdml_parser.GetWorldVolume()
 
         # Grab constants from the GDML <define>
-        layers = self.gdml_parser.GetConstant("layers")
-        bars = self.gdml_parser.GetConstant("bars")
+        layers = int(self.gdml_parser.GetConstant("layers"))
+        bars = int(self.gdml_parser.GetConstant("bars"))
         width = self.gdml_parser.GetConstant("width")
         thickness_layer = self.gdml_parser.GetConstant("thickness_layer")
         thickness_bar = self.gdml_parser.GetConstant("thickness_bar")

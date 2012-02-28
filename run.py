@@ -28,8 +28,8 @@ gRunManager.SetUserInitialization(exN03PL)
 exN03PL.SetDefaultCutValue(1.0 * mm)
 exN03PL.SetCutsWithDefault()
 
-myEA2 = EventAction.EventAction(exN03geom.getSD())
-gRunManager.SetUserAction(myEA2)
+myEA = EventAction.VlenfEventAction()
+gRunManager.SetUserAction(myEA)
 
 pgPGA = GenieGeneratorAction()
 gRunManager.SetUserAction(pgPGA)
@@ -41,6 +41,9 @@ fieldMgr.SetDetectorField(myField)
 fieldMgr.CreateChordFinder(myField)
 
 gRunManager.Initialize()
+
+# used for fetching hits
+myEA.SetSensitiveDetector(exN03geom.get_sensitive_detector())
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
