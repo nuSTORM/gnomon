@@ -19,7 +19,7 @@ from DetectorConstruction import VlenfDetectorConstruction
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
-    parser.add_argument('--name', help='name for the simulation output')
+    parser.add_argument('NAME', help='name for the simulation output')
     parser.add_argument('--number_events', help='how many events to simulate',
                         type=int, default=0)
     parser.add_argument('--run', help='run number',
@@ -34,6 +34,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     Configuration.run = args.run
+    Configuration.name = args.NAME
 
     rand_engine = G4.Ranlux64Engine()
     HepRandom.setTheEngine(rand_engine)

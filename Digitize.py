@@ -60,6 +60,7 @@ function(doc) {
         digit['number_run'] = hit['number_run']
         digit['number_event'] = hit['number_event']
         digit['view'] = hit['view']
+        digit['counts_adc'] = counts_adc
         
         self.db.save(digit)
         #print 'counts', counts_adc

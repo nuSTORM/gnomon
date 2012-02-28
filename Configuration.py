@@ -5,20 +5,19 @@ import couchdb
 
 # Run number, needs to be set by initializing process
 run = 0
+name = "test"
 
 class CouchConfiguration():
-
     def __init__(self):
         self.couch = couchdb.Server('http://gnomon:VK0K1QMQ@localhost:5984/')
+        #self.couch = couchdb.Server('http://gnomon:VK0K1QMQ@gnomon.iriscouch.com/')
 
-        self.db_name = "test"
-
-        if self.db_name in self.couch:
-            print 'WARNING: Already found DB %s' % self.db_name
-            #self.couch.delete(self.db_name)
-            self.db = self.couch[self.db_name]
+        if name in self.couch:
+            print 'WARNING: Already found DB %s' % name
+            #self.couch.delete(name)
+            self.db = self.couch[name]
         else:
-            self.db = self.couch.create(self.db_name)
+            self.db = self.couch.create(name)
 
         self.map_fun = """
 function(doc) {
