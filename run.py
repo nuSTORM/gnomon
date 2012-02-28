@@ -42,9 +42,6 @@ fieldMgr.CreateChordFinder(myField)
 
 gRunManager.Initialize()
 
-# used for fetching hits
-myEA.SetSensitiveDetector(exN03geom.get_sensitive_detector())
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
     parser.add_argument('--name', help='name for the simulation output')

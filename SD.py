@@ -1,7 +1,7 @@
 import math
 import couchdb
 import Geant4 as G4
-
+import Configuration
 
 class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint bar"
@@ -16,22 +16,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.thickness_layer = thickness_layer
         self.thickness_bar = thickness_bar
 
-        self.pos = {}
-        self.pos['X'] = []
-        self.pos['Y'] = []
-
-        self.couch = couchdb.Server('http://gnomon:VK0K1QMQ@localhost:5984/')
-
-    def setNextEventDBName(self, db_name):
-        """Set the run number and event number for the next event.  This is used
-        to avoid collisions in CouchDB."""
-        if db_name in self.couch:
-            print 'WARNING: Already found DB %s' % db_name
-            self.couch.delete(db_name)
-        self.db = self.couch.create(db_name)
-
-    def getCurrentDBName(self):
-        return self.db_name
+        self.config = Configuration.DEFAULT()
 
     def getNumberOfBars(self):
         """Return the number of bars per view"""
@@ -110,9 +95,12 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['layer'] = theTouchable.GetCopyNumber(2)
         doc['view'] = view
 
+        doc['number_run'] = self.config.getRunNumber()
+        doc['number_event'] = self.config.getEventNumber()
+
         doc['position_bar'] = self.getMCHitBarPosition(doc['layer'],
                                                        doc['bar'],
                                                        doc['view'],
                                                        position)
 
-        self.db.save(doc)
+        self.config.getCurrentDB().save(doc)
