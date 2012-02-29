@@ -1,11 +1,6 @@
 Installation
 ============
 
-Hardware Prerequisites
-----------------------
-
-none
-
 Software Prerequisites
 ----------------------
 
