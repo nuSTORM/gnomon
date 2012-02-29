@@ -15,7 +15,9 @@ Run the command ``cmake --version``.
 How do I upgrade my CMake version?
 ----------------------------------
 
-One can download CMake from their `download page <http://cmake.org/cmake/resources/software.html>`_ or you can use your package manager.  Worst case: discuss with your system administrator and tell them how many years old your version of CMake is.
+You can download CMake from their `download page <http://cmake.org/cmake/resources/software.html>`_ or you can use your package manager.  Worst case: discuss with your system administrator and tell them how many years old your version of CMake is.
+
+You can also build CMake much like Xerces C++ is built in the installation instructions to install it in your virtual environment.
 
 Does Python 3.X work?
 ----------------------

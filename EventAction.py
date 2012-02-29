@@ -3,7 +3,9 @@ each MC event."""
 
 import Geant4 as G4
 import Configuration
-from Digitize import VlenfSimpleDigitizer
+
+from processors.Digitize import VlenfSimpleDigitizer
+from processors.Utils import Compactor
 
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
@@ -16,6 +18,7 @@ class VlenfEventAction(G4.G4UserEventAction):
 
         self.processors = []
         self.processors.append(VlenfSimpleDigitizer())
+        self.processors.append(Compactor())
 
         #  (optionally) Used for telling SD to use bulk operations rather than
         #  individual commits.
