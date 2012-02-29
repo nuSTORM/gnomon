@@ -16,21 +16,32 @@ class VlenfEventAction(G4.G4UserEventAction):
 
         self.processors = []
         self.processors.append(VlenfSimpleDigitizer())
+
+        #  (optionally) Used for telling SD to use bulk operations rather than
+        #  individual commits.
+        self.sd = None
         
     def BeginOfEventAction(self, event):
         """Executed at the beginning of an event, print hits"""
         print "*** current event (BEA)=", event.GetEventID()
         self.config.setEventNumber(event.GetEventID())
 
+    def setSD(self, sd):
+        self.sd = sd
+
     def EndOfEventAction(self, event):
         """Executed at the end of an event, do nothing"""
         print "*** current event (EEA)=", event.GetEventID()
+
+        #  Trick to tell the sensitive detector to perform a bulk commit.
+        if self.sd and self.sd.getUseBulkCommits():
+            self.sd.bulkCommit()
 
         run_number = self.config.getRunNumber()
         for processor in self.processors:
             processor.FetchThenProcess(run_number, event.GetEventID())
 
         # Helps if we've deletected MChits
-        self.config.getCurrentDB().compact()
+        #self.config.getCurrentDB().compact()
 
         

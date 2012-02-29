@@ -10,6 +10,7 @@ name = "test"
 class CouchConfiguration():
     def __init__(self):
         self.couch = couchdb.Server('http://gnomon:VK0K1QMQ@localhost:5984/')
+        self.couch.version()
         #self.couch = couchdb.Server('http://gnomon:VK0K1QMQ@gnomon.iriscouch.com/')
 
         if name in self.couch:

@@ -62,6 +62,16 @@ if __name__ == "__main__":
 
     gRunManager.Initialize()
 
+    #  This is a trick that, if enabled, lets the event action notify the
+    #  detector when the event is over.  This allows the sensitive detector
+    #  to perform a bulk commit of 'mchit's to the event store.  It's meant
+    #  to be an optimization since writing tons of small 'mchit's individually
+    #  to the database is slow.
+    #
+    #  This can be disabled for conceptually clarify in SD.py
+    sd = exN03geom.getSensitiveDetector()
+    myEA.setSD(sd)
+
     if args.event_display:
         gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")
         gApplyUICommand("/vis/viewer/create OGLSX oglsxviewer")

@@ -7,6 +7,16 @@ On a Mac, I get "Fatal Python Error: PyThreadState"?!
 
 This obscure error means that you somehow mixed python versions.  Make sure that you create your virtual environment with the ``virtualenv -p my_python_version`` where you tell it to clone the correct python version.  This should agree with the version that's selected in ``sudo port select --list python``.
 
+How do I check my CMake version?
+--------------------------------
+
+Run the command ``cmake --version``.
+
+How do I upgrade my CMake version?
+----------------------------------
+
+One can download CMake from their `download page <http://cmake.org/cmake/resources/software.html>`_ or you can use your package manager.  Worst case: discuss with your system administrator and tell them how many years old your version of CMake is.
+
 Does Python 3.X work?
 ----------------------
 

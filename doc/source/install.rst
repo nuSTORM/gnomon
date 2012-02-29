@@ -4,12 +4,13 @@ Installation
 Software Prerequisites
 ----------------------
 
-Gnomon depends on several software packages:
+Gnomon and its dependencies depends on several software packages:
 
 * Python 2.7.X
 * Boost::Python
+* CMake >= 2.8 (for Geant4 fetching data)
 * Matplotlib
-* xerces C++ 3.1.1
+* xerces C++ 3.1.1 (for GDML)
 * GEANT4.9.5
 * g4py
 * ROOT 5.32

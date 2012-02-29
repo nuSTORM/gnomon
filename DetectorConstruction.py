@@ -15,7 +15,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
     def __del__(self):
         pass
 
-    def get_sensitive_detector(self):
+    def getSensitiveDetector(self):
         """Return the SD"""
         return self.sensitive_detector
 
