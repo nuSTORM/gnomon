@@ -6,7 +6,7 @@ Software Prerequisites
 
 Gnomon depends on several software packages:
 
-* Python 2.7.X (Python 3 is not currently supported)
+* Python 2.7.X
 * Boost::Python
 * Matplotlib
 * xerces C++ 3.1.1
@@ -73,25 +73,8 @@ To be able to generate the documentation, we also need these tools::
 **Unsupported**.  Command dump::
 
   yum install mercurial
-  mkdir ~/gnomon
-  cd ~/gnomon
-  mkdir local
-  wget http://python.org/ftp/python/2.7.2/Python-2.7.2.tgz
-  tar xvfz Python-2.7.2.tgz
-  cd Python-2.7.2
-  ./configure --prefix=/home/tunnell/gnomon/local --enable-shared CXXFLAGS="-fPIC" CFLAGS="-fPIC"
-  make install
-  export PATH=/home/tunnell/gnomon/local/bin:$PATH
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/tunnell/gnomon/local/lib
-  cd ..
-  wget http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11-py2.7.egg
-  sh setuptools-0.6c11-py2.7.egg
-  # now you have easy_install
-  easy_install virtualenv
-  cd
-  virtualenv -p `which python` $HOME/env/gnomon
-  cd $HOME/env/gnomon
-  export EXTRAS="--with-python-incdir=/home/tunnell/gnomon/local/include/python2.7 --with-python-libdir=/home/tunnell/gnomon/local/lib"
+
+See :doc:`faq` about how to change the Python version in userspace.
 
 Step 2: virtualenv
 ^^^^^^^^^^^^^^^^^^
