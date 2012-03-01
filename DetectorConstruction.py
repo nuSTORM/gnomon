@@ -39,7 +39,6 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         # Get logical volume for X view, then attach SD
         lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
         assert lv.GetName() == "ScintillatorBarX"
-        print 'using sd as %s' % lv.GetName()
         lv.SetSensitiveDetector(self.sensitive_detector)
 
         # Get logical volume for Y view, then attach SD

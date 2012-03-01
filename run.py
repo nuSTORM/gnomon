@@ -9,6 +9,7 @@ import g4py.ExN03pl
 import g4py.ParticleGun
 
 import argparse
+import logging
 
 import Configuration
 import EventAction
@@ -31,7 +32,21 @@ if __name__ == "__main__":
 
     parser.add_argument('--pause',
                         help='pause after each event, require return')
+
+    # should test these correspond to numeric errors
+    log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+    parser.add_argument('--log_level', choices=log_levels, default='WARNING')
     args = parser.parse_args()
+
+    #args.log_level
+    #logging.getLogger('test').setLevel("WARNING")
+    logging.basicConfig(filename='example.log',level=logging.DEBUG)
+
+    logger = logging.getLogger('gnomon')
+    #logger.basicConfig(filename='example.log',level=logging.DEBUG)
+    logger.setLevel(args.log_level)
+
+    """ SHOULD CHECK IF NAME EXISTS, and warn if yes!!"""
 
     Configuration.run = args.run
     Configuration.name = args.NAME

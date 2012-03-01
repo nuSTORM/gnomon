@@ -13,6 +13,9 @@ class VlenfEventAction(G4.G4UserEventAction):
     def __init__(self):
         """execute the constructor of the parent class G4UserEventAction"""
         G4.G4UserEventAction.__init__(self)
+
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
         
         self.config = Configuration.DEFAULT()
 
@@ -26,7 +29,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         
     def BeginOfEventAction(self, event):
         """Executed at the beginning of an event, print hits"""
-        print "*** current event (BEA)=", event.GetEventID()
+        self.log.debug("Beggining event %s", event.GetEventID()))
         self.config.setEventNumber(event.GetEventID())
 
     def setSD(self, sd):
@@ -34,7 +37,7 @@ class VlenfEventAction(G4.G4UserEventAction):
 
     def EndOfEventAction(self, event):
         """Executed at the end of an event, do nothing"""
-        print "*** current event (EEA)=", event.GetEventID()
+        self.log.info('Processed event %d', event.GetEventID())
 
         #  Trick to tell the sensitive detector to perform a bulk commit.
         if self.sd and self.sd.getUseBulkCommits():

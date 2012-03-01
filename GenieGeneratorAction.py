@@ -1,6 +1,7 @@
 import Geant4 as G4
 import ROOT
 
+import logging
 
 class GenieGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     "My Primary Generator Action"
@@ -8,6 +9,9 @@ class GenieGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     def __init__(self):
         G4.G4VUserPrimaryGeneratorAction.__init__(self)
         self.event_list = self.get_next_events()
+
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
 
     def get_next_events(self):
         f = ROOT.TFile('ntuple_neg14.root')
@@ -42,23 +46,21 @@ class GenieGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
                 next_events.append(hadron_event)
 
-            print 'nc', t.__getattr__('nc')
-            print 'Event type:'
+            self.log.debug('Event type:')
             for type in ['qel', 'res', 'dis', 'coh', 'dfr',
                          'imd', 'nuel', 'em']:
-                print '\t', type, ':', t.__getattr__(type)
+                self.log.debug('\t%s:%d', type, t.__getattr__(type))
 
-            print 'Propogator:'
+            self.log.debug('Propogator:')
             for prop in ['nc', 'cc']:
-                print '\t', prop, ':', t.__getattr__(prop)
+                self.log.debug('\t%s:%d', prop, t.__getattr__(prop))
 
-            print 'y:', t.y
+            self.log.debug('y: %f', t.y)
             try:
-                print 'm_l:', math.sqrt(t.El ** 2 -
-                                        (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2))
+                self.log.debug('m_l: %f', math.sqrt(t.El ** 2 -
+                                        (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2)))
             except:
                 pass
-            print lepton_event
 
             yield next_events
 

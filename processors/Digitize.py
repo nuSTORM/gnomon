@@ -9,10 +9,14 @@ class VlenfSimpleDigitizer():
     energy scale."""
 
     def __init__(self):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+
         self.config = Configuration.DEFAULT()
 
         self.keep_mc_hits = False
-        self.energy_scale = 20 # pe / MeV
+        self.energy_scale = 20.0 # pe / MeV
+        elf.debug('Energy scale: %f', self.energy_scale)
 
         self.db = self.config.getCurrentDB()
 

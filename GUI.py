@@ -93,8 +93,6 @@ class VlenfApp(Frame):
     def cmd_beamOn(self):
         position = 0
 
-        print "Now geometry updated"
-
         eventNum = self.eventVar.get()
         for i in range(eventNum):
             gRunManager.BeamOn(1)
@@ -106,10 +104,8 @@ class VlenfApp(Frame):
         for i in self.processList:
             if self.processVar[i].get() == 0:
                 gProcessTable.SetProcessActivation(i, 0)
-                print "Process " + i + " inactivated"
             else:
                 gProcessTable.SetProcessActivation(i, 1)
-                print "Process " + i + " activated"
 
     def cmd_g4command(self):
         gApplyUICommand(self.g4commandVar.get())

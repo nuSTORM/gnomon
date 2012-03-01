@@ -11,21 +11,30 @@ name = "test"
 
 class CouchConfiguration():
     def __init__(self):
+        """Setup the CouchDB configuration manager.
+
+        The default connection is to localhost's port 5984.  This can be
+        overridden by setting the environmental variable COUCHDB_URL to,
+        for example, http://new_server:1234/"""
+
+
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+
         self.server_url = 'http://localhost:5984/'
         if os.getenv('COUCHDB_URL'):
             value = os.getenv('COUCHDB_URL')
-            logging.info('Using environmental variable COUCHDB_URL: %s' % value)
+            self.log.info('Using environmental variable COUCHDB_URL: %s' % value)
             self.server_url = value
 
         self.couch = couchdb.Server(self.server_url)
-        self.couch.version()
-        #self.couch = couchdb.Server('http://gnomon:VK0K1QMQ@gnomon.iriscouch.com/')
+        self.couch.version()  # check that CouchDB connection works
 
         if name in self.couch:
-            print 'WARNING: Already found DB %s' % name
-            #self.couch.delete(name)
+            self.debug('DB already exists: %s', name)
             self.db = self.couch[name]
         else:
+            self.debug('Creating DB: %s', name)
             self.db = self.couch.create(name)
 
         self.map_fun = """
@@ -41,11 +50,11 @@ function(doc) {
         self.configuration = None
         my_query = self.db.query(self.map_fun)
         if len(my_query) > 1:
-            print "ERROR!"
-        elif len(my_query) == 1:
-            self.configuration = list(my_query)[0].value
-            print self.configuration
+            self.log.critical("Too many configurations for run %d. Grabbing first. This should never happen.", run)
 
+        if len(my_query) != 0:
+            self.configuration = list(my_query)[0].value
+            self.log.debug('The configuraiton is: %s', self.configuration)
         else:
             self.configuration = {}
             self.configuration['type'] = 'configuration'
