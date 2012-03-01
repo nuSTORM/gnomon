@@ -1,6 +1,8 @@
 """The Digitization routines are for simulating electronics response in various
 ways.  Oh, and we use USA spelling here, so use a 'zed' and like it."""
 
+import logging
+
 import Geant4 as G4
 import Configuration
 
@@ -16,7 +18,7 @@ class VlenfSimpleDigitizer():
 
         self.keep_mc_hits = False
         self.energy_scale = 20.0 # pe / MeV
-        elf.debug('Energy scale: %f', self.energy_scale)
+        self.log.debug('Energy scale: %f', self.energy_scale)
 
         self.db = self.config.getCurrentDB()
 

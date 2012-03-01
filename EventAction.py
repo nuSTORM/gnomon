@@ -1,6 +1,8 @@
 """The EventAction is used by Geant4 to determine what to do before and after
 each MC event."""
 
+import logging
+
 import Geant4 as G4
 import Configuration
 
@@ -29,7 +31,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         
     def BeginOfEventAction(self, event):
         """Executed at the beginning of an event, print hits"""
-        self.log.debug("Beggining event %s", event.GetEventID()))
+        self.log.debug("Beggining event %s", event.GetEventID())
         self.config.setEventNumber(event.GetEventID())
 
     def setSD(self, sd):

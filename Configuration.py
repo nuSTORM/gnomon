@@ -31,10 +31,10 @@ class CouchConfiguration():
         self.couch.version()  # check that CouchDB connection works
 
         if name in self.couch:
-            self.debug('DB already exists: %s', name)
+            self.log.debug('DB already exists: %s', name)
             self.db = self.couch[name]
         else:
-            self.debug('Creating DB: %s', name)
+            self.log.debug('Creating DB: %s', name)
             self.db = self.couch.create(name)
 
         self.map_fun = """
