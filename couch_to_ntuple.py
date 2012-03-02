@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--runs', '-r', metavar='N', type=int, nargs='+',
-                    help='runs to process')
+                    help='run(s) to process')
     group.add_argument('--all', '-a', action='store_true',
                     help='process all runs')
 
@@ -20,27 +20,41 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     Configuration.name = args.name
-    Configuration.run = args.run
+    # Configuration.run # not used
 
     config = Configuration.CouchConfiguration()
     db = config.getCurrentDB()
-    print config.getAllRunsInDB()
     
+    if args.all:
+        print 'using all runs'
+        addition = ''
+    else:
+        print 'using runs', args.runs
+        addition = 'if('
+        run_conditions = ['doc.run == %d' % run for run in args.runs]
+        print run_conditions
+        print " || ".join(run_conditions)
+        addition += " || ".join(run_conditions) 
+        addition += ')'
 
     map_fun = """
 function(doc) {
   if (doc.type == '%s') {
+    %s
     emit(doc.type, doc); 
 }
 }
-""" % args.type
+""" % (args.type, addition)
     
+    print 'debug', map_fun
     
     file = None
     if args.filename:
+        if '.root' not in args.filename:
+            print 'error: no .root in filename!'
         file = ROOT.TFile(args.filename, 'RECREATE')
     else:
-        file = ROOT.TFile('gnomon_%s_%d_%s.root' % (args.NAME,  config.getRunNumber(), args.type), 'RECREATE')
+        file = ROOT.TFile('gnomon_%s_%s.root' % (args.name, args.type), 'RECREATE')
     t = ROOT.TTree('t', '')
 
     my_struct = None
