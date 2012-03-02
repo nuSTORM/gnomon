@@ -14,9 +14,8 @@ from Geant4 import gTransportationManager, gApplyUICommand, mm
 sys.stdout = temp  # Then return sys.stdout
 
 # g4py
-import g4py.ExN03geom
+#import g4py.ExN03geom
 import g4py.ExN03pl
-import g4py.ParticleGun
 
 # gnomon
 import Configuration
@@ -90,8 +89,8 @@ if __name__ == "__main__":
     HepRandom.setTheEngine(rand_engine)
     HepRandom.setTheSeed(20050830)
 
-    exN03geom = VlenfDetectorConstruction()
-    gRunManager.SetUserInitialization(exN03geom)
+    detector = VlenfDetectorConstruction()
+    gRunManager.SetUserInitialization(detector)
 
     exN03PL = g4py.ExN03pl.PhysicsList()
     gRunManager.SetUserInitialization(exN03PL)
@@ -110,6 +109,8 @@ if __name__ == "__main__":
     fieldMgr.SetDetectorField(myField)
     fieldMgr.CreateChordFinder(myField)
 
+# get the field right!
+
     gRunManager.Initialize()
 
     #  This is a trick that, if enabled, lets the event action notify the
@@ -119,7 +120,7 @@ if __name__ == "__main__":
     #  to the database is slow.
     #
     #  This can be disabled for conceptually clarify in SD.py
-    sd = exN03geom.getSensitiveDetector()
+    sd = detector.getSensitiveDetector()
     myEA.setSD(sd)
 
     if args.event_display:

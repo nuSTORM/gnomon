@@ -1,6 +1,5 @@
 """Store configuration information for the run"""
 
-import Geant4 as G4
 import couchdb
 import os
 import logging
@@ -37,7 +36,7 @@ class CouchConfiguration():
                 self.log.info('DB already exists: %s', name)
             self.db = self.couch[name]
         else:
-            self.log.info('Creating DB: %s', name)
+            self.log.info("DB doesn't exist so creating DB: %s", name)
             self.db = self.couch.create(name)
 
         self.map_fun = """
