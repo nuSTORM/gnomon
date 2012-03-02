@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 #from Geant4 import *
+import sys
+import argparse
+import logging
+from StringIO import StringIO
+
+# Grab stdout so Geant4 doesn't announce itself
+#temp = sys.stdout
+#sys.stdout = StringIO()
 import Geant4 as G4
+
+
 from Geant4 import HepRandom, gRunManager
 from Geant4 import gTransportationManager, gApplyUICommand
 from Geant4 import mm
@@ -10,6 +20,7 @@ import g4py.ParticleGun
 
 import argparse
 import logging
+import logging.config
 
 import Configuration
 import EventAction
@@ -17,6 +28,20 @@ import ToroidField
 from GenieGeneratorAction import GenieGeneratorAction
 from GUI import VlenfApp
 from DetectorConstruction import VlenfDetectorConstruction
+
+class StreamToLogger(object):
+   """                                                                                                                                              
+   Fake file-like stream object that redirects writes to a logger instance.                                                                         
+   """
+   def __init__(self, logger, log_level=logging.INFO):
+      self.logger = logger
+      self.log_level = log_level
+      self.linebuf = ''
+
+   def write(self, buf):
+      for line in buf.rstrip().splitlines():
+         self.logger.log(self.log_level, line.rstrip())
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
@@ -40,11 +65,36 @@ if __name__ == "__main__":
 
     #args.log_level
     #logging.getLogger('test').setLevel("WARNING")
-    logging.basicConfig(filename='example.log',level=logging.DEBUG)
+    #logging.config.fileConfig('logging.conf')
+    #logging.basicConfig(filename='example.log', mode='w', level=logging.DEBUG)
+    # create console handler and set level to debug
 
-    logger = logging.getLogger('gnomon')
-    #logger.basicConfig(filename='example.log',level=logging.DEBUG)
-    logger.setLevel(args.log_level)
+    logging.basicConfig(filename='example.log', mode='w', level=logging.DEBUG)
+
+    console_handler = logging.StreamHandler(sys.__stdout__)
+    console_handler.setLevel(args.log_level)
+    formatter = logging.Formatter('%(levelname)s(%(name)s): %(message)s')
+    console_handler.setFormatter(formatter)
+
+    #file_handler = logging.FileHandler('testlog', mode='w')
+    #file_handler.setLevel('DEBUG')
+
+    logger = logging.getLogger('root')
+    #logger.setLevel(logging.NOTSET)
+    logger.addHandler(console_handler)
+    #logger.addHandler(file_handler)
+
+    stdout_logger = logging.getLogger('root').getChild('STDOUT')
+    sl = StreamToLogger(stdout_logger, logging.INFO)
+    sys.stdout = sl
+ 
+    stderr_logger = logging.getLogger('root').getChild('STDERR')
+    sl = StreamToLogger(stderr_logger, logging.ERROR)
+    sys.stderr = sl
+
+    #logger = logging.getLogger('gnomon')
+    ##logger.basicConfig(filename='example.log',level=logging.DEBUG)
+    #logger.setLevel(args.log_level)
 
     """ SHOULD CHECK IF NAME EXISTS, and warn if yes!!"""
 
@@ -115,3 +165,5 @@ if __name__ == "__main__":
             raw_input()
     else:
         gRunManager.BeamOn(args.number_events)
+
+    
