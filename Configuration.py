@@ -7,10 +7,10 @@ import logging
 
 # Run number, needs to be set by initializing process
 run = 0
-name = "test"
+name = ""
 
 class CouchConfiguration():
-    def __init__(self):
+    def __init__(self, warn_if_db_exists = False):
         """Setup the CouchDB configuration manager.
 
         The default connection is to localhost's port 5984.  This can be
@@ -31,10 +31,13 @@ class CouchConfiguration():
         self.couch.version()  # check that CouchDB connection works
 
         if name in self.couch:
-            self.log.debug('DB already exists: %s', name)
+            if warn_if_db_exists:
+                self.log.warning('DB already exists: %s', name)
+            else:
+                self.log.info('DB already exists: %s', name)
             self.db = self.couch[name]
         else:
-            self.log.debug('Creating DB: %s', name)
+            self.log.info('Creating DB: %s', name)
             self.db = self.couch.create(name)
 
         self.map_fun = """

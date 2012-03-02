@@ -1,27 +1,24 @@
 #!/usr/bin/env python
-#from Geant4 import *
+# system libraries
 import sys
 import argparse
 import logging
-from StringIO import StringIO
+import os
 
-# Grab stdout so Geant4 doesn't announce itself
-#temp = sys.stdout
-#sys.stdout = StringIO()
-import Geant4 as G4
-
-
+# Geant4
+temp = sys.stdout  # backup stdout
+sys.stdout = open(os.devnull)  # make fake stdout
+import Geant4 as G4  # Then silently import Geant4!
 from Geant4 import HepRandom, gRunManager
-from Geant4 import gTransportationManager, gApplyUICommand
-from Geant4 import mm
+from Geant4 import gTransportationManager, gApplyUICommand, mm
+sys.stdout = temp  # Then return sys.stdout
+
+# g4py
 import g4py.ExN03geom
 import g4py.ExN03pl
 import g4py.ParticleGun
 
-import argparse
-import logging
-import logging.config
-
+# gnomon
 import Configuration
 import EventAction
 import ToroidField
@@ -29,18 +26,19 @@ from GenieGeneratorAction import GenieGeneratorAction
 from GUI import VlenfApp
 from DetectorConstruction import VlenfDetectorConstruction
 
-class StreamToLogger(object):
-   """                                                                                                                                              
-   Fake file-like stream object that redirects writes to a logger instance.                                                                         
-   """
-   def __init__(self, logger, log_level=logging.INFO):
-      self.logger = logger
-      self.log_level = log_level
-      self.linebuf = ''
 
-   def write(self, buf):
-      for line in buf.rstrip().splitlines():
-         self.logger.log(self.log_level, line.rstrip())
+class StreamToLogger(object):
+    """
+    Fake file-like stream object that redirects writes to a logger instance.
+    """
+    def __init__(self, logger, log_level=logging.INFO):
+        self.logger = logger
+        self.log_level = log_level
+        self.linebuf = ''
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.logger.log(self.log_level, line.rstrip())
 
 
 if __name__ == "__main__":
@@ -58,16 +56,10 @@ if __name__ == "__main__":
     parser.add_argument('--pause',
                         help='pause after each event, require return')
 
-    # should test these correspond to numeric errors
+    # should test these correspond to numeric errors TODO
     log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
     parser.add_argument('--log_level', choices=log_levels, default='WARNING')
     args = parser.parse_args()
-
-    #args.log_level
-    #logging.getLogger('test').setLevel("WARNING")
-    #logging.config.fileConfig('logging.conf')
-    #logging.basicConfig(filename='example.log', mode='w', level=logging.DEBUG)
-    # create console handler and set level to debug
 
     logging.basicConfig(filename='example.log', mode='w', level=logging.DEBUG)
 
@@ -76,30 +68,23 @@ if __name__ == "__main__":
     formatter = logging.Formatter('%(levelname)s(%(name)s): %(message)s')
     console_handler.setFormatter(formatter)
 
-    #file_handler = logging.FileHandler('testlog', mode='w')
-    #file_handler.setLevel('DEBUG')
-
     logger = logging.getLogger('root')
-    #logger.setLevel(logging.NOTSET)
     logger.addHandler(console_handler)
-    #logger.addHandler(file_handler)
 
     stdout_logger = logging.getLogger('root').getChild('STDOUT')
     sl = StreamToLogger(stdout_logger, logging.INFO)
     sys.stdout = sl
- 
+
     stderr_logger = logging.getLogger('root').getChild('STDERR')
     sl = StreamToLogger(stderr_logger, logging.ERROR)
     sys.stderr = sl
-
-    #logger = logging.getLogger('gnomon')
-    ##logger.basicConfig(filename='example.log',level=logging.DEBUG)
-    #logger.setLevel(args.log_level)
 
     """ SHOULD CHECK IF NAME EXISTS, and warn if yes!!"""
 
     Configuration.run = args.run
     Configuration.name = args.NAME
+    
+    config = Configuration.CouchConfiguration(warn_if_db_exists = True)
 
     rand_engine = G4.Ranlux64Engine()
     HepRandom.setTheEngine(rand_engine)
@@ -165,5 +150,3 @@ if __name__ == "__main__":
             raw_input()
     else:
         gRunManager.BeamOn(args.number_events)
-
-    
