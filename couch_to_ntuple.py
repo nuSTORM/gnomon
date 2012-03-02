@@ -84,5 +84,5 @@ function(doc) {
                 
         t.Fill()
     
-    
+    t.Write()
     file.Close()
