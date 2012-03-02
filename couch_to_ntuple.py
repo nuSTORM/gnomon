@@ -4,19 +4,28 @@ import ROOT
 import Configuration
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Grab gnomon data and Ntuple')
+    parser = argparse.ArgumentParser(description='Grab gnomon data from Couch and convert to ROOT file')
     
-    parser.add_argument('NAME', help='name for the simulation output', type=str)
-    parser.add_argument('TYPE', help='event type', type=str) 
-    parser.add_argument('--filename', help='root filename', type=str)
+    parser.add_argument('--name', '-n', help='name for the simulation output DB', type=str, required=True)
+    parser.add_argument('--type', '-t', help='event type', type=str, required=True) 
+    parser.add_argument('--filename', '-f', help='root filename', type=str)
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--runs', '-r', metavar='N', type=int, nargs='+',
+                    help='runs to process')
+    group.add_argument('--all', '-a', action='store_true',
+                    help='process all runs')
+
 
     args = parser.parse_args()
     
-    Configuration.name = args.NAME
-    Configuration.run = 0
+    Configuration.name = args.name
+    Configuration.run = args.run
 
     config = Configuration.CouchConfiguration()
     db = config.getCurrentDB()
+    print config.getAllRunsInDB()
+    
 
     map_fun = """
 function(doc) {
@@ -24,13 +33,14 @@ function(doc) {
     emit(doc.type, doc); 
 }
 }
-""" % args.TYPE
+""" % args.type
+    
     
     file = None
     if args.filename:
         file = ROOT.TFile(args.filename, 'RECREATE')
     else:
-        file = ROOT.TFile('gnomon_%s_%d_%s.root' % (args.NAME,  config.getRunNumber(), args.TYPE), 'RECREATE')
+        file = ROOT.TFile('gnomon_%s_%d_%s.root' % (args.NAME,  config.getRunNumber(), args.type), 'RECREATE')
     t = ROOT.TTree('t', '')
 
     my_struct = None
@@ -75,6 +85,8 @@ function(doc) {
                 code = 'I'
             elif my_type == float: 
                 code = 'F'
+            else:
+                raise ValueError
                 
             t.Branch(key, ROOT.AddressOf(my_struct, key), '%s/%s' % (key, code))
 

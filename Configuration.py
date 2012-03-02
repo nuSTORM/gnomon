@@ -74,6 +74,18 @@ function(doc) {
     def getRunNumber(self):
         return run
 
+    def getAllRunsInDB(self):
+        map_fun = """
+function(doc) {
+  if (doc.type == 'configuration')
+        emit(null, doc.run);
+}
+"""
+
+        my_query = self.db.query(self.map_fun)
+        runs = [x.value['run'] for x in list(my_query)]
+        return runs
+
     def setEventNumber(self, number):
         my_query = self.db.query(self.map_fun)
         assert len(my_query) == 1
