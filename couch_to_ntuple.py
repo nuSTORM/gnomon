@@ -1,7 +1,10 @@
+#!/usr/bin/env python 
 import argparse
 from array import array
 import ROOT
+
 import Configuration
+import Logging
 
 if __name__ == "__main__":
     my_description = 'Grab gnomon data from Couch and convert to ROOT file'
@@ -19,7 +22,10 @@ if __name__ == "__main__":
     group.add_argument('--all', '-a', action='store_true',
                     help='process all runs')
 
+    Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level 
     args = parser.parse_args()
+
+    Logging.setupLogging(args.log_level)  # Console/file/stdout/stderr logs 
 
     Configuration.name = args.name
     # Configuration.run # not used

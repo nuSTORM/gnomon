@@ -24,21 +24,7 @@ import ToroidField
 from GenieGeneratorAction import GenieGeneratorAction
 from GUI import VlenfApp
 from DetectorConstruction import VlenfDetectorConstruction
-
-
-class StreamToLogger(object):
-    """
-    Fake file-like stream object that redirects writes to a logger instance.
-    """
-    def __init__(self, logger, log_level=logging.INFO):
-        self.logger = logger
-        self.log_level = log_level
-        self.linebuf = ''
-
-    def write(self, buf):
-        for line in buf.rstrip().splitlines():
-            self.logger.log(self.log_level, line.rstrip())
-
+import Logging
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
@@ -55,30 +41,10 @@ if __name__ == "__main__":
     parser.add_argument('--pause',
                         help='pause after each event, require return')
 
-    # should test these correspond to numeric errors TODO
-    log_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-    parser.add_argument('--log_level', choices=log_levels, default='WARNING')
+    Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
     args = parser.parse_args()
 
-    logging.basicConfig(filename='example.log', mode='w', level=logging.DEBUG)
-
-    console_handler = logging.StreamHandler(sys.__stdout__)
-    console_handler.setLevel(args.log_level)
-    formatter = logging.Formatter('%(levelname)s(%(name)s): %(message)s')
-    console_handler.setFormatter(formatter)
-
-    logger = logging.getLogger('root')
-    logger.addHandler(console_handler)
-
-    stdout_logger = logging.getLogger('root').getChild('STDOUT')
-    sl = StreamToLogger(stdout_logger, logging.INFO)
-    sys.stdout = sl
-
-    stderr_logger = logging.getLogger('root').getChild('STDERR')
-    sl = StreamToLogger(stderr_logger, logging.ERROR)
-    sys.stderr = sl
-
-    """ SHOULD CHECK IF NAME EXISTS, and warn if yes!!"""
+    Logging.setupLogging(args.log_level)  # Console/file/stdout/stderr logs
 
     Configuration.run = args.run
     Configuration.name = args.NAME

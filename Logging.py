@@ -1,0 +1,44 @@
+import logging
+import sys
+
+def getLogLevels():
+    return ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+
+def addLogLevelOptionToArgs(parser):
+    parser.add_argument('--log_level',
+                        choices=getLogLevels(),
+                        default='WARNING')
+
+class StreamToLogger(object):
+    """                                                                                                                            
+    Fake file-like stream object that redirects writes to a logger instance.                                                       
+    """
+    def __init__(self, logger, log_level=logging.INFO):
+        self.logger = logger
+        self.log_level = log_level
+        self.linebuf = ''
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.logger.log(self.log_level, line.rstrip())
+
+
+def setupLogging(console_level):
+    logging.basicConfig(filename='example.log', mode='w', level=logging.DEBUG)
+
+    console_handler = logging.StreamHandler(sys.__stdout__)
+    console_handler.setLevel(console_level)
+    formatter = logging.Formatter('%(levelname)s(%(name)s): %(message)s')
+    console_handler.setFormatter(formatter)
+
+    logger = logging.getLogger('root')
+    logger.addHandler(console_handler)
+
+    stdout_logger = logging.getLogger('root').getChild('STDOUT')
+    sl = StreamToLogger(stdout_logger, logging.INFO)
+    sys.stdout = sl
+
+    stderr_logger = logging.getLogger('root').getChild('STDERR')
+    sl = StreamToLogger(stderr_logger, logging.ERROR)
+    sys.stderr = sl
+    
