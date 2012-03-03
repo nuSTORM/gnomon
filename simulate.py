@@ -4,6 +4,8 @@ import sys
 import argparse
 import logging
 import os
+import time
+import random
 
 # Geant4
 temp = sys.stdout  # backup stdout
@@ -26,14 +28,36 @@ from GUI import VlenfApp
 from DetectorConstruction import VlenfDetectorConstruction
 import Logging
 
+log = None  #  Logger for this file
+
+def setRandomSeed(seed):
+    """Set random seed
+
+    Set the Geant4 random number generator seed.  If the seed is zero,
+    then use the computer clock time."""
+    rand_engine = G4.Ranlux64Engine()
+    HepRandom.setTheEngine(rand_engine)
+    log = logging.getLogger('root')
+    if seed == 0:
+        clock_seed = int(time.time())
+        log.info('Setting Geant4 random number seed to clock:', clock_seed)
+        HepRandom.setTheSeed(clock_seed)
+    else:
+        log.debug('Setting Geant4 random number seed to:', seed)
+        HepRandom.setTheSeed(seed)
+        
+    return rand_engine  #  prevents destructor
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
     parser.add_argument('--name', '-n', help='DB in CouchDB for output',
                         type=str, required=True)
     parser.add_argument('--number_events', help='how many events to simulate',
                         type=int, default=10)
-    parser.add_argument('--run', help='run number',
-                        type=int, default=1, required=True)
+    parser.add_argument('--run', help='run number (random if 0)',
+                        type=int, default=0)
+    parser.add_argument('--seed', help='random seed, 0 means set to clock',
+                        type=int, default=0)
 
     group = parser.add_argument_group('Visualization', 'GUI or event display')
     group.add_argument('--gui', action='store_true')
@@ -56,15 +80,23 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     Logging.setupLogging(args.log_level)  # Console/file/stdout/stderr logs
+    log = logging.getLogger('root').getChild('simulate')
+    log.info(args)
 
-    Configuration.run = args.run
+    if args.run == 0:
+        random.seed()
+        Configuration.run = random.randint(1, sys.maxint)
+        log.warning('Using random run number %d since none specified', Configuration.run)
+    else:
+        Configuration.run = args.run
     Configuration.name = args.name
     
-    config = Configuration.CouchConfiguration(warn_if_db_exists = True)
+    config = Configuration.CouchConfiguration(warn_if_exists = True)
 
+    #rand_engine = setRandomSeed(args.seed)
     rand_engine = G4.Ranlux64Engine()
     HepRandom.setTheEngine(rand_engine)
-    HepRandom.setTheSeed(20050830)
+    HepRandom.setTheSeed(args.seed)
 
     detector = VlenfDetectorConstruction()
     gRunManager.SetUserInitialization(detector)

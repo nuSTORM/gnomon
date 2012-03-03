@@ -9,7 +9,7 @@ run = 0
 name = ""
 
 class CouchConfiguration():
-    def __init__(self, warn_if_db_exists = False):
+    def __init__(self, warn_if_exists = False):
         """Setup the CouchDB configuration manager.
 
         The default connection is to localhost's port 5984.  This can be
@@ -30,7 +30,7 @@ class CouchConfiguration():
         self.couch.version()  # check that CouchDB connection works
 
         if name in self.couch:
-            if warn_if_db_exists:
+            if warn_if_exists:
                 self.log.warning('DB already exists: %s', name)
             else:
                 self.log.info('DB already exists: %s', name)
@@ -56,7 +56,12 @@ function(doc) {
 
         if len(my_query) != 0:
             self.configuration = list(my_query)[0].value
-            self.log.debug('The configuraiton is: %s', self.configuration)
+            self.log.info('The configuraiton is: %s', self.configuration)
+
+            if warn_if_exists:
+                error_string = 'Bad run number since run %d already exists' % self.configuration['run']
+                self.log.critical(error_string)
+                raise ValueError(error_string)
         else:
             self.configuration = {}
             self.configuration['type'] = 'configuration'
