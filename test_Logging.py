@@ -1,16 +1,44 @@
 from unittest import TestCase
-from subprocess import check_output
+import sys
+import argparse
+import exceptions
 
-MY_COMMANDS = ['clhep', 'geant4', 'root']
-MY_ARGS = ['prefix', 'libs', 'cflags']
+import logging  #  python's
+import Logging  #  gnomon's
 
-class TestShepherdConfig(TestCase):
+class TestLogging(TestCase):
     def setUp(self):
-        self._command_name = 'shepherd-config'
+        pass
 
-    def test_doesthiswor(self):
-        for command in MY_COMMANDS:
-            for arg in MY_ARGS:
-                print check_output([self._command_name, '--%s' % command, '--%s' % arg])
+    def test_exist_getLogLevels(self):
+        bad_level_name = 'blarg'
+        l = logging.getLogger(bad_level_name)
+
+        with self.assertRaises(ValueError):
+            l.setLevel(bad_level_name)
+
+        for level_name in Logging.getLogLevels():
+            l = logging.getLogger(level_name)
+            l.setLevel(level_name)
+
+    def test_setupLogging(self):
+        Logging.setupLogging('WARNING')
         
+        self.assertNotEqual(sys.stdout, sys.__stdout__)
+        self.assertNotEqual(sys.stderr, sys.__stderr__)
 
+    def test_StreamToLogger(self):
+        pass  #  can't think of test, wait for bugs
+
+    def test_addLogLevelOptionToArgs(self):
+        for level_name in Logging.getLogLevels():
+            parser = argparse.ArgumentParser()
+            with self.assertRaises(exceptions.SystemExit):
+                parser.parse_args(['--log_level', level_name])
+                
+            Logging.addLogLevelOptionToArgs(parser)
+        
+            with self.assertRaises(exceptions.SystemExit):
+                parser.parse_args(['--log_level'])
+
+            parser.parse_args(['--log_level', level_name])
