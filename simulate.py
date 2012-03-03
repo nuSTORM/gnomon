@@ -24,7 +24,6 @@ import Configuration
 import EventAction
 import ToroidField
 import GeneratorAction
-from GUI import VlenfApp
 from DetectorConstruction import VlenfDetectorConstruction
 import Logging
 
@@ -41,8 +40,7 @@ if __name__ == "__main__":
     parser.add_argument('--seed', help='random seed, 0 means set to clock',
                         type=int, default=0)
 
-    group = parser.add_argument_group('Visualization', 'GUI or event display')
-    group.add_argument('--gui', action='store_true')
+    group = parser.add_argument_group('Visualization', 'event display')
     group.add_argument('--display', action='store_true', help='event display')
     group.add_argument('--view', choices=['XY', 'ZY', 'ZX'], default='ZX')
 
@@ -150,10 +148,6 @@ if __name__ == "__main__":
             gApplyUICommand("/vis/viewer/set/viewpointVector -1 0 0")
         elif args.view == 'ZX':
             gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
-
-    if args.gui:
-        app = VlenfApp()
-        app.mainloop()
 
     if args.pause:
         for i in range(args.events):
