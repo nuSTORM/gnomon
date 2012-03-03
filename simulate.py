@@ -60,12 +60,13 @@ if __name__ == "__main__":
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
     args = parser.parse_args()
 
-    Logging.setupLogging(args.log_level)  # Console/file/stdout/stderr logs
+    Logging.setupLogging(args.log_level, args.name)
     log = logging.getLogger('root').getChild('simulate')
     log.debug('Commandline args: %s', str(args))
 
+    random.seed()
+
     if args.run == 0:
-        random.seed()
         Configuration.run = random.randint(1, sys.maxint)
         log.warning('Using random run number %d since none specified', Configuration.run)
     else:
@@ -76,7 +77,13 @@ if __name__ == "__main__":
 
     rand_engine = G4.Ranlux64Engine()
     HepRandom.setTheEngine(rand_engine)
-    HepRandom.setTheSeed(args.seed)
+    seed = args.seed
+    if seed == 0:
+        seed = random.randint(1, 65536)
+        log.warning('Using random seed %d', seed)
+    else:
+        log.info('Using seed %d', seed)
+    HepRandom.setTheSeed(seed)
 
     detector = VlenfDetectorConstruction()
     gRunManager.SetUserInitialization(detector)

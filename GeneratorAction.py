@@ -45,7 +45,7 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
     def setMomentum(self, momentum):
         self.check3Vector(momentum)
 
-        self.log.info('Momentum set to (MeV): %s', str(vertex))
+        self.log.info('Momentum set to (MeV): %s', str(momentum))
         self.momentum = momentum
         
     def GeneratePrimaries(self, event):
