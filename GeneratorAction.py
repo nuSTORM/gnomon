@@ -16,7 +16,7 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
         self.log = self.log.getChild(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
 
-        self.vertex = (0, 0, 0)
+        self.vertex = (0, 0, 0)  #  mm
         self.log.debug('Default vertex: %s', str(self.vertex))
 
     def check3Vector(self, value):
@@ -31,7 +31,7 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     def setVertex(self, vertex):
         self.check3Vector(vertex)
             
-        self.log.info('Vertex set to: %s', str(vertex))
+        self.log.info('Vertex set to (mm): %s', str(vertex))
         self.vertex = vertex
         
 
@@ -40,17 +40,19 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
     def __init__(self):
         VlenfGeneratorAction.__init__(self)
         
-        self.momentum = (0,0,1) # GeV/c
+        self.momentum = (0,0,1) # MeV/c
 
     def setMomentum(self, momentum):
         self.check3Vector(momentum)
-        self.momentum = momentum
 
+        self.log.info('Momentum set to (MeV): %s', str(vertex))
+        self.momentum = momentum
+        
     def GeneratePrimaries(self, event):
         pp = G4.G4PrimaryParticle()
         pp.SetPDGcode(13)
 
-        pp.SetMomentum(0, 0, 0.5) # GeV/c
+        pp.SetMomentum(0, 0, 0.5) # MeV/c
 
         v = G4.G4PrimaryVertex()
         v.SetPosition(0.0, 1000.0 * G4.mm, 0)
@@ -129,7 +131,9 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
 
             v = G4.G4PrimaryVertex()
-            v.SetPosition(0.0, 1000.0 * G4.mm, 0)
+            v.SetPosition(self.vertex[0] * G4.mm,
+                          self.vertex[1] * G4.mm,
+                          self.vertex[2] * G4.mm)
             v.SetPrimary(pp)
 
             event.AddPrimaryVertex(v)

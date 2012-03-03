@@ -50,6 +50,7 @@ if __name__ == "__main__":
                         help='pause after each event, require return')
 
     group = parser.add_argument_group('GeneratorAction', 'Input of particles to simulate')
+    group.add_argument('--momentum', metavar='N', type=float, nargs=3, help='momentum MeV/c (requires particle)')
     group1 = group.add_mutually_exclusive_group()
     group1.add_argument('--genie', '-g', action='store_true', help='Use Genie events')
     group1.add_argument('--particle', '-p', action='store_true', help='Use particle gun')
@@ -101,9 +102,15 @@ if __name__ == "__main__":
         pga = GeneratorAction.GenieGeneratorAction()
         
     if args.vertex:
-        pass
+        pga.setVertex(args.vertex)
     elif args.uniform:
         raise NotImplementedError('Uniform distribution not implemented')
+
+    if args.momentum:
+        if args.genie:
+            log.error('Momentum cannot be set if using GenieGeneratorAction, ignoring...')
+        else:
+            pga.setMomentum(args.momentum)
     gRunManager.SetUserAction(pga)
 
     fieldMgr = gTransportationManager.GetFieldManager()
