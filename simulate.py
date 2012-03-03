@@ -21,33 +21,44 @@ import g4py.ExN03pl
 import Configuration
 import EventAction
 import ToroidField
-from GenieGeneratorAction import GenieGeneratorAction
+from GeneratorAction import GenieGeneratorAction
 from GUI import VlenfApp
 from DetectorConstruction import VlenfDetectorConstruction
 import Logging
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
-    parser.add_argument('NAME', help='name for the simulation output')
+    parser.add_argument('--name', '-n', help='DB in CouchDB for output',
+                        type=str, required=True)
     parser.add_argument('--number_events', help='how many events to simulate',
-                        type=int, default=0)
+                        type=int, default=10)
     parser.add_argument('--run', help='run number',
-                        type=int, default=1)
+                        type=int, default=1, required=True)
 
-    parser.add_argument('--gui', action='store_true')
-    parser.add_argument('--event_display', action='store_true')
-    parser.add_argument('--view', choices=['XY', 'ZY', 'ZX'], default='ZX')
+    group = parser.add_argument_group('Visualization', 'GUI or event display')
+    group.add_argument('--gui', action='store_true')
+    group.add_argument('--event_display', action='store_true')
+    group.add_argument('--view', choices=['XY', 'ZY', 'ZX'], default='ZX')
 
-    parser.add_argument('--pause',
+    parser.add_argument('--pause', action='store_true',
                         help='pause after each event, require return')
 
+    group = parser.add_argument_group('GeneratorAction', 'Input of particles to simulate')
+    group1 = group.add_mutually_exclusive_group(required=True)
+    group1.add_argument('--genie', '-g', action='store_true', help='Use Genie events')
+    group1.add_argument('--particle', '-p', action='store_true', help='Use particle gun')
+
+    group2 = group.add_mutually_exclusive_group(required=True)
+    group2.add_argument('--vertex', metavar='N', type=float, nargs=3, help='vertex location (mm)')
+    group2.add_argument('--uniform', '-u', action='store_true', help='uniform distribution')
+    
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
     args = parser.parse_args()
 
     Logging.setupLogging(args.log_level)  # Console/file/stdout/stderr logs
 
     Configuration.run = args.run
-    Configuration.name = args.NAME
+    Configuration.name = args.name
     
     config = Configuration.CouchConfiguration(warn_if_db_exists = True)
 

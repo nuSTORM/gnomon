@@ -10,7 +10,7 @@ if __name__ == "__main__":
     my_description = 'Grab gnomon data from Couch and convert to ROOT file'
     parser = argparse.ArgumentParser(description=my_description)
 
-    parser.add_argument('--name', '-n', help='name for the simulation DB',
+    parser.add_argument('--name', '-n', help='DB in CouchDB for output',
                         type=str, required=True)
     parser.add_argument('--type', '-t', help='event type', type=str,
                         required=True)

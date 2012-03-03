@@ -1,10 +1,31 @@
+"""Generator actions
+
+These generate particles to simulate"""
+
 import Geant4 as G4
 import ROOT
 
 import logging
 
+class SingleParticleGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
+    """Generate single particle at specific point"""
+    def __init__(self):
+        G4.G4VUserPrimaryGeneratorAction.__init__(self)
+
+    def GeneratePrimaries(self, event):
+        pp = G4.G4PrimaryParticle()
+        pp.SetPDGcode(particle['code'])
+
+        pp.SetMomentum(0, 0, 0.5) # GeV/c
+
+        v = G4.G4PrimaryVertex()
+        v.SetPosition(0.0, 1000.0 * G4.mm, 0)
+        v.SetPrimary(pp)
+
+        event.AddPrimaryVertex(v)
+    
 class GenieGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
-    "My Primary Generator Action"
+    """Generate events from a Genie ntuple"""
 
     def __init__(self):
         G4.G4VUserPrimaryGeneratorAction.__init__(self)
