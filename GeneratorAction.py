@@ -7,14 +7,48 @@ import ROOT
 
 import logging
 
-class SingleParticleGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
-    """Generate single particle at specific point"""
+class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
+    """Base class for VLENF generator actions"""
     def __init__(self):
         G4.G4VUserPrimaryGeneratorAction.__init__(self)
 
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+        self.log.debug('Initialized %s', self.__class__.__name__)
+
+        self.vertex = (0, 0, 0)
+        self.log.debug('Default vertex: %s', str(self.vertex))
+
+    def check3Vector(self, value):
+        if not isinstance(value, list):
+            raise ValueError('Wrong type for 3-vector')
+        if len(value) != 3:
+            raise ValueError('Wrong dimensions for 3-vector')
+        for element in value:
+            if not isinstance(element, (float, int)):
+                raise ValueError('3-vector element is not number')
+
+    def setVertex(self, vertex):
+        self.check3Vector(vertex)
+            
+        self.log.info('Vertex set to: %s', str(vertex))
+        self.vertex = vertex
+        
+
+class SingleParticleGeneratorAction(VlenfGeneratorAction):
+    """Generate single particle at specific point"""
+    def __init__(self):
+        VlenfGeneratorAction.__init__(self)
+        
+        self.momentum = (0,0,1) # GeV/c
+
+    def setMomentum(self, momentum):
+        self.check3Vector(momentum)
+        self.momentum = momentum
+
     def GeneratePrimaries(self, event):
         pp = G4.G4PrimaryParticle()
-        pp.SetPDGcode(particle['code'])
+        pp.SetPDGcode(13)
 
         pp.SetMomentum(0, 0, 0.5) # GeV/c
 
@@ -24,15 +58,12 @@ class SingleParticleGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
         event.AddPrimaryVertex(v)
     
-class GenieGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
+class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
 
     def __init__(self):
-        G4.G4VUserPrimaryGeneratorAction.__init__(self)
+        VlenfGeneratorAction.__init__(self)
         self.event_list = self.get_next_events()
-
-        self.log = logging.getLogger('root')
-        self.log = self.log.getChild(self.__class__.__name__)
 
     def get_next_events(self):
         f = ROOT.TFile('ntuple_neg14.root')

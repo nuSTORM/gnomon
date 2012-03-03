@@ -23,36 +23,18 @@ import g4py.ExN03pl
 import Configuration
 import EventAction
 import ToroidField
-from GeneratorAction import GenieGeneratorAction
+import GeneratorAction
 from GUI import VlenfApp
 from DetectorConstruction import VlenfDetectorConstruction
 import Logging
 
 log = None  #  Logger for this file
 
-def setRandomSeed(seed):
-    """Set random seed
-
-    Set the Geant4 random number generator seed.  If the seed is zero,
-    then use the computer clock time."""
-    rand_engine = G4.Ranlux64Engine()
-    HepRandom.setTheEngine(rand_engine)
-    log = logging.getLogger('root')
-    if seed == 0:
-        clock_seed = int(time.time())
-        log.info('Setting Geant4 random number seed to clock:', clock_seed)
-        HepRandom.setTheSeed(clock_seed)
-    else:
-        log.debug('Setting Geant4 random number seed to:', seed)
-        HepRandom.setTheSeed(seed)
-        
-    return rand_engine  #  prevents destructor
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the VLENF')
     parser.add_argument('--name', '-n', help='DB in CouchDB for output',
                         type=str, required=True)
-    parser.add_argument('--number_events', help='how many events to simulate',
+    parser.add_argument('--events', help='how many events to simulate',
                         type=int, default=10)
     parser.add_argument('--run', help='run number (random if 0)',
                         type=int, default=0)
@@ -61,14 +43,14 @@ if __name__ == "__main__":
 
     group = parser.add_argument_group('Visualization', 'GUI or event display')
     group.add_argument('--gui', action='store_true')
-    group.add_argument('--event_display', action='store_true')
+    group.add_argument('--display', action='store_true', help='event display')
     group.add_argument('--view', choices=['XY', 'ZY', 'ZX'], default='ZX')
 
     parser.add_argument('--pause', action='store_true',
                         help='pause after each event, require return')
 
     group = parser.add_argument_group('GeneratorAction', 'Input of particles to simulate')
-    group1 = group.add_mutually_exclusive_group(required=True)
+    group1 = group.add_mutually_exclusive_group()
     group1.add_argument('--genie', '-g', action='store_true', help='Use Genie events')
     group1.add_argument('--particle', '-p', action='store_true', help='Use particle gun')
 
@@ -81,7 +63,7 @@ if __name__ == "__main__":
 
     Logging.setupLogging(args.log_level)  # Console/file/stdout/stderr logs
     log = logging.getLogger('root').getChild('simulate')
-    log.info(args)
+    log.debug('Commandline args: %s', str(args))
 
     if args.run == 0:
         random.seed()
@@ -93,7 +75,6 @@ if __name__ == "__main__":
     
     config = Configuration.CouchConfiguration(warn_if_exists = True)
 
-    #rand_engine = setRandomSeed(args.seed)
     rand_engine = G4.Ranlux64Engine()
     HepRandom.setTheEngine(rand_engine)
     HepRandom.setTheSeed(args.seed)
@@ -108,9 +89,22 @@ if __name__ == "__main__":
 
     myEA = EventAction.VlenfEventAction()
     gRunManager.SetUserAction(myEA)
-
-    pgPGA = GenieGeneratorAction()
-    gRunManager.SetUserAction(pgPGA)
+    
+    #
+    #  Generator actions
+    #
+    if args.particle:
+        pga = GeneratorAction.SingleParticleGeneratorAction()
+    else:
+        if not args.genie:
+            log.warning('No generator action set, assuming GenieGeneratorAction')
+        pga = GeneratorAction.GenieGeneratorAction()
+        
+    if args.vertex:
+        pass
+    elif args.uniform:
+        raise NotImplementedError('Uniform distribution not implemented')
+    gRunManager.SetUserAction(pga)
 
     fieldMgr = gTransportationManager.GetFieldManager()
 
@@ -132,7 +126,7 @@ if __name__ == "__main__":
     sd = detector.getSensitiveDetector()
     myEA.setSD(sd)
 
-    if args.event_display:
+    if args.display:
         gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")
         gApplyUICommand("/vis/viewer/create OGLSX oglsxviewer")
         gApplyUICommand("/vis/drawVolume")
@@ -155,8 +149,8 @@ if __name__ == "__main__":
         app.mainloop()
 
     if args.pause:
-        for i in range(args.number_events):
+        for i in range(args.events):
             gRunManager.BeamOn(1)
             raw_input()
     else:
-        gRunManager.BeamOn(args.number_events)
+        gRunManager.BeamOn(args.events)

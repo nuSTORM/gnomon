@@ -1,5 +1,7 @@
 import logging
 import sys
+import time
+import os
 
 def getLogLevels():
     return ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
@@ -7,7 +9,7 @@ def getLogLevels():
 def addLogLevelOptionToArgs(parser):
     parser.add_argument('--log_level',
                         choices=getLogLevels(),
-                        default='WARNING')
+                        default='INFO')
 
 class StreamToLogger(object):
     """                                                                                                                            
@@ -24,7 +26,7 @@ class StreamToLogger(object):
 
 
 def setupLogging(console_level):
-    logging.basicConfig(filename='example.log', mode='w', level=logging.DEBUG)
+    logging.basicConfig(filename='gnomon.log', mode='w', level=logging.DEBUG)
 
     console_handler = logging.StreamHandler(sys.__stdout__)
     console_handler.setLevel(console_level)
@@ -42,3 +44,5 @@ def setupLogging(console_level):
     sl = StreamToLogger(stderr_logger, logging.ERROR)
     sys.stderr = sl
     
+    logger.info('Starting up Gnomon (PID: %d)', os.getpid())
+    logger.info('Start time: %s', time.ctime())

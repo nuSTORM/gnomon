@@ -62,7 +62,7 @@ function(doc) {
             print 'error: no .root in filename!'
         file = ROOT.TFile(args.filename, 'RECREATE')
     else:
-        file = ROOT.TFile('gnomon_%s_%s.root' % (args.name, args.type),
+        file = ROOT.TFile('root/gnomon_%s_%s.root' % (args.name, args.type),
                           'RECREATE')
     t = ROOT.TTree('t', '')
 
