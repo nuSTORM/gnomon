@@ -22,7 +22,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.config = Configuration.DEFAULT()
 
         self.processors = []
-        self.processors.append(VlenfSimpleDigitizer())
+        #self.processors.append(VlenfSimpleDigitizer())
         self.processors.append(Compactor())
 
         #  (optionally) Used for telling SD to use bulk operations rather than

@@ -16,7 +16,6 @@ class VlenfSimpleDigitizer():
 
         self.config = Configuration.DEFAULT()
 
-        self.keep_mc_hits = False
         self.energy_scale = 20.0 # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
 
@@ -44,9 +43,6 @@ function(doc) {
                 hits_dict[(i,j)] = []
 
             hits_dict[(i,j)].append(dict(doc))
-
-            if not self.keep_mc_hits:
-                self.db.delete(doc)
 
         for key in hits_dict:
             self.Process(key, hits_dict[key])

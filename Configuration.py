@@ -93,6 +93,7 @@ function(doc) {
 
     def setEventNumber(self, number):
         my_query = self.db.query(self.map_fun)
+        print list(my_query)
         assert len(my_query) == 1
         self.configuration = list(my_query)[0].value
         self.configuration['event'] = number
@@ -100,6 +101,9 @@ function(doc) {
 
     def getEventNumber(self):
         my_query = self.db.query(self.map_fun)
+        print my_query
+        print list(my_query)
+        print [x.value for x in list(my_query)]
         assert len(my_query) == 1
         self.configuration = list(my_query)[0].value
         return self.configuration['event']
