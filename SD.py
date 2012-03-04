@@ -1,5 +1,4 @@
 import math
-import couchdb
 import Geant4 as G4
 import Configuration
 

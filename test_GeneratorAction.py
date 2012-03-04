@@ -1,8 +1,4 @@
 from unittest import TestCase
-import sys
-import argparse
-import exceptions
-
 import GeneratorAction as GA
 
 bad_verticies = ["UNIFORM",
