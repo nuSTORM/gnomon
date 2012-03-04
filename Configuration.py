@@ -87,7 +87,7 @@ function(doc) {
 }
 """
 
-        my_query = self.db.query(self.map_fun)
+        my_query = self.db.query(map_fun)
         runs = [x.value['run'] for x in list(my_query)]
         return runs
 

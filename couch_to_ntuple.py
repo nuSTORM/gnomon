@@ -1,6 +1,5 @@
 #!/usr/bin/env python 
 import argparse
-from array import array
 import ROOT
 
 import Configuration

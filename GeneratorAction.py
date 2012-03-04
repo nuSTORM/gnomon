@@ -40,7 +40,7 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
     def __init__(self):
         VlenfGeneratorAction.__init__(self)
         
-        self.momentum = (0,0,1) # MeV/c
+        self.momentum = (0, 0, 1) # MeV/c
         self.pid = -13
 
     def setMomentum(self, momentum):
@@ -111,9 +111,9 @@ class GenieGeneratorAction(VlenfGeneratorAction):
                 next_events.append(hadron_event)
 
             self.log.debug('Event type:')
-            for type in ['qel', 'res', 'dis', 'coh', 'dfr',
+            for my_type in ['qel', 'res', 'dis', 'coh', 'dfr',
                          'imd', 'nuel', 'em']:
-                self.log.debug('\t%s:%d', type, t.__getattr__(type))
+                self.log.debug('\t%s:%d', my_type, t.__getattr__(my_type))
 
             self.log.debug('Propogator:')
             for prop in ['nc', 'cc']:
