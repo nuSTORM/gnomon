@@ -26,10 +26,11 @@ class StreamToLogger(object):
             self.logger.log(self.log_level, line.rstrip())
 
 
-def setupLogging(console_level, name):
+def setupLogging(console_level, name, logfileless=False):
     output_filename = 'log/gnomon_%s_%s.log' % (name, str(uuid.uuid4()))
 
-    logging.basicConfig(filename=output_filename, mode='w', level=logging.DEBUG)
+    if not logfileless:
+        logging.basicConfig(filename=output_filename, mode='w', level=logging.DEBUG)
 
     console_handler = logging.StreamHandler(sys.__stdout__)
     console_handler.setLevel(console_level)

@@ -39,6 +39,8 @@ if __name__ == "__main__":
                         type=int, default=0)
     parser.add_argument('--seed', help='random seed, 0 means set to clock',
                         type=int, default=0)
+    parser.add_argument('--logfileless', action='store_true',
+                        help='this will disable writing out a log file')
 
     group = parser.add_argument_group('Visualization', 'event display')
     group.add_argument('--display', action='store_true', help='event display')
@@ -49,6 +51,7 @@ if __name__ == "__main__":
 
     group = parser.add_argument_group('GeneratorAction', 'Input of particles to simulate')
     group.add_argument('--momentum', metavar='N', type=float, nargs=3, help='momentum MeV/c (requires particle)')
+    group.add_argument('--pid', type=int, help='Geant4 particle number (requires particle, default=-13)')
     group1 = group.add_mutually_exclusive_group()
     group1.add_argument('--genie', '-g', action='store_true', help='Use Genie events')
     group1.add_argument('--particle', '-p', action='store_true', help='Use particle gun')
@@ -60,7 +63,7 @@ if __name__ == "__main__":
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
     args = parser.parse_args()
 
-    Logging.setupLogging(args.log_level, args.name)
+    Logging.setupLogging(args.log_level, args.name, logfileless=args.logfileless)
     log = logging.getLogger('root').getChild('simulate')
     log.debug('Commandline args: %s', str(args))
 
@@ -116,6 +119,13 @@ if __name__ == "__main__":
             log.error('Momentum cannot be set if using GenieGeneratorAction, ignoring...')
         else:
             pga.setMomentum(args.momentum)
+
+    if args.pid:
+        if args.genie:
+            log.error('PID cannot be set if using GenieGeneratorAction, ignoring...')
+        else:
+            pga.setPID(args.pid)
+
     gRunManager.SetUserAction(pga)
 
     fieldMgr = gTransportationManager.GetFieldManager()

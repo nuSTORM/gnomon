@@ -41,21 +41,31 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         VlenfGeneratorAction.__init__(self)
         
         self.momentum = (0,0,1) # MeV/c
+        self.pid = -13
 
     def setMomentum(self, momentum):
         self.check3Vector(momentum)
 
         self.log.info('Momentum set to (MeV): %s', str(momentum))
         self.momentum = momentum
+
+    def setPID(self, pid):
+        if not isinstance(pid, int):
+            raise ValueError('PID must be integer')
+        self.pid = pid
         
     def GeneratePrimaries(self, event):
         pp = G4.G4PrimaryParticle()
-        pp.SetPDGcode(13)
+        pp.SetPDGcode(self.pid)
 
-        pp.SetMomentum(0, 0, 0.5) # MeV/c
+        pp.SetMomentum(self.momentum[0],
+                       self.momentum[1],
+                       self.momentum[2]) # MeV/c
 
         v = G4.G4PrimaryVertex()
-        v.SetPosition(0.0, 1000.0 * G4.mm, 0)
+        v.SetPosition(self.vertex[0] * G4.mm,
+                      self.vertex[1] * G4.mm,
+                      self.vertex[2] * G4.mm)
         v.SetPrimary(pp)
 
         event.AddPrimaryVertex(v)

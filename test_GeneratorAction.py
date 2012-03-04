@@ -53,6 +53,12 @@ class TestSingleParticleGeneratorAction(TestCase):
         for good_vertex in good_verticies:
             self.ga.setMomentum(good_vertex)
 
+    def test_types_setPID(self):
+        with self.assertRaises(ValueError):
+            self.ga.setPID('string')
+        self.ga.setPID(-13)
+        self.ga.setPID(13)
+
     def test_setMomentum(self):
         for good_vertex in good_verticies:
             self.ga.setMomentum(good_vertex)
