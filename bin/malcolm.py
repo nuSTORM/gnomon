@@ -9,7 +9,7 @@ number_of_events = 1000
 
 for momentum in [100, 139, 195, 271, 379, 528, 737, 1028, 1434, 2000]:
     for pid in [-13, 13]:
-        for run in range(1,10):
+        for run in range(1,2):
             print momentum, pid, run
             filename = tempfile.mkstemp()[1]
             file = open(filename, 'w')
@@ -30,6 +30,6 @@ time python simulate.py --name %(db_name)s --vertex 0 2000 0 -p --momentum 0 0 %
             file.write(script)
             file.close()
 
-            time.sleep(1)
+            #time.sleep(1)
             job_name = '%s_%s' % (db_name, run)
             os.system('qsub -N %s %s' % (job_name, filename))

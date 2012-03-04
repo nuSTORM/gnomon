@@ -25,7 +25,7 @@ if __name__ == "__main__":
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level 
     args = parser.parse_args()
 
-    Logging.setupLogging(args.log_level)  # Console/file/stdout/stderr logs 
+    Logging.setupLogging(args.log_level, args.name)
 
     Configuration.name = args.name
     # Configuration.run # not used
@@ -87,7 +87,8 @@ function(doc) {
                 elif my_type == float:
                     my_struct_code += 'float %s;' % key
                 else:
-                    raise ValueError
+                    print key, my_type
+                    raise ValueError()
 
             my_struct_code += '};'
             print my_struct_code

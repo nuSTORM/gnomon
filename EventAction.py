@@ -32,7 +32,7 @@ class VlenfEventAction(G4.G4UserEventAction):
     def BeginOfEventAction(self, event):
         """Executed at the beginning of an event, print hits"""
         self.log.debug("Beggining event %s", event.GetEventID())
-        self.config.setEventNumber(event.GetEventID())
+        self.sd.setEventNumber(event.GetEventID())
 
     def setSD(self, sd):
         self.sd = sd
@@ -45,9 +45,9 @@ class VlenfEventAction(G4.G4UserEventAction):
         if self.sd and self.sd.getUseBulkCommits():
             self.sd.bulkCommit()
 
-        run_number = self.config.getRunNumber()
-        for processor in self.processors:
-            processor.FetchThenProcess(run_number, event.GetEventID())
+        #run_number = self.config.getRunNumber()
+        #for processor in self.processors:
+        #    processor.FetchThenProcess(run_number, event.GetEventID())
 
         # Helps if we've deletected MChits
         #self.config.getCurrentDB().compact()

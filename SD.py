@@ -17,9 +17,14 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.thickness_bar = thickness_bar
 
         self.config = Configuration.DEFAULT()
+
+        self.event = 0
         
         self.use_bulk_commits = True
         self.mc_hits = []
+
+    def setEventNumber(self, number):
+        self.event = number
 
     def getNumberOfBars(self):
         """Return the number of bars per view"""
@@ -99,13 +104,12 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['view'] = view
 
         doc['number_run'] = self.config.getRunNumber()
-        doc['number_event'] = self.config.getEventNumber()
+        doc['number_event'] = self.event #self.config.getEventNumber()
 
-        doc['position_bar'] = self.getMCHitBarPosition(doc['layer'],
-                                                       doc['bar'],
-                                                       doc['view'],
-                                                       position)
-
+        doc['position_bar']  = self.getMCHitBarPosition(doc['layer'],
+                                                        doc['bar'],
+                                                        doc['view'],
+                                                        position)
 
         if self.use_bulk_commits:
             self.mc_hits.append(doc)
