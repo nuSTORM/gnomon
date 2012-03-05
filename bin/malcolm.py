@@ -24,12 +24,13 @@ for momentum in [100, 139, 195, 271, 379, 528, 737, 1028, 1434, 2000]:
 source /home/tunnell/env/gnomon/bin/activate
 cd $VIRTUAL_ENV/src/gnomon
 time python simulate.py --name %(db_name)s --vertex 0 2000 0 -p --momentum 0 0 %(momentum)d --events %(number_of_events)d --logfileless --pid %(pid)d --log_level INFO --run %(run)d
+time python digitize.py --name %(db_name)s -a
 """ % {'momentum': momentum, 'db_name' : db_name, 'number_of_events' : number_of_events, 'pid' : pid, 'run' : run}
 
             print 'script:', script
             file.write(script)
             file.close()
 
-            #time.sleep(1)
+            #time.sleep(60)
             job_name = '%s_%s' % (db_name, run)
             os.system('qsub -N %s %s' % (job_name, filename))
