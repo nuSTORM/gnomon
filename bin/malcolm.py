@@ -5,7 +5,7 @@ import couchdb
 
 couch = couchdb.Server(os.getenv('COUCHDB_URL'))
 
-number_of_events = 1000
+number_of_events = 100
 
 for momentum in [100, 139, 195, 271, 379, 528, 737, 1028, 1434, 2000]:
     for pid in [-13, 13]:
@@ -14,7 +14,7 @@ for momentum in [100, 139, 195, 271, 379, 528, 737, 1028, 1434, 2000]:
             filename = tempfile.mkstemp()[1]
             file = open(filename, 'w')
         
-            db_name = 'malcolm_%d_%d' % (momentum, pid)
+            db_name = 'malcolm_tiny_%d_%d' % (momentum, pid)
             try:
                 couch.delete(db_name)
             except:

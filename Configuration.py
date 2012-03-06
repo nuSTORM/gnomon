@@ -39,7 +39,20 @@ class CouchConfiguration():
         if name not in self.couch:
             self.log.info("DB doesn't exist so creating DB: %s", name)
             try:
-                self.couch.create(name)
+                db = self.couch.create(name)
+                auth_doc = {}
+                auth_doc['_id'] = '_design/auth'
+                auth_doc['language'] = 'javascript'
+                auth_doc['validate_doc_update'] = """
+                function(newDoc, oldDoc, userCtx) {
+                if (userCtx.roles.indexOf('_admin') !== -1) {
+                return;
+                } else {
+                throw({forbidden: 'Only admins may edit the database'});
+                }
+                }
+                """
+                db.save(auth_doc)
             except:
                 pass
 

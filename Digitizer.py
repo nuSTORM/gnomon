@@ -23,6 +23,9 @@ class VlenfSimpleDigitizer():
         
         self.digits = []
 
+        self.threshold = None
+        self.setThreshold()
+
 
     def ProcessEvent(self, run):
         hits_dict = {}
@@ -49,6 +52,15 @@ emit(doc.type, doc);
 
         self.Commit()
 
+    def setThreshold(self, threshold = 2):
+        """Threshold for registering a hit
+
+        Units are ADC counts"""
+        self.threshold = threshold
+
+    def getThreshold(self):
+        return self.threshold
+
     def ProcessHits(self, key, hits):
         """ process hits within a single bar"""
         counts_adc = 0
@@ -60,16 +72,19 @@ emit(doc.type, doc);
             assert hit['bar'] == index_bar
             counts_adc += hit['dedx'] * self.energy_scale
 
-        digit = {}
-        digit['type'] = 'digit'
-        digit['layer'] = index_layer
-        digit['bar'] = index_bar
-        digit['number_run'] = hit['number_run']
-        digit['number_event'] = hit['number_event']
-        digit['view'] = hit['view']
-        digit['counts_adc'] = counts_adc
 
-        self.digits.append(digit)
+        if counts_adc > self.getThreshold():
+            digit = {}
+            digit['type'] = 'digit'
+            digit['layer'] = index_layer
+            digit['bar'] = index_bar
+            digit['number_run'] = hit['number_run']
+            digit['number_event'] = hit['number_event']
+            digit['view'] = hit['view']
+            digit['counts_adc'] = counts_adc
+            digit['position'] = hit['position_bar']  # this should be derived
+            
+            self.digits.append(digit)
 
     def Commit(self):
         self.log.info('Bulk commit of digits in progress')
