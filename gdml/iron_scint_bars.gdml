@@ -6,7 +6,7 @@
     <!-- bar info.  units are 'mm' -->
     <constant name="length" value="5000"/>
     <constant name="width" value="10"/>
-    <constant name="thickness_bar" value="5"/>  <!-- z -->
+    <constant name="thickness_bar" value="10"/>  <!-- z -->
     <constant name="thickness_steel" value="10"/>  <!-- z -->
 
     <constant name="thickness_layer" value="2*thickness_bar + thickness_steel"/>  <!-- z -->
@@ -56,18 +56,18 @@
        scintillator bars.  There's also the artificial shape of the world volume
        but that's just for Geant4's sake -->
   <solids>
-    <box lunit="mm" name="SteelPlateSolid" x="5000" y="5000" z="thickness_steel"/>
+    <box lunit="mm" name="SteelPlateSolid" x="length" y="length" z="thickness_steel"/>
     
     <!-- x means x-view, etc. -->
     <box lunit="mm" name="ScintillatorXBarSolid" x="width" y="length" z="thickness_bar"/>
     <box lunit="mm" name="ScintillatorYBarSolid" x="length" y="width" z="thickness_bar"/>
 
-    <box lunit="mm" name="ScintillatorPlaneXSolid" x="5000" y="5000" z="thickness_bar"/>
-    <box lunit="mm" name="ScintillatorPlaneYSolid" x="5000" y="5000" z="thickness_bar"/>
+    <box lunit="mm" name="ScintillatorPlaneXSolid" x="length" y="length" z="thickness_bar"/>
+    <box lunit="mm" name="ScintillatorPlaneYSolid" x="length" y="length" z="thickness_bar"/>
 
-    <box lunit="mm" name="LayerSolid" x="5000" y="5000" z="thickness_layer"/>
-    <box lunit="mm" name="CalorimeterSolid" x="5000" y="5000" z="8880"/> 
-    <box lunit="m" name="WorldSolid" x="6" y="6" z="10"/> <!-- note units-->
+    <box lunit="mm" name="LayerSolid" x="length" y="length" z="thickness_layer"/>
+    <box lunit="mm" name="CalorimeterSolid" x="length" y="length" z="thickness_layer * layers"/> 
+    <box lunit="m" name="WorldSolid" x="6" y="6" z="15"/> <!-- note units-->
   </solids>
 
   <structure>
@@ -136,7 +136,6 @@
       <materialref ref="Galactic"/>
       <solidref ref="CalorimeterSolid"/>
 
-      <!--444 repeats, (8.8 m), is 1 kt actual mass-->
       <replicavol number="444">
         <volumeref ref="LayerOfPlanes"/> 
         <replicate_along_axis>

@@ -1,4 +1,7 @@
 #!/usr/bin/env python 
+
+"""Create a ROOT file sorted by [document.number_run, document.number_event]"""
+
 import argparse
 import ROOT
 
@@ -40,32 +43,35 @@ if __name__ == "__main__":
     db = config.getCurrentDB()
 
     if args.all:
-        print 'using all runs'
+        log.info('Runs: All runs')
         addition = ''
     else:
-        print 'using runs', args.runs
+        log.info('Runs:', str(args.run))
         addition = 'if('
         run_conditions = ['doc.run == %d' % run for run in args.runs]
-        print run_conditions
-        print " || ".join(run_conditions)
         addition += " || ".join(run_conditions)
         addition += ')'
 
+    # Note the key below: "[document.number_run, document.number_event]" which
+    # is important because CouchDB will sort by this.  It's part of our ROOT
+    # file specification that it be sorted like this.
     map_fun = """
 function(doc) {
   if (doc.type == '%s') {
     %s
-    emit(doc.type, doc);
+    emit([doc.number_run, doc.number_event], 1);
 }
 }
 """ % (args.type, addition)
 
-    print 'debug', map_fun
+    log.debug('Map function: %s', map_fun)
 
     file = None
     if args.filename:
         if '.root' not in args.filename:
-            print 'error: no .root in filename!'
+            error_string = 'No .root in filename!'
+            log.error(error_string)
+            raise ValueError(error_string)
         file = ROOT.TFile(args.filename, 'RECREATE')
     else:
         file = ROOT.TFile('root/gnomon_%s_%s.root' % (args.name, args.type),
@@ -75,8 +81,8 @@ function(doc) {
     my_struct = None
     elements_3vector = ['x', 'y', 'z']
 
-    for row in db.query(map_fun):
-        doc = dict(row.value)
+    for row in db.query(map_fun, include_docs=True):
+        doc = row.doc
 
         log.info('Ntupling another %s', row.key)
         log.debug('Ntupling %s', str(doc))
