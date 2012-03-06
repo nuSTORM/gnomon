@@ -63,7 +63,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     Logging.setupLogging(args.log_level, args.name, logfileless=args.logfileless)
-    log = logging.getLogger('root').getChild('simulate')
+    log = logging.getLogger('root').getChild(sys.argv[0].split('.')[0])
     log.debug('Commandline args: %s', str(args))
 
     random.seed()

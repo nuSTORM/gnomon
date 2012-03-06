@@ -60,9 +60,11 @@ class ScintSD(G4.G4VSensitiveDetector):
         if view == 'X':
             trans = position.x
             doc['x'] = guess_trans
+            doc['y'] = 0
         elif view == 'Y':
             trans = position.y
             doc['y'] = guess_trans
+            doc['x'] = 0
 
         # 0.1 mm tolerance
         diff = math.fabs(trans-guess_trans)
