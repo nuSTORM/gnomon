@@ -6,7 +6,6 @@ import logging
 import Geant4 as G4
 import Configuration
 
-from processors.Digitize import VlenfSimpleDigitizer
 from processors.Utils import Compactor
 
 class VlenfEventAction(G4.G4UserEventAction):

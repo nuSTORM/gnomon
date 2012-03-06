@@ -9,7 +9,7 @@ import random
 # gnomon
 import Configuration
 import Logging
-import Digitize
+import Digitizer
 
 log = None  #  Logger for this file
 
@@ -80,7 +80,7 @@ function(keys, values, rereduce) {
 return sum(values);
 }"""
 
-    digitizer = Digitize.VlenfSimpleDigitizer()
+    digitizer = Digitizer.VlenfSimpleDigitizer()
 
     for row in db.query(map_fun, red_fun, group=True):
         run = row.key

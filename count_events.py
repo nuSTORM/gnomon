@@ -9,7 +9,6 @@ import random
 # gnomon
 import Configuration
 import Logging
-import Digitize
 
 log = None  #  Logger for this file
 
