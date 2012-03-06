@@ -30,7 +30,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     Logging.setupLogging(args.log_level, args.name, logfileless=args.logfileless)
-    log = logging.getLogger('root').getChild(sys.argv[0].split('.')[0])
+    log = logging.getLogger('root').getChild('simulate')
     log.debug('Commandline args: %s', str(args))
 
     random.seed()
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         for run in args.runs:
             log.info('\t%d', run)
         addition = 'if('
-        run_conditions = ['doc.run == %d' % run for run in args.runs]
+        run_conditions = ['doc.number_run == %d' % run for run in args.runs]
         addition += " || ".join(run_conditions)
         addition += ')'
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 function(doc) {
 if (doc.type == 'mchit') {
 %s
-emit(1, 1);
+emit([doc.number_run, doc.number_event], 1);
 }
 }
 """ % (addition)
@@ -67,27 +67,4 @@ function(keys, values, rereduce) {
 return sum(values);
 }
 """
-    for row in db.query(map_fun, red_fun):
-        log.warning('This process will digitize %d mchits', row.value)
-
-    map_fun = """
-function(doc) {
-emit(doc.number_run, 1);
-}"""
-
-    red_fun = """
-function(keys, values, rereduce) {
-return sum(values);
-}"""
-
-    digitizer = Digitize.VlenfSimpleDigitizer()
-
-    for row in db.query(map_fun, red_fun, group=True):
-        run = row.key
-        log.info('Digitizing run %d', run)
-        log.debug('There are %d mchits in run %d', row.value, run)
-
-        digitizer.ProcessEvent(run)
-
-        
-
+    log.critical('Number of events: %d', len(db.query(map_fun, red_fun, group=True)))
