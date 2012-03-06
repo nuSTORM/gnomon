@@ -31,6 +31,6 @@ time python digitize.py --name %(db_name)s -a
             file.write(script)
             file.close()
 
-            #time.sleep(60)
+            #time.sleep(1)
             job_name = '%s_%s' % (db_name, run)
             os.system('qsub -N %s %s' % (job_name, filename))

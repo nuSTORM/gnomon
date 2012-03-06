@@ -9,7 +9,6 @@ import random
 # gnomon
 import Configuration
 import Logging
-import Digitize
 
 log = None  #  Logger for this file
 
@@ -55,7 +54,7 @@ if __name__ == "__main__":
 
     map_fun = """
 function(doc) {
-if (doc.type == 'mchit') {
+if (doc.type == 'digit') {
 %s
 emit([doc.number_run, doc.number_event], 1);
 }
@@ -67,4 +66,5 @@ function(keys, values, rereduce) {
 return sum(values);
 }
 """
-    log.critical('Number of events: %d', len(db.query(map_fun, red_fun, group=True)))
+    my_query = len(db.query(map_fun, red_fun, group=True))
+    log.critical('Number of events: %d', len(my_query))
