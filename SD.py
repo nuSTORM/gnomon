@@ -80,7 +80,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         diff = math.fabs(guess_z - position.z)
         threshold = self.thickness_bar/2 + 0.1 * G4.mm 
         self.log.debug('\tIs %f <= %f ?', diff, threshold)
-        assert diff <= threshold
+        #assert diff <= threshold
 
         guess_trans = bar_number
         guess_trans = self.width * (guess_trans - self.bars/2) + self.width/2
@@ -102,7 +102,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         diff = math.fabs(trans-guess_trans)
         threshold = self.width/2 + 1 * G4.mm
         self.log.debug('\tIs %f <= %f ?', diff, threshold)  
-        assert diff <= threshold
+        #assert diff <= threshold
 
         return doc
 
