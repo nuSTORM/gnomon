@@ -30,7 +30,7 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         self.event = 0
         
-        self.use_bulk_commits = True
+        self.use_bulk_commits = False
         self.mc_hits = []
 
     def setEventNumber(self, number):
