@@ -121,32 +121,32 @@ function(doc) {
             from ROOT import MyStruct
             my_struct = MyStruct()
 
-        for key in keys:
-            my_value = doc[key]
-            my_type = type(my_value)
+            for key in keys:
+                my_value = doc[key]
+                my_type = type(my_value)
 
-            code = None
-            if my_type == unicode:
-                code = 'C'
-            elif my_type == int:
-                code = 'I'
-            elif my_type == float:
-                code = 'F'
-            elif my_type == dict:
-                # Special case, need three branches
-                code = 'F'
-                for element in elements_3vector:
-                    new_key = '%s_%s' % (key, element)
-                    t.Branch(new_key, ROOT.AddressOf(my_struct, new_key),
-                             '%s/%s' % (new_key, code))
-                continue
-            else:
-                raise ValueError
+                code = None
+                if my_type == unicode:
+                    code = 'C'
+                elif my_type == int:
+                    code = 'I'
+                elif my_type == float:
+                    code = 'F'
+                elif my_type == dict:
+                    # Special case, need three branches
+                    code = 'F'
+                    for element in elements_3vector:
+                        new_key = '%s_%s' % (key, element)
+                        t.Branch(new_key, ROOT.AddressOf(my_struct, new_key),
+                                 '%s/%s' % (new_key, code))
+                    continue
+                else:
+                    raise ValueError
 
-            t.Branch(key, ROOT.AddressOf(my_struct, key),
-                     '%s/%s' % (key, code))
+                t.Branch(key, ROOT.AddressOf(my_struct, key),
+                         '%s/%s' % (key, code))
         
-
+                
         for key in keys:
             my_value = doc[key]
 
