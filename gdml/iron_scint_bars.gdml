@@ -118,17 +118,17 @@
       <solidref ref="LayerSolid"/>
       <physvol name="SteelPlanePhysical">
         <volumeref ref="SteelPlane"/>
-        <position name="SteelPlane_pos" unit="mm" x="0" y="0" z="-1*thickness_steel/2"/>
+        <position name="SteelPlane_pos" unit="mm" x="0" y="0" z="0"/>
       </physvol>
 
       <physvol name="ScintillatorPlaneXPhysical">
         <volumeref ref="ScintillatorPlaneX"/>
-        <position name="ScintillatorPlaneX_pos" unit="mm" x="0" y="0" z="thickness_bar/2"/>
+        <position name="ScintillatorPlaneX_pos" unit="mm" x="0" y="0" z="thickness_steel"/>
       </physvol>
 
       <physvol name="ScintillatorPlaneYPhysical">
         <volumeref ref="ScintillatorPlaneY"/>
-        <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="3*thickness_bar/2"/>
+        <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="thickness_steel + thickness_bar"/>
       </physvol>
     </volume>
 

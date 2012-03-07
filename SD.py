@@ -1,4 +1,6 @@
 import math
+import logging
+
 import Geant4 as G4
 import Configuration
 
@@ -8,12 +10,21 @@ class ScintSD(G4.G4VSensitiveDetector):
     def __init__(self, layers, bars, width, thickness_layer, thickness_bar):
         G4.G4VSensitiveDetector.__init__(self, "Scintillator")
 
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+
         # todo: just pass gdml object
         self.layers = layers
         self.bars = bars
         self.width = width
         self.thickness_layer = thickness_layer
         self.thickness_bar = thickness_bar
+
+        self.log.debug('layers: %f', layers)
+        self.log.debug('bars: %f', bars)
+        self.log.debug('width: %f', width)
+        self.log.debug('thickness_layer: %f', thickness_layer)
+        self.log.debug('thickness_bar: %f', thickness_bar)
 
         self.config = Configuration.DEFAULT()
 
@@ -35,30 +46,39 @@ class ScintSD(G4.G4VSensitiveDetector):
         return self.layers
 
     def getView(self, lv):
+        """Determine the detector view starting with a G4LogicalVolume"""
         view = None
         if str(lv.GetName())[-1] == 'X':
             view = 'X'
         elif str(lv.GetName())[-1] == 'Y':
             view = 'Y'
-
+        
+        self.log.error('Cannot determine view for %s', lv.GetName())
         return view
 
     def getMCHitBarPosition(self, layer_number, bar_number, view, position):
         doc = {}
 
-        guess_z = self.thickness_layer * (layer_number - self.layers/2)
+        guess_z = self.thickness_layer * (layer_number - self.layers/2 + 1)
 
+        #  TODO This requires more investigation.  See issue #4
         if view == 'X':
-            guess_z += self.thickness_bar/2
+            guess_z -= self.thickness_bar/2
         else:
-            guess_z += 3 * self.thickness_bar/2
-        guess_z += (self.thickness_layer - 2 * self.thickness_bar)
+            guess_z += self.thickness_bar/2
 
         doc['z'] = guess_z
 
         # 0.1 mm tolerance
+        self.log.debug('Finding bar longitudinal position')
+        self.log.debug('\tView: %s', view)
+        self.log.debug('\tLayer number: %f', layer_number)
+        self.log.debug('\tGuess in z: %f', guess_z)
+        self.log.debug('\tPosition in z: %f', position.z)
         diff = math.fabs(guess_z - position.z)
-        assert diff <= self.thickness_bar/2 + 0.1 * G4.mm
+        threshold = self.thickness_bar/2 + 0.1 * G4.mm 
+        self.log.debug('\tIs %f <= %f ?', diff, threshold)
+        assert diff <= threshold
 
         guess_trans = bar_number
         guess_trans = self.width * (guess_trans - self.bars/2) + self.width/2
@@ -72,8 +92,15 @@ class ScintSD(G4.G4VSensitiveDetector):
             doc['x'] = 0
 
         # 0.1 mm tolerance
+        self.log.debug('Finding bar transverse position')
+        self.log.debug('\tView: %s', view)
+        self.log.debug('\tLayer number: %f', bar_number)
+        self.log.debug('\tGuess in z: %f', guess_trans)
+        self.log.debug('\tPosition in z: %f', trans)
         diff = math.fabs(trans-guess_trans)
-        assert diff <= self.width/2 + 1 * G4.mm
+        threshold = self.width/2 + 1 * G4.mm
+        self.log.debug('\tIs %f <= %f ?', diff, threshold)  
+        assert diff <= threshold
 
         return doc
 
@@ -118,8 +145,12 @@ class ScintSD(G4.G4VSensitiveDetector):
             self.config.getCurrentDB().save(doc)
 
     def getUseBulkCommits(self):
+        """Should SD perform bulk commits to CouchDB"""
         return self.use_bulk_commits
             
     def bulkCommit(self):
+        """Perform bulk commit of mchits
+
+        Commit to couchdb all mchits for the event and then clear cache"""
         self.config.getCurrentDB().update(self.mc_hits)
         self.mc_hits = []
