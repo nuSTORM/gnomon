@@ -30,8 +30,8 @@ class ToroidField(G4.G4MagneticField):
 
         if r != 0.0:
             B = self.sign * self.PhenomModel(r)
-            bfield.x = (pos.y / r) * B
-            bfield.y = (pos.x / r) * B
+            bfield.x =      (pos.y / r) * B
+            bfield.y = -1 * (pos.x / r) * B
         else:
             bfield.x = 0
             bfield.y = 0
