@@ -49,7 +49,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
 
         lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
         assert lv.GetName() == "SteelPlane"
-        fieldMgr = lv.GetFieldManager()
+        fieldMgr = G4.G4FieldManager()
         myField = MagneticField.WandsToroidField()
         fieldMgr.SetDetectorField(myField)
         fieldMgr.CreateChordFinder(myField)
