@@ -48,6 +48,7 @@ class ScintSD(G4.G4VSensitiveDetector):
     def getView(self, lv):
         """Determine the detector view starting with a G4LogicalVolume"""
         view = None
+        print 'yo', lv.GetName()
         if str(lv.GetName())[-1] == 'X':
             return 'X'
         elif str(lv.GetName())[-1] == 'Y':

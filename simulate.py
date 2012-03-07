@@ -168,9 +168,9 @@ if __name__ == "__main__":
         elif args.view == 'ZX':
             gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
 
-    #import GUI
-    #app = GUI.VlenfApp()
-    #app.mainloop()
+    import GUI
+    app = GUI.VlenfApp()
+    app.mainloop()
 
     if args.pause:
         for i in range(args.events):
