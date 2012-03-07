@@ -21,7 +21,6 @@ import g4py.ExN03pl
 # gnomon
 import Configuration
 import EventAction
-import ToroidField
 import GeneratorAction
 from DetectorConstruction import VlenfDetectorConstruction
 import Logging
@@ -129,14 +128,6 @@ if __name__ == "__main__":
             pga.setPID(args.pid)
 
     gRunManager.SetUserAction(pga)
-
-    fieldMgr = gTransportationManager.GetFieldManager()
-
-    myField = ToroidField.ToroidField()
-    fieldMgr.SetDetectorField(myField)
-    fieldMgr.CreateChordFinder(myField)
-
-# get the field right!
 
     gRunManager.Initialize()
 

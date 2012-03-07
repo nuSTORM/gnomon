@@ -1,6 +1,7 @@
 import Geant4 as G4
 from SD import ScintSD
 
+import MagneticField
 
 class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
     "Vlenf Detector Construction"
@@ -45,6 +46,13 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(2)
         assert lv.GetName() == "ScintillatorBarY"
         lv.SetSensitiveDetector(self.sensitive_detector)
+
+        lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
+        assert lv.GetName() == "SteelPlane"
+        fieldMgr = lv.GetFieldManager()
+        myField = MagneticField.WandsToroidField()
+        fieldMgr.SetDetectorField(myField)
+        fieldMgr.CreateChordFinder(myField)
 
         # Return pointer to world volume
         return self.world
