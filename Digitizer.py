@@ -16,7 +16,7 @@ class VlenfSimpleDigitizer():
 
         self.config = Configuration.DEFAULT()
 
-        self.energy_scale = 20.0 # pe / MeV
+        self.energy_scale = 80.0 # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
 
         self.db = self.config.getCurrentDB()

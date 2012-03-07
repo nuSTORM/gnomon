@@ -6,6 +6,7 @@ import Geant4 as G4
 import ROOT
 
 import logging
+import random
 
 class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     """Base class for VLENF generator actions"""
@@ -28,11 +29,25 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
             if not isinstance(element, (float, int)):
                 raise ValueError('3-vector element is not number')
 
+    def SetPosition(self, v):
+        if self.vertex == 'uniform':
+            x = random.uniform(-2500, 5000)
+            y = random.uniform(-2500, 5000)
+            z = random.uniform(-30*222, 30*222)
+            v.SetPosition(x,y,z)
+        else:
+            v.SetPosition(self.vertex[0] * G4.mm,
+                          self.vertex[1] * G4.mm,
+                          self.vertex[2] * G4.mm)
+
     def setVertex(self, vertex):
-        self.check3Vector(vertex)
+        if 'uniform':
+            self.vertex = 'uniform'
+        else:
+            self.check3Vector(vertex)
             
-        self.log.info('Vertex set to (mm): %s', str(vertex))
-        self.vertex = vertex
+            self.log.info('Vertex set to (mm): %s', str(vertex))
+            self.vertex = vertex
         
 
 class SingleParticleGeneratorAction(VlenfGeneratorAction):
@@ -63,9 +78,7 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
                        self.momentum[2]) # MeV/c
 
         v = G4.G4PrimaryVertex()
-        v.SetPosition(self.vertex[0] * G4.mm,
-                      self.vertex[1] * G4.mm,
-                      self.vertex[2] * G4.mm)
+        self.SetPosition(v)
         v.SetPrimary(pp)
 
         event.AddPrimaryVertex(v)
@@ -141,9 +154,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
 
             v = G4.G4PrimaryVertex()
-            v.SetPosition(self.vertex[0] * G4.mm,
-                          self.vertex[1] * G4.mm,
-                          self.vertex[2] * G4.mm)
+            self.SetPosition(v)
             v.SetPrimary(pp)
 
             event.AddPrimaryVertex(v)

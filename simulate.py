@@ -111,7 +111,8 @@ if __name__ == "__main__":
     if args.vertex:
         pga.setVertex(args.vertex)
     elif args.uniform:
-        raise NotImplementedError('Uniform distribution not implemented')
+        pga.setVertex('uniform')
+        #raise NotImplementedError('Uniform distribution not implemented')
 
     if args.momentum:
         if args.genie:
@@ -164,6 +165,10 @@ if __name__ == "__main__":
             gApplyUICommand("/vis/viewer/set/viewpointVector -1 0 0")
         elif args.view == 'ZX':
             gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
+
+    #import GUI
+    #app = GUI.VlenfApp()
+    #app.mainloop()
 
     if args.pause:
         for i in range(args.events):

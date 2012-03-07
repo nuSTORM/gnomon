@@ -2,9 +2,10 @@ import sys
 from time import sleep
 from Geant4 import gRunManager, gApplyUICommand
 
+from Tkinter import Frame, Label, IntVar, Scale, Button, W, Checkbutton
+from Tkinter import DoubleVar, HORIZONTAL, StringVar, Entry, E
+
 class VlenfApp(Frame):
-    from Tkinter import Frame, Label, IntVar, Scale, Button, W, Checkbutton
-    from Tkinter import DoubleVar, HORIZONTAL, StringVar, Entry, E
     
     g4pipe = 0
 
