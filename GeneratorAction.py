@@ -34,6 +34,7 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
             x = random.uniform(-2500, 5000)
             y = random.uniform(-2500, 5000)
             z = random.uniform(-30*222, 30*222)
+            self.log.info('Using vertex %f %f %f', x, y, z)
             v.SetPosition(x,y,z)
         else:
             v.SetPosition(self.vertex[0] * G4.mm,
@@ -42,6 +43,7 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
     def setVertex(self, vertex):
         if 'uniform':
+            self.log.info('Using uniform vertex')
             self.vertex = 'uniform'
         else:
             self.check3Vector(vertex)

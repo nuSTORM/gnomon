@@ -54,6 +54,7 @@ class ScintSD(G4.G4VSensitiveDetector):
             return 'Y'
         
         self.log.error('Cannot determine view for %s', lv.GetName())
+        raise 'Cannot determine view for %s' % lv.GetName()
         return view
 
     def getMCHitBarPosition(self, layer_number, bar_number, view, position):
