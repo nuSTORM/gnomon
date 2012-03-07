@@ -22,7 +22,7 @@ class TestLogging(TestCase):
             l.setLevel(level_name)
 
     def test_setupLogging(self):
-        Logging.setupLogging('WARNING')
+        Logging.setupLogging('WARNING', 'testname')
         
         self.assertNotEqual(sys.stdout, sys.__stdout__)
         self.assertNotEqual(sys.stderr, sys.__stderr__)

@@ -42,7 +42,7 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
                           self.vertex[2] * G4.mm)
 
     def setVertex(self, vertex):
-        if 'uniform':
+        if vertex == 'uniform':
             self.log.info('Using uniform vertex')
             self.vertex = 'uniform'
         else:

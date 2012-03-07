@@ -1,8 +1,8 @@
 from unittest import TestCase
 import GeneratorAction as GA
 
-bad_verticies = ["UNIFORM",
-                 [0,1],
+bad_verticies = [[0,1],
+                 'some_other_string',
                  [0,'hi']]
 good_verticies = [[1,2,3],
                   [0.1,0.2,0.3],
@@ -31,12 +31,16 @@ class TestVlenfGeneratorAction(TestCase):
 
         for good_vertex in good_verticies:
             self.ga.setVertex(good_vertex)
+        self.ga.setVertex('uniform')
 
     def test_setVertex(self):
         for good_vertex in good_verticies:
             self.ga.setVertex(good_vertex)
             self.assertEqual(good_vertex, self.ga.vertex)
         
+        self.ga.setVertex('uniform')
+        self.assertEqual('uniform', self.ga.vertex)
+
 class TestSingleParticleGeneratorAction(TestCase):
     def setUp(self):
         self.ga = GA.SingleParticleGeneratorAction()
