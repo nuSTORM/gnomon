@@ -3,6 +3,7 @@ import logging
 
 import Geant4 as G4
 import Configuration
+Configuration.DEFAULT = Configuration.MockConfiguration
 
 class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint bar"
@@ -34,7 +35,10 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.mc_hits = []
 
     def setEventNumber(self, number):
-        self.event = number
+        if isinstance(number, int):
+            self.event = number
+        else:
+            raise TypeError('Not an int event number')
 
     def getNumberOfBars(self):
         """Return the number of bars per view"""
@@ -59,15 +63,22 @@ class ScintSD(G4.G4VSensitiveDetector):
         return view
 
     def getMCHitBarPosition(self, layer_number, bar_number, view, position):
+        print 'blarg %d %d %s %f %f %f' %( layer_number, bar_number, view, position.x, position.y, position.z)
+
         doc = {}
 
-        guess_z = self.thickness_layer * (layer_number - self.layers/2 + 1)
+        guess_z = self.thickness_layer * layer_number
 
         #  TODO This requires more investigation.  See issue #4
+        #  Ordering in increasing beam-axis, ie z-axis: steel, X, Y
         if view == 'X':
-            guess_z -= self.thickness_bar/2
+            guess_z += self.thickness_layer - 2 * self.thickness_bar
         else:
-            guess_z += self.thickness_bar/2
+            guess_z += self.thickness_layer - 1 * self.thickness_bar
+
+        guess_z += self.thickness_bar / 2 # Go to middle of bar
+
+        guess_z -= self.thickness_layer * self.layers/2 # Set 0 to middle
 
         doc['z'] = guess_z
 
@@ -80,7 +91,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         diff = math.fabs(guess_z - position.z)
         threshold = self.thickness_bar/2 + 0.1 * G4.mm 
         self.log.debug('\tIs %f <= %f ?', diff, threshold)
-        #assert diff <= threshold
+        assert diff <= threshold
 
         guess_trans = bar_number
         guess_trans = self.width * (guess_trans - self.bars/2) + self.width/2
@@ -102,7 +113,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         diff = math.fabs(trans-guess_trans)
         threshold = self.width/2 + 1 * G4.mm
         self.log.debug('\tIs %f <= %f ?', diff, threshold)  
-        #assert diff <= threshold
+        assert diff <= threshold
 
         return doc
 

@@ -77,4 +77,25 @@ function(doc) {
     def getRunNumber(self):
         return run
 
+class MockDB():
+    def update(self):
+        pass
+
+    def save(self):
+        pass
+
+class MockConfiguration():
+    def __init__(self):
+        self.db = MockDB()
+
+    def getCouchDB(self):
+        raise NotImplementedError
+
+    def getCurrentDB(self):
+        return self.db
+
+    def getRunNumber(self):
+        return 0
+    
+
 DEFAULT = CouchConfiguration

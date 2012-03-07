@@ -42,6 +42,7 @@ class VlenfEventAction(G4.G4UserEventAction):
 
         #  Trick to tell the sensitive detector to perform a bulk commit.
         if self.sd and self.sd.getUseBulkCommits():
+            self.log.debug('Calling bulk commit from EA')
             self.sd.bulkCommit()
 
         #run_number = self.config.getRunNumber()

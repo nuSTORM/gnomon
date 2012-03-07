@@ -1,7 +1,6 @@
 Frequently Asked Questions
 =====================================
 
-
 On a Mac, I get "Fatal Python Error: PyThreadState"?!
 -----------------------------------------------------------------
 
@@ -56,3 +55,8 @@ However, this may not be straightforward for one reason or another.  One should 
   virtualenv -p `which python` $HOME/env/gnomon
   cd $HOME/env/gnomon
   export EXTRAS="--with-python-incdir=/home/tunnell/gnomon/local/include/python2.7 --with-python-libdir=/home/tunnell/gnomon/local/lib"
+
+Why is the test coverage of Geant4 interfaces poor?
+---------------------------------------------------
+
+Hard to instantiate.  Geant4 isn't modular enough.
