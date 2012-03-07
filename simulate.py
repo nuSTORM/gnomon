@@ -108,10 +108,8 @@ if __name__ == "__main__":
         pga = GeneratorAction.GenieGeneratorAction()
         
     if args.vertex:
-        print 'yo vertex'
         pga.setVertex(args.vertex)
     elif args.uniform:
-        print 'yo uniform'
         pga.setVertex('uniform')
         #raise NotImplementedError('Uniform distribution not implemented')
 
