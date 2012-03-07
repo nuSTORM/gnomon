@@ -78,10 +78,10 @@ function(doc) {
         return run
 
 class MockDB():
-    def update(self):
+    def update(self, doc):
         pass
 
-    def save(self):
+    def save(self, doc):
         pass
 
 class MockConfiguration():

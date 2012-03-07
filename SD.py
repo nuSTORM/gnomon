@@ -3,7 +3,6 @@ import logging
 
 import Geant4 as G4
 import Configuration
-Configuration.DEFAULT = Configuration.MockConfiguration
 
 class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint bar"
@@ -31,7 +30,7 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         self.event = 0
         
-        self.use_bulk_commits = False
+        self.use_bulk_commits = True
         self.mc_hits = []
 
     def setEventNumber(self, number):
@@ -52,7 +51,6 @@ class ScintSD(G4.G4VSensitiveDetector):
     def getView(self, lv):
         """Determine the detector view starting with a G4LogicalVolume"""
         view = None
-        print 'yo', lv.GetName()
         if str(lv.GetName())[-1] == 'X':
             return 'X'
         elif str(lv.GetName())[-1] == 'Y':
@@ -63,8 +61,6 @@ class ScintSD(G4.G4VSensitiveDetector):
         return view
 
     def getMCHitBarPosition(self, layer_number, bar_number, view, position):
-        print 'blarg %d %d %s %f %f %f' %( layer_number, bar_number, view, position.x, position.y, position.z)
-
         doc = {}
 
         guess_z = self.thickness_layer * layer_number
@@ -84,13 +80,10 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         # 0.1 mm tolerance
         self.log.debug('Finding bar longitudinal position')
-        self.log.debug('\tView: %s', view)
-        self.log.debug('\tLayer number: %f', layer_number)
         self.log.debug('\tGuess in z: %f', guess_z)
         self.log.debug('\tPosition in z: %f', position.z)
         diff = math.fabs(guess_z - position.z)
         threshold = self.thickness_bar/2 + 0.1 * G4.mm 
-        self.log.debug('\tIs %f <= %f ?', diff, threshold)
         assert diff <= threshold
 
         guess_trans = bar_number
@@ -106,13 +99,10 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         # 0.1 mm tolerance
         self.log.debug('Finding bar transverse position')
-        self.log.debug('\tView: %s', view)
-        self.log.debug('\tLayer number: %f', bar_number)
         self.log.debug('\tGuess in z: %f', guess_trans)
         self.log.debug('\tPosition in z: %f', trans)
         diff = math.fabs(trans-guess_trans)
         threshold = self.width/2 + 1 * G4.mm
-        self.log.debug('\tIs %f <= %f ?', diff, threshold)  
         assert diff <= threshold
 
         return doc
@@ -151,6 +141,8 @@ class ScintSD(G4.G4VSensitiveDetector):
                                                         doc['bar'],
                                                         doc['view'],
                                                         position)
+
+        self.log.info("View %s" % view)
 
         if self.use_bulk_commits:
             self.mc_hits.append(doc)
