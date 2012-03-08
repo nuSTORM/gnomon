@@ -67,14 +67,17 @@ function(doc) {
     log.debug('Map function: %s', map_fun)
 
     file = None
+    filename = None
     if args.filename:
         if '.root' not in args.filename:
             error_string = 'No .root in filename!'
             log.error(error_string)
             raise ValueError(error_string)
+        filename = args.filename
         file = ROOT.TFile(args.filename, 'RECREATE')
     else:
-        file = ROOT.TFile('root/gnomon_%s_%s.root' % (args.name, args.type),
+        filename = 'root/gnomon_%s_%s.root' % (args.name, args.type)
+        file = ROOT.TFile(filename,
                           'RECREATE')
     t = ROOT.TTree('t', '')
 
@@ -161,3 +164,19 @@ function(doc) {
 
     t.Write()
     file.Close()
+    
+    
+    try:
+        db = config.getCouchDB()['root']
+    except:
+        db = config.getCouchDB().create('root')
+
+    if args.name in db:
+        doc = db.get(args.name)
+        db.delete(doc)
+        
+    doc = {'_id': args.name}
+    db.save(doc)
+    db.put_attachment(doc, open(filename))
+    db.compact()
+    
