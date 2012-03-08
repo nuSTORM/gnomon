@@ -72,7 +72,7 @@ return sum(values);
 
     map_fun = """
 function(doc) {
-emit(doc.number_run, 1);
+emit([doc.number_run, doc.number_event], 1);
 }"""
 
     red_fun = """
@@ -83,11 +83,11 @@ return sum(values);
     digitizer = Digitizer.VlenfSimpleDigitizer()
 
     for row in db.query(map_fun, red_fun, group=True):
-        run = row.key
-        log.info('Digitizing run %d', run)
-        log.debug('There are %d mchits in run %d', row.value, run)
+        run, event = row.key
+        log.info('Digitizing run %d, event %d', run, event)
+        log.debug('There are %d mchits in run %d, event %d', row.value, run, event)
 
-        digitizer.ProcessEvent(run)
+        digitizer.ProcessEvent(run, event)
 
 
         

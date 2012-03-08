@@ -27,25 +27,24 @@ class VlenfSimpleDigitizer():
         self.setThreshold()
 
 
-    def ProcessEvent(self, run):
+    def ProcessEvent(self, run, event):
         hits_dict = {}
 
         map_fun = """
 function(doc) {
-if (doc.number_run == %d && doc.type == 'mchit')
-emit(doc.type, doc);
- }""" % (run)
+if (doc.number_run == %d && doc.number_run == %d && doc.type == 'mchit')
+emit([doc.layer, doc.bar, doc.view], doc.dedx);
+ }""" % (run, event)
 
-        for row in self.db.query(map_fun):
-            doc = row.value
+        """TODO All this logic below could be made a reduce instead"""
 
-            i = doc['layer']
-            j = doc['bar']
+        for row in self.db.query(map_fun, include_docs=True):
+            doc = row.doc
 
-            if (i,j) not in hits_dict:
-                hits_dict[(i,j)] = []
+            if row.key not in hits_dict:
+                hits_dict[row.key] = []
 
-            hits_dict[(i,j)].append(dict(doc))
+            hits_dict[row.key].append(dict(doc))
 
         for key in hits_dict:
             self.ProcessHits(key, hits_dict[key])
@@ -65,13 +64,12 @@ emit(doc.type, doc);
         """ process hits within a single bar"""
         counts_adc = 0
         counts_tdc = 0
-        index_layer = key[0]
-        index_bar   = key[1]
+        index_layer, index_bar, index_view = key
         for hit in hits:
             assert hit['layer'] == index_layer
-            assert hit['bar'] == index_bar
+            assert hit['bar']   == index_bar
+            assert hit['view']  == index_view
             counts_adc += hit['dedx'] * self.energy_scale
-
 
         if counts_adc > self.getThreshold() or True:
             digit = {}
@@ -80,7 +78,7 @@ emit(doc.type, doc);
             digit['bar'] = index_bar
             digit['number_run'] = hit['number_run']
             digit['number_event'] = hit['number_event']
-            digit['view'] = hit['view']
+            digit['view'] = index_view
             digit['counts_adc'] = counts_adc
             digit['position'] = hit['position_bar']  # this should be derived
             
