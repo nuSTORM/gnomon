@@ -76,6 +76,7 @@ function(doc) {
 
     def getRunNumber(self):
         return run
+        
 
 class MockDB():
     def update(self, doc):

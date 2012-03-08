@@ -48,13 +48,13 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         assert lv.GetName() == "ScintillatorBarY"
         lv.SetSensitiveDetector(self.sensitive_detector)
 
-        lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
+        """lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
         assert lv.GetName() == "SteelPlane"
         self.field_manager = G4.G4FieldManager()
         self.myField = MagneticField.WandsToroidField()
         self.field_manager.SetDetectorField(self.myField)
         self.field_manager.CreateChordFinder(self.myField)
-        lv.SetFieldManager(self.field_manager, False)
+        lv.SetFieldManager(self.field_manager, False)"""
 
         # Return pointer to world volume
         return self.world
