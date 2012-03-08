@@ -12,6 +12,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.gdml_parser = G4.G4GDMLParser()
         self.sensitive_detector = None
         self.filename = "gdml/iron_scint_bars.gdml"
+        self.field_manager = None
 
     def __del__(self):
         pass
@@ -49,10 +50,11 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
 
         lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
         assert lv.GetName() == "SteelPlane"
-        fieldMgr = G4.G4FieldManager()
-        myField = MagneticField.WandsToroidField()
-        fieldMgr.SetDetectorField(myField)
-        fieldMgr.CreateChordFinder(myField)
+        self.field_manager = G4.G4FieldManager()
+        self.myField = MagneticField.WandsToroidField()
+        self.field_manager.SetDetectorField(self.myField)
+        self.field_manager.CreateChordFinder(self.myField)
+        lv.SetFieldManager(self.field_manager, False)
 
         # Return pointer to world volume
         return self.world

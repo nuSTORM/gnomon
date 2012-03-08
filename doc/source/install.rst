@@ -213,5 +213,10 @@ Now you are ready to get gnomon.  One can currently work only from the developer
 
   cd $VIRTUAL_ENV/src
   hg clone https://bitbucket.org/gnomon/gnomon
+  cd gnomon
+
+There is no installation for the actual gnomon code since it's written in an interpreted language (i.e. python).  In order to tell Python where to look for gnomon, you must append ``$VIRTUAL_ENV/bin/activate`` with the following::
+
+  export PYTHONPATH=$VIRTUAL_ENV/src/gnomon/gnomon:$PYTHONPATH
 
 Then you are ready to move to the tutorial.

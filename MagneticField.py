@@ -22,8 +22,8 @@ class WandsToroidField(G4.G4MagneticField):
         January 30th, 2012.  Not defined for r <= 0"""
         if r <= 0:
             raise ValueError
-        field = B0 + B1 / r + B2 * math.exp(-1 * H / r)
-        return field * G4.tesla
+        field = B0 + B1*G4.m / r + B2 * math.exp(-1 * H * r / G4.m)
+        return field
 
     def GetFieldValue(self, pos, time):
         # From Bob Wands, 1 cm plate, Jan. 30
@@ -34,12 +34,12 @@ class WandsToroidField(G4.G4MagneticField):
 
         if r != 0.0:
             B = self.sign * self.PhenomModel(r)
-            bfield.x =      (pos.y / r) * B
-            bfield.y = -1 * (pos.x / r) * B
+            bfield.x = -1 * (pos.y / r) * B
+            bfield.y =  1 * (pos.x / r) * B
         else:
             bfield.x = 0
             bfield.y = 0
 
         bfield.z = 0.
 
-        return bfield
+        return bfield * G4.tesla
