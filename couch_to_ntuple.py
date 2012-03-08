@@ -172,14 +172,16 @@ function(doc) {
         db = config.getCouchDB().create('root')
 
     try:
-        db.delete(db[args.name])
+        doc = db[args.name]
+    except:
+        doc = {'_id': args.name}
+        db.save(doc)
+        
+    try:
+        db.delete_attachment(doc, filename)
     except:
         pass
 
-    db.commit()
-        
-    doc = {'_id': args.name}
-    db.save(doc)
     db.put_attachment(doc, open(filename, 'r'))
     db.compact()
     

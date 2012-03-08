@@ -28,6 +28,13 @@ How do I check my Python version
 
 Run the command ``python --version``.
 
+Install Numpy and Scipy on Mac Lion
+-----------------------------------
+
+As of the 8th of March, 2012, you have to branch the git repositories.  Make sure an install of either doesn't already exist since they have to be in sync.
+
+I also had to do ``swig install swig swig-python`` and (ugly-ly) install umfpack with HomeBrew.
+
 How do I change my Python version?
 ----------------------------------
 
