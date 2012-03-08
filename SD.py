@@ -108,9 +108,10 @@ class ScintSD(G4.G4VSensitiveDetector):
         return doc
 
     def ProcessHits(self, step, rohist):
+        self.log.error('%d hit' % self.event)
         preStepPoint = step.GetPreStepPoint()
-        if(preStepPoint.GetCharge() == 0):
-            return
+        #if(preStepPoint.GetCharge() == 0):
+        #    return
 
         theTouchable = preStepPoint.GetTouchable()
         copyNo = theTouchable.GetCopyNumber(0)
