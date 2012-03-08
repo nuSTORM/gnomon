@@ -16,7 +16,7 @@ class VlenfSimpleDigitizer():
 
         self.config = Configuration.DEFAULT()
 
-        self.energy_scale = 80.0 # pe / MeV
+        self.energy_scale = 1.0 # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
 
         self.db = self.config.getCurrentDB()
@@ -73,7 +73,7 @@ emit(doc.type, doc);
             counts_adc += hit['dedx'] * self.energy_scale
 
 
-        if counts_adc > self.getThreshold():
+        if counts_adc > self.getThreshold() or True:
             digit = {}
             digit['type'] = 'digit'
             digit['layer'] = index_layer
@@ -89,5 +89,7 @@ emit(doc.type, doc);
     def Commit(self):
         self.log.info('Bulk commit of digits in progress')
         self.log.debug('Size of digit bulk commit in bytes: %d', sys.getsizeof(self.digits))
-        self.db.update(self.digits)
+        for doc in self.db.update(self.digits):
+            self.log.debug('\tsaved: %s' % repr(doc))
+        
         self.digits = []
