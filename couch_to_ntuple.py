@@ -85,6 +85,8 @@ function(doc) {
     elements_3vector = ['x', 'y', 'z']
 
     for row in db.query(map_fun, include_docs=True):
+        print 'yo'
+        
         doc = row.doc
 
         log.info('Ntupling another %s', row.key)

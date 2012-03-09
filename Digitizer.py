@@ -16,7 +16,7 @@ class VlenfSimpleDigitizer():
 
         self.config = Configuration.DEFAULT()
 
-        self.energy_scale = 1.0 # pe / MeV
+        self.energy_scale = 80.0 # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
 
         self.db = self.config.getCurrentDB()
@@ -27,27 +27,42 @@ class VlenfSimpleDigitizer():
         self.setThreshold()
 
 
-    def ProcessEvent(self, run, event):
+    def Process(self):
         hits_dict = {}
 
         map_fun = """
 function(doc) {
-if (doc.number_run == %d && doc.number_run == %d && doc.type == 'mchit')
-emit([doc.layer, doc.bar, doc.view], doc.dedx);
- }""" % (run, event)
+if (doc.type == 'mchit')
+emit([doc.number_run, doc.number_event, doc.layer, doc.bar, doc.view, doc.position_bar], doc.dedx);
+ }"""
+
+        red_fun = """
+        function(keys, values, rereduce) {
+        return sum(values);
+        }"""
 
         """TODO All this logic below could be made a reduce instead"""
 
-        for row in self.db.query(map_fun, include_docs=True):
-            doc = row.doc
+        for row in self.db.query(map_fun, red_fun, group=True):
+            number_run, number_event, layer, bar, view, position_bar = row.key
 
-            if row.key not in hits_dict:
-                hits_dict[row.key] = []
+            dedx = row.value
+            counts_adc = dedx * self.energy_scale
+            
+            if counts_adc > self.getThreshold():
+                digit = {}
+                digit['type'] = 'digit'
+                digit['number_run'] = number_run
+                digit['number_event'] = number_event
+                digit['layer'] = layer
+                digit['bar'] = bar
+                digit['view'] = view
+                digit['counts_adc'] = counts_adc
+                digit['position'] = position_bar  # this should be derived
+                
+                self.digits.append(digit)
 
-            hits_dict[row.key].append(dict(doc))
-
-        for key in hits_dict:
-            self.ProcessHits(key, hits_dict[key])
+                print digit, row.key
 
         self.Commit()
 
@@ -60,34 +75,11 @@ emit([doc.layer, doc.bar, doc.view], doc.dedx);
     def getThreshold(self):
         return self.threshold
 
-    def ProcessHits(self, key, hits):
-        """ process hits within a single bar"""
-        counts_adc = 0
-        counts_tdc = 0
-        index_layer, index_bar, index_view = key
-        for hit in hits:
-            assert hit['layer'] == index_layer
-            assert hit['bar']   == index_bar
-            assert hit['view']  == index_view
-            counts_adc += hit['dedx'] * self.energy_scale
-
-        if counts_adc > self.getThreshold() or True:
-            digit = {}
-            digit['type'] = 'digit'
-            digit['layer'] = index_layer
-            digit['bar'] = index_bar
-            digit['number_run'] = hit['number_run']
-            digit['number_event'] = hit['number_event']
-            digit['view'] = index_view
-            digit['counts_adc'] = counts_adc
-            digit['position'] = hit['position_bar']  # this should be derived
-            
-            self.digits.append(digit)
-
     def Commit(self):
         self.log.info('Bulk commit of digits in progress')
         self.log.debug('Size of digit bulk commit in bytes: %d', sys.getsizeof(self.digits))
         for doc in self.db.update(self.digits):
+            assert doc[0] == True  # Check that doc saved
             self.log.debug('\tsaved: %s' % repr(doc))
         
         self.digits = []
