@@ -15,6 +15,7 @@ class VlenfSimpleDigitizer():
         self.log = self.log.getChild(self.__class__.__name__)
 
         self.config = Configuration.DEFAULT()
+        self.commit_threshold = self.config.getCommitThreshold() 
 
         self.energy_scale = 80.0 # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
@@ -64,7 +65,7 @@ emit([doc.number_run, doc.number_event, doc.layer, doc.bar, doc.view, doc.positi
 
                 print digit, row.key
 
-        self.Commit()
+        self.bulkCommit()
 
     def setThreshold(self, threshold = 2):
         """Threshold for registering a hit
@@ -75,11 +76,11 @@ emit([doc.number_run, doc.number_event, doc.layer, doc.bar, doc.view, doc.positi
     def getThreshold(self):
         return self.threshold
 
-    def Commit(self):
-        self.log.info('Bulk commit of digits in progress')
-        self.log.debug('Size of digit bulk commit in bytes: %d', sys.getsizeof(self.digits))
-        for doc in self.db.update(self.digits):
-            assert doc[0] == True  # Check that doc saved
-            self.log.debug('\tsaved: %s' % repr(doc))
-        
-        self.digits = []
+    def bulkCommit(self, force=False):
+        self.log.info('Bulk commit of digits requested')
+        size = sys.getsizeof(self.digits)
+        self.log.debug('Size of digit bulk commit in bytes: %d', self.digits)
+        if size > self.commit_threshold or force:
+            self.info('Commiting %d bytes to CouchDB' % size)
+            self.db.update(self.digits)
+            self.digits = []

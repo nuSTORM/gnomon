@@ -76,6 +76,9 @@ function(doc) {
 
     def getRunNumber(self):
         return run
+
+    def getCommitThreshold(self):
+        return 1024 * 1024 # bytes, ie. 1 MB
         
 
 class MockDB():

@@ -22,6 +22,8 @@ if __name__ == "__main__":
     parser.add_argument('--type', '-t', help='event type', type=str,
                         required=True)
     parser.add_argument('--filename', '-f', help='root filename', type=str)
+    parser.add_argument('--logfileless', action='store_true',
+                        help='this will disable writing out a log file')
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--runs', '-r', metavar='N', type=int, nargs='+',
@@ -85,8 +87,6 @@ function(doc) {
     elements_3vector = ['x', 'y', 'z']
 
     for row in db.query(map_fun, include_docs=True):
-        print 'yo'
-        
         doc = row.doc
 
         log.info('Ntupling another %s', row.key)

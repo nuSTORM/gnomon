@@ -167,3 +167,7 @@ if __name__ == "__main__":
             raw_input()
     else:
         gRunManager.BeamOn(args.events)
+
+
+    # Force a bulk commit if any mchits are left in the cache
+    sd.bulkCommit(force=True)

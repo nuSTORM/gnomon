@@ -1,5 +1,6 @@
 import math
 import logging
+import sys
 
 import Geant4 as G4
 import Configuration
@@ -27,7 +28,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.log.debug('thickness_bar: %f', thickness_bar)
 
         self.config = Configuration.DEFAULT()
-
+        self.commit_threshold = self.config.getCommitThreshold()
+        
         self.event = 0
         
         self.use_bulk_commits = True
@@ -108,10 +110,10 @@ class ScintSD(G4.G4VSensitiveDetector):
         return doc
 
     def ProcessHits(self, step, rohist):
-        self.log.error('%d hit' % self.event)
         preStepPoint = step.GetPreStepPoint()
-        #if(preStepPoint.GetCharge() == 0):
-        #    return
+
+        if step.GetTotalEnergyDeposit() == 0.0:
+            return
 
         theTouchable = preStepPoint.GetTouchable()
         copyNo = theTouchable.GetCopyNumber(0)
@@ -154,9 +156,14 @@ class ScintSD(G4.G4VSensitiveDetector):
         """Should SD perform bulk commits to CouchDB"""
         return self.use_bulk_commits
             
-    def bulkCommit(self):
+    def bulkCommit(self, force=False):
         """Perform bulk commit of mchits
 
         Commit to couchdb all mchits for the event and then clear cache"""
-        self.config.getCurrentDB().update(self.mc_hits)
-        self.mc_hits = []
+        self.log.info('Bulk commit of mchits requested')
+        size = sys.getsizeof(self.mc_hits)
+        self.log.debug('Size of digit bulk commit in bytes: %d' % size)
+        if size > self.commit_threshold or force:
+            self.log.info('Commiting %d bytes to CouchDB' % size)
+            self.config.getCurrentDB().update(self.mc_hits)
+            self.mc_hits = []

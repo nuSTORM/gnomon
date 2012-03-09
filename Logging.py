@@ -49,5 +49,10 @@ def setupLogging(console_level, name, logfileless=False):
     sys.stderr = sl
     
     logger.info('Starting up Gnomon (PID: %d)', os.getpid())
-    logger.info('Using log filename: %s', output_filename)
+
+    if not logfileless:
+        logger.info('Using log filename: %s', output_filename)
+    else:
+        logger.warning('No log file will be used')
+        
     logger.info('Start time: %s', time.ctime())
