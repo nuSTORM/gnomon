@@ -173,7 +173,7 @@ class ScintSD(G4.G4VSensitiveDetector):
             try:
                 self.db.update(self.mc_hits)
             except:
-                log.error('Failed to upload mchits to CouchDB, retrying...')
+                self.log.error('Failed to upload mchits to CouchDB, retrying...')
                 wait_time = random.randint(60,120) # wait between 60 s and 120 s
                 time.sleep(wait_time)
                 self.db.update(self.mc_hits)
