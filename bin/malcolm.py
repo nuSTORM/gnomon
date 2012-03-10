@@ -4,13 +4,14 @@ import time
 import couchdb
 
 #server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
-server = 'http://gnomon:harry@gnomon.iriscouch.com/'
+#server = 'http://gnomon:harry@gnomon.iriscouch.com/'
+server = 'http://gnomon:balls@172.16.84.2:8080/'
 #server = 'http://gnomon:balls@heplnm071.pp.rl.ac.uk:5984/'
 couch = couchdb.Server(server)
 
 number_of_events = 1000
 
-fresh = False
+fresh = True
 
 if fresh:
     try:
@@ -47,6 +48,6 @@ time python digitize.py --name %(db_name)s %(flags)s --run %(run)d
             file.write(script)
             file.close()
 
-            time.sleep(1)
+            #time.sleep(1)
             job_name = '%s_%s' % (db_name, run)
-            os.system('qsub -N %s %s' % (job_name, filename))
+            #os.system('qsub -N %s %s' % (job_name, filename))
