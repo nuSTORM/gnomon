@@ -2,6 +2,9 @@ import math
 import logging
 import sys
 
+import random  #  used for random,
+import time    #  wait if connection dies
+
 import Geant4 as G4
 import Configuration
 
@@ -10,6 +13,8 @@ class ScintSD(G4.G4VSensitiveDetector):
 
     def __init__(self, layers, bars, width, thickness_layer, thickness_bar):
         G4.G4VSensitiveDetector.__init__(self, "Scintillator")
+
+        random.seed()
 
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
@@ -29,6 +34,7 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         self.config = Configuration.DEFAULT()
         self.commit_threshold = self.config.getCommitThreshold()
+        self.db = self.config.getCurrentDB()
         
         self.event = 0
         
@@ -147,10 +153,9 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         self.log.info("View %s" % view)
 
-        if self.use_bulk_commits:
-            self.mc_hits.append(doc)
-        else:
-            self.config.getCurrentDB().save(doc)
+        self.mc_hits.append(doc)
+        self.bulkCommit()
+
 
     def getUseBulkCommits(self):
         """Should SD perform bulk commits to CouchDB"""
@@ -165,5 +170,11 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.log.debug('Size of digit bulk commit in bytes: %d' % size)
         if size > self.commit_threshold or force:
             self.log.info('Commiting %d bytes to CouchDB' % size)
-            self.config.getCurrentDB().update(self.mc_hits)
+            try:
+                self.db.update(self.mc_hits)
+            except:
+                log.error('Failed to upload mchits to CouchDB, retrying...')
+                wait_time = random.randint(60,120) # wait between 60 s and 120 s
+                time.sleep(wait_time)
+                self.db.update(self.mc_hits)
             self.mc_hits = []

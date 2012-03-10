@@ -33,16 +33,14 @@ class VlenfSimpleDigitizer():
 
         map_fun = """
 function(doc) {
-if (doc.type == 'mchit')
+if (doc.type == 'mchit' && doc.number_run == %d)
 emit([doc.number_run, doc.number_event, doc.layer, doc.bar, doc.view, doc.position_bar], doc.dedx);
- }"""
+ }""" % self.config.getRunNumber()
 
         red_fun = """
         function(keys, values, rereduce) {
         return sum(values);
         }"""
-
-        """TODO All this logic below could be made a reduce instead"""
 
         for row in self.db.query(map_fun, red_fun, group=True):
             number_run, number_event, layer, bar, view, position_bar = row.key
@@ -81,6 +79,6 @@ emit([doc.number_run, doc.number_event, doc.layer, doc.bar, doc.view, doc.positi
         size = sys.getsizeof(self.digits)
         self.log.debug('Size of digit bulk commit in bytes: %d', self.digits)
         if size > self.commit_threshold or force:
-            self.info('Commiting %d bytes to CouchDB' % size)
+            self.log.info('Commiting %d bytes to CouchDB' % size)
             self.db.update(self.digits)
             self.digits = []

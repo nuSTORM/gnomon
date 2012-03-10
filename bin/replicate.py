@@ -2,7 +2,8 @@ import couchdb
 import urlparse
 import os
 
-remote_url = 'http://tasd.fnal.gov:5984/'
+remote_url = 'http://gnomon:balls@tasd.fnal.gov:5984/'
+#remote_url = 'http://gnomon:balls@heplnm071.pp.rl.ac.uk:5984/'
 remote_couch = couchdb.Server(remote_url)
 
 local_url = 'http://gnomon:harry@gnomon.iriscouch.com/'
@@ -23,4 +24,6 @@ for momentum in [100, 139, 195, 271, 379, 528, 737, 1028, 1434, 2000]:
         print local_link, dest_link
 
         local_couch.replicate(dest_link, local_link, continous=True, create_target=True)
+        break
+    break
             

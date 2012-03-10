@@ -19,6 +19,8 @@ if __name__ == "__main__":
                         type=str, required=True)
     parser.add_argument('--logfileless', action='store_true',
                         help='this will disable writing out a log file')
+    parser.add_argument('--run', help='run number',
+                        type=int, required=True)
 
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
     args = parser.parse_args()
@@ -29,7 +31,7 @@ if __name__ == "__main__":
 
     random.seed()
 
-    # Configuration.run not used
+    Configuration.run  = args.run
     Configuration.name = args.name
     
     config = Configuration.CouchConfiguration(warn_if_exists = True)
@@ -37,3 +39,4 @@ if __name__ == "__main__":
 
     digitizer = Digitizer.VlenfSimpleDigitizer()
     digitizer.Process()
+    digitizer.bulkCommit(True)

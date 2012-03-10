@@ -4,9 +4,13 @@
 
 import argparse
 import ROOT
+import couchdb
 
 import Configuration
 import Logging
+
+import random  # used to delay attachment post
+import time    # used to delay attachment post
 
 import logging  # FIXME TODO this and the scriptname buisiness should be new func
 import sys
@@ -21,16 +25,12 @@ if __name__ == "__main__":
                         type=str, required=True)
     parser.add_argument('--type', '-t', help='event type', type=str,
                         required=True)
-    parser.add_argument('--filename', '-f', help='root filename', type=str)
     parser.add_argument('--logfileless', action='store_true',
                         help='this will disable writing out a log file')
 
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--runs', '-r', metavar='N', type=int, nargs='+',
-                    help='run(s) to process')
-    group.add_argument('--all', '-a', action='store_true',
-                    help='process all runs')
-
+    parser.add_argument('--run', help='run number',
+                        type=int, required=True)
+    
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level 
     args = parser.parse_args()
 
@@ -39,48 +39,27 @@ if __name__ == "__main__":
     log.debug('Commandline args: %s', str(args)) 
 
     Configuration.name = args.name
-    # Configuration.run # not used
+    Configuration.run  = args.run
 
     config = Configuration.CouchConfiguration()
     db = config.getCurrentDB()
-
-    if args.all:
-        log.info('Runs: All runs')
-        addition = ''
-    else:
-        log.info('Runs:', str(args.run))
-        addition = 'if('
-        run_conditions = ['doc.run == %d' % run for run in args.runs]
-        addition += " || ".join(run_conditions)
-        addition += ')'
 
     # Note the key below: "[document.number_run, document.number_event]" which
     # is important because CouchDB will sort by this.  It's part of our ROOT
     # file specification that it be sorted like this.
     map_fun = """
 function(doc) {
-  if (doc.type == '%s') {
-    %s
+  if (doc.type == '%s' && doc.number_run == %d) {
     emit([doc.number_run, doc.number_event], 1);
 }
 }
-""" % (args.type, addition)
+""" % (args.type, args.run)
 
     log.debug('Map function: %s', map_fun)
 
-    file = None
-    filename = None
-    if args.filename:
-        if '.root' not in args.filename:
-            error_string = 'No .root in filename!'
-            log.error(error_string)
-            raise ValueError(error_string)
-        filename = args.filename
-        file = ROOT.TFile(args.filename, 'RECREATE')
-    else:
-        filename = 'root/gnomon_%s_%s.root' % (args.name, args.type)
-        file = ROOT.TFile(filename,
-                          'RECREATE')
+    filename = 'root/gnomon_%s_%d_%s.root' % (args.name, args.run, args.type)
+    file = ROOT.TFile(filename,
+                      'RECREATE')
     t = ROOT.TTree('t', '')
 
     my_struct = None
@@ -167,23 +146,37 @@ function(doc) {
     t.Write()
     file.Close()
     
-    
-    try:
-        db = config.getCouchDB()['root']
-    except:
-        db = config.getCouchDB().create('root')
 
+    # Do it in this order to avoid race condition
     try:
-        doc = db[args.name]
-    except:
-        doc = {'_id': args.name}
+        db = config.getCouchDB().create('root')
+    except couchdb.http.PreconditionFailed:
+        db = config.getCouchDB()['root']
+
+    # Avoid race condition, throws couchdb.http.ResourceConflict
+    name = '%s_%d' % (args.name, args.run)
+    try:
+        doc = {'_id': name}
         db.save(doc)
+    except couchdb.http.ResourceConflict:
+        doc = db[name]
         
     try:
         db.delete_attachment(doc, filename)
     except:
         pass
 
-    db.put_attachment(doc, open(filename, 'r'))
-    db.compact()
+    try:
+        db.put_attachment(doc, open(filename, 'r'))
+    except:
+        # If fails, sleep... this is normally a Python issue of having:
+        #   "Connection reset by peer"
+        #
+        log.error('Failed to upload ROOT file to CouchDB, retrying...')
+        random.seed()
+        wait_time = random.randint(60,120) # wait between 60 s and 120 s
+        time.sleep(wait_time)
+        db.put_attachment(doc, open(filename, 'r'))
+        
+        
     
