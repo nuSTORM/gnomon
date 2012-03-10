@@ -15,10 +15,10 @@ number_of_events = 1000
 
 flags = '--log_level WARNING --logfileless'
 
-for momentum in batch_queue_config.momenta
+for momentum in batch_queue_config.momenta:
     for pid in batch_queue_config.pids:
         db_name = 'malcolm_%d_%d' % (momentum, pid)
-            
+
         for run in range(2,3):
             print momentum, pid, run
             filename = tempfile.mkstemp()[1]
