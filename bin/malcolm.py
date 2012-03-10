@@ -3,9 +3,7 @@ import os
 import time
 import couchdb
 
-#server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
-server = 'http://gnomon:harry@gnomon.iriscouch.com/'
-#server = 'http://gnomon:balls@heplnm071.pp.rl.ac.uk:5984/'
+server = 'http://gnomon:balls@172.16.84.2:8080/'
 couch = couchdb.Server(server)
 
 number_of_events = 1000
@@ -20,7 +18,7 @@ if fresh:
 
 flags = '--log_level WARNING --logfileless'
 
-for momentum in [100, 139, 195, 271, 379, 528, 737, 1028, 1434, 2000, 5000]:
+for momentum in [100, 500, 1000, 2000]:
     for pid in [-13, 13]:
         db_name = 'malcolm_%d_%d' % (momentum, pid)
         if fresh:
@@ -29,7 +27,7 @@ for momentum in [100, 139, 195, 271, 379, 528, 737, 1028, 1434, 2000, 5000]:
             except:
                 pass
             
-        for run in range(16,17):
+        for run in range(1,2):
             print momentum, pid, run
             filename = tempfile.mkstemp()[1]
             file = open(filename, 'w')
