@@ -3,6 +3,8 @@ import os
 import time
 import couchdb
 
+import batch_queue_config
+
 #server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
 #server = 'http://gnomon:harry@gnomon.iriscouch.com/'
 server = 'http://gnomon:balls@172.16.84.2:8080/'
@@ -11,26 +13,13 @@ couch = couchdb.Server(server)
 
 number_of_events = 1000
 
-fresh = True
-
-if fresh:
-    try:
-        couch.delete('root')
-    except:
-        pass
-
 flags = '--log_level WARNING --logfileless'
 
-for momentum in [100, 139, 195, 271, 379, 528, 737, 1028, 1434, 2000, 5000]:
-    for pid in [-13, 13]:
+for momentum in batch_queue_config.momenta
+    for pid in batch_queue_config.pids:
         db_name = 'malcolm_%d_%d' % (momentum, pid)
-        if fresh:
-            try:
-                couch.delete(db_name)
-            except:
-                pass
             
-        for run in range(16,17):
+        for run in range(2,3):
             print momentum, pid, run
             filename = tempfile.mkstemp()[1]
             file = open(filename, 'w')
