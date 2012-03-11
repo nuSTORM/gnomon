@@ -24,21 +24,27 @@ For development, we also recommend:
 
 We will explain how to install all of these packages in the following section.
 
-Step-by-Step Installation: Ubuntu 11.10
+Step-by-Step Installation
 ---------------------------------------
 
-Although Gnomon can run on any CUDA-supported Linux distribution or
-Mac OS X, we strongly recommend the use of Ubuntu 11.10 for Gnomon
-testing and development.  For these instructions, we will assume you
-are starting with a fresh Ubuntu 11.10 installation.
+Although Gnomon can run on any Linux distribution or Mac OS X, we recommend the
+use of Ubuntu 11.10 or Mac OS X for Gnomon testing and development.  For these
+instructions, we will assume you are starting with a fresh Ubuntu 11.10 or fresh
+Mac OS X 10.7.3 installation.  Notes about using Scientific Linux can be found
+in the :doc:`faq`.
 
-Steps 1 and 2 will require root privileges, but the remaining steps
-will be done in your home directory without administrator
-intervention.
+Steps 1 will require root privileges, but the remaining steps will be done in
+your home directory without administrator intervention.
 
 
-Step 1: Prereqs
+Step 1: Prerequisites
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This step is where the installation instructions diverge depending on which
+operating system you are using.  Please find your package manager and
+distribution below.  If you do not see your distribution, then please notify
+the developers if you are successful in installing gnomon on your unsupported
+distribution and any changes to the instructions you had to make.
 
 ``apt-get`` packages from Ubuntu package manager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,16 +63,35 @@ To be able to generate the documentation, we also need these tools::
 
   sudo apt-get install texlive dvipng
 
-``port`` packages from MacPorts package manager OSX
+``port`` packages from MacPorts package manager OS X
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Unsupported**. Get macports and install XCode.  Then::
-    
-    sudo port install cmake
-    sudo easy_install virtualenv mercurial
-    sudo port install boost +python27
-    sudo port install py27-tkinter
-    export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
+Macports is one possible package manager for OS X and the one that will be
+assumed for these instructions.  Instructions are provided at the Macports
+website http://guide.macports.org/.  It is assumed that the versions of your
+software are::
+
+* Mac OS X >=10.7.3
+* Xcode >=4.3.1
+* MacPorts >=2.0.4 (requires Xcode)
+
+If you do not have MacPorts, then you must ensure Xcode is installed before you
+are able to install MacPorts.  Xcode is available through the AppStore but it is
+also required to go into the Xcode preferences, select the Downloads tab, and
+ensure that the "Command Line Tools" component is installed.  This is all
+outlined in the MacPorts installation guide which is referenced above.
+
+Next we must run the following commands::
+
+     sudo port install wget
+     sudo port install cmake
+     sudo port install boost +python27
+     sudo port select --set python python27
+     sudo easy_install sphinx
+     sudo port install mercurial
+     sudo port install py27-tkinter
+     sudo easy_install virtualenv
+     export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
 
 ``yum`` packages from the Redhat based distributions (SL5)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
