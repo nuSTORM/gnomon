@@ -111,16 +111,19 @@ your system environment. We will keep all of the python modules for
 Gnomon (with a few exceptions) and libraries compiled from source
 inside of a virtualenv in your ``$HOME`` directory::
 
-  virtualenv $HOME/env/gnomon
+  virtualenv -p `which python` $HOME/env/gnomon
   cd $HOME/env/gnomon
 
-.. hint::  Do ``virtualenv -p `which python` $HOME/env/gnomon`` if you want ``virtualenv`` to pick up a specific instance of Python. In this case, you'll want to find the shared library associated with that installation and make a symbolic link in $HOME/env/gnomon/lib.  This can be done on a Mac by doing, for example, ``ln -s /opt/local/lib/libpython2.7.dylib $VIRTUAL_ENV/lib`` if the shared library lives in ``/opt/``.  Or in the Scientific Linux case above: ``ln -s ~/gnomon/local/lib/libpython2.7.so.1.0 $VIRTUAL_ENV/lib``
+You'll want to find the Python shared library associated with the installation referneced above with ``which python`` and make a symbolic link in $HOME/env/gnomon/lib.  This can be done on a Mac by doing, for example, ``ln -s /opt/local/lib/libpython2.7.dylib $VIRTUAL_ENV/lib`` if the shared library lives in ``/opt/``.  Or in the Scientific Linux case above: ``ln -s ~/gnomon/local/lib/libpython2.7.so.1.0 $VIRTUAL_ENV/lib``
 
 Next, append the following lines to the end of ``$HOME/env/gnomon/bin/activate`` to allow codes to see locally installed libraries::
 
   # For Macs: Change LD_LIBRARY_PATH -> DYLD_LIBRARY_PATH
   export LD_LIBRARY_PATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
   export PYTHONPATH=$VIRTUAL_ENV/lib:$PYTHONPATH
+  
+  # For Macs, uncomment this line:
+  #export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
 
 Finally, we can enable the virtual environment::
 
@@ -165,6 +168,8 @@ We also need to append a ``source`` line to ``$VIRTUAL_ENV/bin/activate``::
 
   source $VIRTUAL_ENV/src/root-5.32.00/bin/thisroot.sh
 
+to ensure that ROOT is setup when the environment is setup.
+
 Step 4: xerces c++
 ^^^^^^^^^^^^^^^^^^
 
@@ -182,8 +187,7 @@ Proceed to your download directory then run the following commands::
   make install
 
 
-.. hint:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  Please check the output of `./configure` to make sure that it agrees with the output of `uname -m`.
-
+.. hint:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  This is only relevant if the output of `./configure` does not agree with the output of `uname -m`.
 
 
 Step 5: GEANT4
