@@ -187,7 +187,7 @@ Proceed to your download directory then run the following commands::
   make install
 
 
-.. hint:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  This is only relevant if the output of `./configure` does not agree with the output of `uname -m`.
+.. warning:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  This is only relevant if the output of `./configure` does not agree with the output of `uname -m`.
 
 
 Step 5: GEANT4
