@@ -222,14 +222,20 @@ Gnomon, so for now you will need to use our fork of g4py::
   cd $VIRTUAL_ENV/src
   hg clone https://bitbucket.org/gnomon/g4py
   cd g4py
+
+  export G4FLAGS="--with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib"
+  export XERCESFLAGS="--with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib"
+  export BOOSTFLAGS="--with-boost-libdir=/usr/lib"
+
+  # Mac OS X users need to uncomment this line below:
+  #export BOOSTFLAGS="--with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib"
+
   # select system name from linux, linux64, macosx as appropriate
-  ./configure linux64 --with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib  --with-boost-libdir=/usr/lib --with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib --prefix=$VIRTUAL_ENV
+  ./configure linux64 ${G4FLAGS} ${XERCESFLAGS} ${BOOSTFLAGS} --prefix=$VIRTUAL_ENV ${EXTRAS}
   make
   make install
 
-.. warning:: If one is not careful and the python headers g4py finds, python libraries g4py finds, and python executable used to import g4py are not of the same version, then very obscure fatal errors will arise.
-
-.. hint:: **Mac users:** one must make sure that the Macports boost::python is found:  ``--with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib``
+.. caution:: If one is not careful and the python headers g4py finds, python libraries g4py finds, and python executable used to import g4py are not of the same version, then very obscure fatal errors will arise.  This is the purpose of the ``${EXTRAS}`` flag.
 
 Now you can enable the Gnomon environment whenever you want by typing
 ``source $HOME/env/gnomon/bin/activate``, or by placing that line in the
