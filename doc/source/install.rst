@@ -24,21 +24,27 @@ For development, we also recommend:
 
 We will explain how to install all of these packages in the following section.
 
-Step-by-Step Installation: Ubuntu 11.10
+Step-by-Step Installation
 ---------------------------------------
 
-Although Gnomon can run on any CUDA-supported Linux distribution or
-Mac OS X, we strongly recommend the use of Ubuntu 11.10 for Gnomon
-testing and development.  For these instructions, we will assume you
-are starting with a fresh Ubuntu 11.10 installation.
+Although Gnomon can run on any Linux distribution or Mac OS X, we recommend the
+use of Ubuntu 11.10 or Mac OS X for Gnomon testing and development.  For these
+instructions, we will assume you are starting with a fresh Ubuntu 11.10 or fresh
+Mac OS X 10.7.3 installation.  Notes about using Scientific Linux can be found
+in the :doc:`faq`.
 
-Steps 1 and 2 will require root privileges, but the remaining steps
-will be done in your home directory without administrator
-intervention.
+Steps 1 will require root privileges, but the remaining steps will be done in
+your home directory without administrator intervention.
 
 
-Step 1: Prereqs
+Step 1: Prerequisites
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This step is where the installation instructions diverge depending on which
+operating system you are using.  Please find your package manager and
+distribution below.  If you do not see your distribution, then please notify
+the developers if you are successful in installing gnomon on your unsupported
+distribution and any changes to the instructions you had to make.
 
 ``apt-get`` packages from Ubuntu package manager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,16 +63,35 @@ To be able to generate the documentation, we also need these tools::
 
   sudo apt-get install texlive dvipng
 
-``port`` packages from MacPorts package manager OSX
+``port`` packages from MacPorts package manager OS X
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Unsupported**. Get macports and install XCode.  Then::
-    
-    sudo port install cmake
-    sudo easy_install virtualenv mercurial
-    sudo port install boost +python27
-    sudo port install py27-tkinter
-    export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
+Macports is one possible package manager for OS X and the one that will be
+assumed for these instructions.  Instructions are provided at the Macports
+website http://guide.macports.org/.  It is assumed that the versions of your
+software are::
+
+* Mac OS X >=10.7.3
+* Xcode >=4.3.1
+* MacPorts >=2.0.4 (requires Xcode)
+
+If you do not have MacPorts, then you must ensure Xcode is installed before you
+are able to install MacPorts.  Xcode is available through the AppStore but it is
+also required to go into the Xcode preferences, select the Downloads tab, and
+ensure that the "Command Line Tools" component is installed.  This is all
+outlined in the MacPorts installation guide which is referenced above.
+
+Next we must run the following commands::
+
+     sudo port install wget
+     sudo port install cmake
+     sudo port install boost +python27
+     sudo port select --set python python27
+     sudo easy_install sphinx
+     sudo port install mercurial
+     sudo port install py27-tkinter
+     sudo easy_install virtualenv
+     export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
 
 ``yum`` packages from the Redhat based distributions (SL5)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,16 +111,19 @@ your system environment. We will keep all of the python modules for
 Gnomon (with a few exceptions) and libraries compiled from source
 inside of a virtualenv in your ``$HOME`` directory::
 
-  virtualenv $HOME/env/gnomon
+  virtualenv -p `which python` $HOME/env/gnomon
   cd $HOME/env/gnomon
 
-.. hint::  Do ``virtualenv -p `which python` $HOME/env/gnomon`` if you want ``virtualenv`` to pick up a specific instance of Python. In this case, you'll want to find the shared library associated with that installation and make a symbolic link in $HOME/env/gnomon/lib.  This can be done on a Mac by doing, for example, ``ln -s /opt/local/lib/libpython2.7.dylib $VIRTUAL_ENV/lib`` if the shared library lives in ``/opt/``.  Or in the Scientific Linux case above: ``ln -s ~/gnomon/local/lib/libpython2.7.so.1.0 $VIRTUAL_ENV/lib``
+You'll want to find the Python shared library associated with the installation referneced above with ``which python`` and make a symbolic link in $HOME/env/gnomon/lib.  This can be done on a Mac by doing, for example, ``ln -s /opt/local/lib/libpython2.7.dylib $VIRTUAL_ENV/lib`` if the shared library lives in ``/opt/``.  Or in the Scientific Linux case above: ``ln -s ~/gnomon/local/lib/libpython2.7.so.1.0 $VIRTUAL_ENV/lib``
 
 Next, append the following lines to the end of ``$HOME/env/gnomon/bin/activate`` to allow codes to see locally installed libraries::
 
   # For Macs: Change LD_LIBRARY_PATH -> DYLD_LIBRARY_PATH
   export LD_LIBRARY_PATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
   export PYTHONPATH=$VIRTUAL_ENV/lib:$PYTHONPATH
+  
+  # For Macs, uncomment this line:
+  #export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
 
 Finally, we can enable the virtual environment::
 
@@ -140,6 +168,8 @@ We also need to append a ``source`` line to ``$VIRTUAL_ENV/bin/activate``::
 
   source $VIRTUAL_ENV/src/root-5.32.00/bin/thisroot.sh
 
+to ensure that ROOT is setup when the environment is setup.
+
 Step 4: xerces c++
 ^^^^^^^^^^^^^^^^^^
 
@@ -157,8 +187,7 @@ Proceed to your download directory then run the following commands::
   make install
 
 
-.. hint:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  Please check the output of `./configure` to make sure that it agrees with the output of `uname -m`.
-
+.. warning:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  This is only relevant if the output of `./configure` does not agree with the output of `uname -m`.
 
 
 Step 5: GEANT4
@@ -193,14 +222,20 @@ Gnomon, so for now you will need to use our fork of g4py::
   cd $VIRTUAL_ENV/src
   hg clone https://bitbucket.org/gnomon/g4py
   cd g4py
+
+  export G4FLAGS="--with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib"
+  export XERCESFLAGS="--with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib"
+  export BOOSTFLAGS="--with-boost-libdir=/usr/lib"
+
+  # Mac OS X users need to uncomment this line below:
+  #export BOOSTFLAGS="--with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib"
+
   # select system name from linux, linux64, macosx as appropriate
-  ./configure linux64 --with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib  --with-boost-libdir=/usr/lib --with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib --prefix=$VIRTUAL_ENV
+  ./configure linux64 ${G4FLAGS} ${XERCESFLAGS} ${BOOSTFLAGS} --prefix=$VIRTUAL_ENV ${EXTRAS}
   make
   make install
 
-.. warning:: If one is not careful and the python headers g4py finds, python libraries g4py finds, and python executable used to import g4py are not of the same version, then very obscure fatal errors will arise.
-
-.. hint:: **Mac users:** one must make sure that the Macports boost::python is found:  ``--with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib``
+.. caution:: If one is not careful and the python headers g4py finds, python libraries g4py finds, and python executable used to import g4py are not of the same version, then very obscure fatal errors will arise.  This is the purpose of the ``${EXTRAS}`` flag.
 
 Now you can enable the Gnomon environment whenever you want by typing
 ``source $HOME/env/gnomon/bin/activate``, or by placing that line in the
