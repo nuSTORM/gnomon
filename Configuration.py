@@ -100,6 +100,9 @@ class MockConfiguration():
 
     def getRunNumber(self):
         return 0
+
+    def getCommitThreshold(self):
+        return 1
     
 
 DEFAULT = CouchConfiguration
