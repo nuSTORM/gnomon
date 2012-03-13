@@ -15,10 +15,10 @@ number_of_events = 1000
 
 flags = '--log_level WARNING --logfileless'
 
-for momentum in batch_queue_config.momenta
+for momentum in batch_queue_config.momenta:
     for pid in batch_queue_config.pids:
         db_name = 'malcolm_%d_%d' % (momentum, pid)
-            
+
         for run in range(2,3):
             print momentum, pid, run
             filename = tempfile.mkstemp()[1]
@@ -37,6 +37,6 @@ time python digitize.py --name %(db_name)s %(flags)s --run %(run)d
             file.write(script)
             file.close()
 
-            #time.sleep(1)
+            time.sleep(5)
             job_name = '%s_%s' % (db_name, run)
-            #os.system('qsub -N %s %s' % (job_name, filename))
+            os.system('qsub -N %s %s' % (job_name, filename))
