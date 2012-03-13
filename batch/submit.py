@@ -17,9 +17,9 @@ flags = '--log_level WARNING --logfileless'
 
 for momentum in batch_queue_config.momenta:
     for pid in batch_queue_config.pids:
-        db_name = 'malcolm_%d_%d' % (momentum, pid)
+        db_name = 'malcolm_flip_%d_%d' % (momentum, pid)
 
-        for run in range(2,3):
+        for run in range(3,4):
             print momentum, pid, run
             filename = tempfile.mkstemp()[1]
             file = open(filename, 'w')
@@ -32,6 +32,7 @@ time python simulate.py --name %(db_name)s --vertex 2000 -2000 0 -p --momentum 0
 time python digitize.py --name %(db_name)s %(flags)s --run %(run)d
 ./couch_to_ntuple.py --name %(db_name)s -t mchit %(flags)s --run %(run)d
 ./couch_to_ntuple.py --name %(db_name)s -t digit %(flags)s --run %(run)d
+./fit.py --name %(db_name)s %(flags)s --run %(run)d
 """ % {'momentum': momentum, 'db_name' : db_name, 'number_of_events' : number_of_events, 'pid' : pid, 'run' : run, 'flags':flags, 'server_url':server}
 
             file.write(script)
