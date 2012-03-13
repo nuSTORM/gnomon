@@ -260,4 +260,4 @@ There is no installation for the actual gnomon code since it's written in an int
 
   export PYTHONPATH=$VIRTUAL_ENV/src/gnomon/gnomon:$PYTHONPATH
 
-Then you are ready to move to the tutorial.
+Then you are ready to move to the tutorial (or examples in the gnomon-analysis branch).

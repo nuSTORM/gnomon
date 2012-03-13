@@ -167,7 +167,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         Commit to couchdb all mchits for the event and then clear cache"""
         self.log.info('Bulk commit of mchits requested')
         size = sys.getsizeof(self.mc_hits)
-        self.log.debug('Size of digit bulk commit in bytes: %d' % size)
+        self.log.debug('Size of proposed digit bulk commit in bytes: %d' % size)
         if size > self.commit_threshold or force:
             self.log.info('Commiting %d bytes to CouchDB' % size)
             try:

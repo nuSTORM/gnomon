@@ -77,7 +77,7 @@ emit([doc.number_run, doc.number_event, doc.layer, doc.bar, doc.view, doc.positi
     def bulkCommit(self, force=False):
         self.log.info('Bulk commit of digits requested')
         size = sys.getsizeof(self.digits)
-        self.log.debug('Size of digit bulk commit in bytes: %d', self.digits)
+        self.log.debug('Size of digit bulk commit in bytes: %d', size)
         if size > self.commit_threshold or force:
             self.log.info('Commiting %d bytes to CouchDB' % size)
             self.db.update(self.digits)
