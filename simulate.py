@@ -39,6 +39,7 @@ if __name__ == "__main__":
                         type=int, default=0)
     parser.add_argument('--logfileless', action='store_true',
                         help='this will disable writing out a log file')
+    parser.add_argument('--polarity', choices=['+','-'], default='+', help='field polarity')
 
     group = parser.add_argument_group('Visualization', 'event display')
     group.add_argument('--display', action='store_true', help='event display')
@@ -86,7 +87,7 @@ if __name__ == "__main__":
         log.info('Using seed %d', seed)
     HepRandom.setTheSeed(seed)
 
-    detector = VlenfDetectorConstruction()
+    detector = VlenfDetectorConstruction(field_polarity=args.polarity)
     gRunManager.SetUserInitialization(detector)
 
     exN03PL = g4py.ExN03pl.PhysicsList()

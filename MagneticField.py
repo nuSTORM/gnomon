@@ -5,7 +5,7 @@ import Geant4 as G4
 class WandsToroidField(G4.G4MagneticField):
     "Toroid Field from Bob Wands simulation parameterization"
 
-    def __init__(self, focus='+'):
+    def __init__(self, focus):
         G4.G4MagneticField.__init__(self)
         if focus == '+':
             self.sign = 1

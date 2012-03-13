@@ -6,13 +6,14 @@ import MagneticField
 class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
     "Vlenf Detector Construction"
 
-    def __init__(self):
+    def __init__(self, field_polarity):
         G4.G4VUserDetectorConstruction.__init__(self)
         self.world = None
         self.gdml_parser = G4.G4GDMLParser()
         self.sensitive_detector = None
         self.filename = "gdml/iron_scint_bars.gdml"
         self.field_manager = None
+        self.field_polarity = field_polarity
 
     def __del__(self):
         pass
@@ -51,7 +52,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
         assert lv.GetName() == "SteelPlane"
         self.field_manager = G4.G4FieldManager()
-        self.myField = MagneticField.WandsToroidField()
+        self.myField = MagneticField.WandsToroidField(self.field_polarity)
         self.field_manager.SetDetectorField(self.myField)
         self.field_manager.CreateChordFinder(self.myField)
         lv.SetFieldManager(self.field_manager, False)
