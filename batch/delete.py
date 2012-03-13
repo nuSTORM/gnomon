@@ -1,25 +1,44 @@
 """Delete everything but the ROOT output"""
-
+import argparse
 import couchdb
-import batch_queue_config
 
-server_list = ['http://gnomon:balls@tasd.fnal.gov:5984/',
-               'http://gnomon:harry@gnomon.iriscouch.com/',
-               'http://gnomon:balls@172.16.84.2:8080/',]
 
-for server in server_list:
-    couch = couchdb.Server(server)
+def run(all, mchits, digits, tracks):
+    server_list = ['http://gnomon:balls@tasd.fnal.gov:5984/',
+                   'http://gnomon:harry@gnomon.iriscouch.com/',
+                   'http://gnomon:balls@172.16.84.2:8080/',]
+    
+    for server in server_list:
+        server = couchdb.Server(server)
 
-    # NEVER DELETE ROOT!
-
-    for momentum in batch_queue_config.momenta:
-        for pid in batch_queue_config.pids:
-            for polarity in ['-', '+']:
-                if polarity == '-':
-                    db_name = 'malcolm_minus_%d_%d' % (momentum, pid)
+        for dbname in server:
+            if dbname[0] != '_':
+                if all:
+                    server.delete(dbname)
                 else:
-                    db_name = 'malcolm_plus_%d_%d' % (momentum, pid)
-                try:
-                    couch.delete(db_name)
-                except:
-                    pass
+                    db = server[dbname]
+                    print db
+                    map_fun = """
+                    function(doc) {
+                    if (doc.type == 'digit')
+                    emit(null, 1)
+                    }"""
+                    
+                    for row in db.query(map_fun, include_docs=True):
+                        print row.doc
+                
+                
+                    db.compact()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='delete couch info')
+    
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--all', '-a', action='store_true', help='all')
+    group2 = group.add_mutually_exclusive_group()
+    group2.add_argument('--mchits', '-m', action='store_true', help='mchits')
+    group2.add_argument('--digits', '-d', action='store_true', help='digits')
+    group2.add_argument('--tracks', '-t', action='store_true', help='tracks')
+
+    args = parser.parse_args()
+    run(args.all, args.mchits, args.digits, args.tracks)
