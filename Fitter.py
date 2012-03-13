@@ -84,18 +84,18 @@ emit(doc.number_event, [doc.view, doc.position]);
             elif last_event != event:
                 #self.log.error('X_view: %s', str(X_view))
                 #self.log.error('Y_view: %s', str(Y_view))
-                try:
-                    for view in [X_view, Y_view]:
-                        for key in view:
-                            assert len(view[key]) > 10
-                    doc = {}
-                    doc['type'] = 'track'
-                    doc['x'] = self.Fit(X_view)
-                    doc['y'] = self.Fit(Y_view)
-                    self.tracks.append(doc)
-                    self.bulkCommit()
-                except:
-                    self.log.error('skipping!')
+                short = False
+                for view in [X_view, Y_view]:
+                    for key in view:
+                        short = True
+                doc = {}
+                doc['type'] = 'track'
+                doc['x'] = self.Fit(X_view)
+                doc['y'] = self.Fit(Y_view)
+                doc['short'] = short
+                self.tracks.append(doc)
+                self.bulkCommit()
+
 
                 X_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
                 Y_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
