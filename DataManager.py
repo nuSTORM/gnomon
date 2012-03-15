@@ -18,6 +18,11 @@ class Manager:
     def Shutdown(self):
         pass
 
+    def Process(self, docs):
+        for doc in docs:
+            self.Save(doc)
+
+
 class CouchManager(Manager):
     def __init__(self):
         Manager.__init__(self)

@@ -34,8 +34,14 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.log.debug('thickness_bar: %f', thickness_bar)
 
         self.config = Configuration.DEFAULT()
-        #self.dm = self.config.getDataManager()
+        self.docs = []
         self.event = 0
+
+    def getDocs(self):
+        return self.docs
+
+    def clearDocs(self):
+        self.docs = []
 
     def setEventNumber(self, number):
         if isinstance(number, int):
@@ -83,9 +89,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['z'] = guess_z
 
         # 0.1 mm tolerance
-        self.log.debug('Finding bar longitudinal position')
-        self.log.debug('\tGuess in z: %f', guess_z)
-        self.log.debug('\tPosition in z: %f', position.z)
+        self.log.debug('Finding bar longitudinal position: Guess in z: %f, Position in z: %f', guess_z, position.z)
         diff = math.fabs(guess_z - position.z)
         threshold = self.thickness_bar/2 + 0.1 * G4.mm 
         assert diff <= threshold
@@ -102,9 +106,7 @@ class ScintSD(G4.G4VSensitiveDetector):
             doc['x'] = 0
 
         # 0.1 mm tolerance
-        self.log.debug('Finding bar transverse position')
-        self.log.debug('\tGuess in z: %f', guess_trans)
-        self.log.debug('\tPosition in z: %f', trans)
+        self.log.debug('Finding bar transverse position: Guess in z: %f, Position in z: %f', guess_trans, trans)
         diff = math.fabs(trans-guess_trans)
         threshold = self.width/2 + 1 * G4.mm
         assert diff <= threshold
@@ -147,8 +149,5 @@ class ScintSD(G4.G4VSensitiveDetector):
                                                         doc['view'],
                                                         position)
 
-        self.dm.Save(doc)
+        self.docs.append(doc)
             
-
-    def Shutdown(self):
-        if self.dm: self.dm.Shutdown()

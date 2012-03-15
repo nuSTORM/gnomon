@@ -19,51 +19,58 @@ class VlenfSimpleDigitizer():
 
         self.energy_scale = 80.0 # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
-
-        self.db = self.config.getCurrentDB()
         
-        self.digits = []
-
         self.threshold = None
         self.setThreshold()
 
+    def Shutdown(self):
+        pass
 
-    def Process(self):
+    def Process(self, docs):
+        new_docs = []
         hits_dict = {}
 
-        map_fun = """
-function(doc) {
-if (doc.type == 'mchit' && doc.number_run == %d)
-emit([doc.number_run, doc.number_event, doc.layer, doc.bar, doc.view, doc.position_bar], doc.dedx);
- }""" % self.config.getRunNumber()
+        for doc in docs:
+            print doc.keys()
+            number_run = doc['number_run']
+            number_event = doc['number_event']
+            layer = doc['layer']
+            bar = doc['bar']
+            view = doc['view']
+            position_bar = doc['position_bar']
 
-        red_fun = """
-        function(keys, values, rereduce) {
-        return sum(values);
-        }"""
+            key = (number_run, number_event, layer, bar, view)
+            print type(key)
 
-        for row in self.db.query(map_fun, red_fun, group=True):
-            number_run, number_event, layer, bar, view, position_bar = row.key
+            if key not in hits_dict.keys():
+                hits_dict[key] = []
 
-            dedx = row.value
+            dedx = doc['dedx']
             counts_adc = dedx * self.energy_scale
             
-            if counts_adc > self.getThreshold():
-                digit = {}
-                digit['type'] = 'digit'
-                digit['number_run'] = number_run
-                digit['number_event'] = number_event
-                digit['layer'] = layer
-                digit['bar'] = bar
-                digit['view'] = view
-                digit['counts_adc'] = counts_adc
-                digit['position'] = position_bar  # this should be derived
-                
-                self.digits.append(digit)
+            digit = {}
+            digit['type'] = 'digit'
+            digit['number_run'] = number_run
+            digit['number_event'] = number_event
+            digit['layer'] = layer
+            digit['bar'] = bar
+            digit['view'] = view
+            digit['counts_adc'] = counts_adc
+            digit['position'] = position_bar  # this should be derived
+            
+            hits_dict[key].append(digit)
 
-                print digit, row.key
 
-        self.bulkCommit()
+        for key, value in hits_dict.iteritems():
+            total_counts_adc = 0
+            for partial_digit in value:
+                total_counts_adc += partial_digit['counts_adc']
+
+            if total_counts_adc > self.getThreshold():
+                partial_digit['counts_adc'] = total_counts_adc
+                new_docs.append(partial_digit)
+
+        return new_docs
 
     def setThreshold(self, threshold = 2):
         """Threshold for registering a hit
@@ -74,11 +81,3 @@ emit([doc.number_run, doc.number_event, doc.layer, doc.bar, doc.view, doc.positi
     def getThreshold(self):
         return self.threshold
 
-    def bulkCommit(self, force=False):
-        self.log.info('Bulk commit of digits requested')
-        size = sys.getsizeof(self.digits)
-        self.log.debug('Size of digit bulk commit in bytes: %d', size)
-        if size > self.commit_threshold or force:
-            self.log.info('Commiting %d bytes to CouchDB' % size)
-            self.db.update(self.digits)
-            self.digits = []

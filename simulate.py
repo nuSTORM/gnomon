@@ -170,4 +170,5 @@ if __name__ == "__main__":
         gRunManager.BeamOn(args.events)
 
 
-    sd.Shutdown()
+    myEA.Shutdown()
+

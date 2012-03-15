@@ -25,6 +25,9 @@ class VlenfPolynomialFitter():
 
         self.tracks = []
 
+    def Shutdown(self):
+        pass
+
     def Fit(self, view):
         """Returns results of fit
 
@@ -51,9 +54,8 @@ class VlenfPolynomialFitter():
         #self.log.error('data %s %s', str(z), str(trans))
         #self.log.error('fit %s %s', str(z), str(datafit))
         #xlabel('Time')
-        #title('Curve-fitting example')
-        #grid(True)
-        #show()
+        grid(True)
+        show()
 
         doc = {}
         doc['params'] = list(bestparams)
@@ -63,46 +65,12 @@ class VlenfPolynomialFitter():
         doc['good_of_fit'] = good_of_fit
         return doc
 
-    def Process(self):
-        hits_dict = {}
-
-        map_fun = """
-function(doc) {
-if (doc.type == 'digit' && doc.number_run == %d)
-emit(doc.number_event, [doc.view, doc.position]);
- }""" % self.config.getRunNumber()
-
-
-        last_event = None
+    def Process(self, docs):
         X_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
         Y_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
-        for row in self.db.query(map_fun):
-            event = row.key
 
-            if last_event == None:
-                last_event = event
-            elif last_event != event:
-                #self.log.error('X_view: %s', str(X_view))
-                #self.log.error('Y_view: %s', str(Y_view))
-                short = False
-                for view in [X_view, Y_view]:
-                    for key in view:
-                        short = True
-                doc = {}
-                doc['type'] = 'track'
-                doc['x'] = self.Fit(X_view)
-                doc['y'] = self.Fit(Y_view)
-                doc['short'] = short
-                self.tracks.append(doc)
-                self.bulkCommit()
-
-
-                X_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
-                Y_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
-                last_event = event
-
-
-            view, position = row.value
+        for doc in docs:
+            view, position = doc['view'], doc['position']
 
             if view == 'X':
                 X_view['trans'] = append(X_view['trans'], position['x'])
@@ -112,11 +80,14 @@ emit(doc.number_event, [doc.view, doc.position]);
                 Y_view['z'] = append(Y_view['z'], position['z'])
                 
 
-    def bulkCommit(self, force=False):
-        self.log.info('Bulk commit of tracks requested')
-        size = sys.getsizeof(self.tracks)
-        self.log.debug('Size of tracks bulk commit in bytes: %d', size)
-        if size > self.commit_threshold or force:
-            self.log.info('Commiting %d bytes to CouchDB' % size)
-            self.db.update(self.tracks)
-            self.tracks = []
+        short = False
+        for view in [X_view, Y_view]:
+            for key in view:
+                if len(view[key]) < 10:
+                    short = True
+        doc = {}
+        doc['type'] = 'track'
+        doc['x'] = self.Fit(X_view)
+        doc['y'] = self.Fit(Y_view)
+        doc['short'] = short
+        return [doc]

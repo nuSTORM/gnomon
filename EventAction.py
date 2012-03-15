@@ -5,8 +5,11 @@ import logging
 
 import Geant4 as G4
 import Configuration
+from Digitizer import VlenfSimpleDigitizer
+from Fitter import VlenfPolynomialFitter
 
 from processors.Utils import Compactor
+from DataManager import CouchManager
 
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
@@ -21,11 +24,11 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.config = Configuration.DEFAULT()
 
         self.processors = []
-        #self.processors.append(VlenfSimpleDigitizer())
-        #self.processors.append(Compactor())
-
-        #  (optionally) Used for telling SD to use bulk operations rather than
-        #  individual commits.
+        self.processors.append(VlenfSimpleDigitizer())
+        self.processors.append(VlenfPolynomialFitter())
+        self.processors.append(CouchManager())
+        
+        # used to fetch mchits, only way given geant
         self.sd = None
         
     def BeginOfEventAction(self, event):
@@ -40,16 +43,16 @@ class VlenfEventAction(G4.G4UserEventAction):
         """Executed at the end of an event, do nothing"""
         self.log.info('Processed event %d', event.GetEventID())
 
-        #  Trick to tell the sensitive detector to perform a bulk commit.
-        #if self.sd and self.sd.getUseBulkCommits():
-        #    self.log.debug('Calling bulk commit from EA')
-        #    self.sd.bulkCommit()
+        docs = self.sd.getDocs()
+        self.sd.clearDocs()
 
-        #run_number = self.config.getRunNumber()
-        #for processor in self.processors:
-        #    processor.FetchThenProcess(run_number, event.GetEventID())
+        for processor in self.processors:
+            docs = processor.Process(docs)
 
-        # Helps if we've deletected MChits
-        #self.config.getCurrentDB().compact()
+    def Shutdown(self):
+        for processor in self.processors:
+            processor.Shutdown()
 
+
+        
         
