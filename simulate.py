@@ -75,7 +75,7 @@ if __name__ == "__main__":
         Configuration.run = args.run
     Configuration.name = args.name
     
-    config = Configuration.CouchConfiguration(warn_if_exists = True)
+    config = Configuration.DEFAULT()
 
     rand_engine = G4.Ranlux64Engine()
     HepRandom.setTheEngine(rand_engine)
@@ -170,5 +170,4 @@ if __name__ == "__main__":
         gRunManager.BeamOn(args.events)
 
 
-    # Force a bulk commit if any mchits are left in the cache
-    sd.bulkCommit(force=True)
+    sd.Shutdown()

@@ -1,6 +1,7 @@
 import math
 import logging
 import sys
+import gzip
 
 import random  #  used for random,
 import time    #  wait if connection dies
@@ -33,13 +34,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.log.debug('thickness_bar: %f', thickness_bar)
 
         self.config = Configuration.DEFAULT()
-        self.commit_threshold = self.config.getCommitThreshold()
-        self.db = self.config.getCurrentDB()
-        
+        #self.dm = self.config.getDataManager()
         self.event = 0
-        
-        self.use_bulk_commits = True
-        self.mc_hits = []
 
     def setEventNumber(self, number):
         if isinstance(number, int):
@@ -151,30 +147,8 @@ class ScintSD(G4.G4VSensitiveDetector):
                                                         doc['view'],
                                                         position)
 
-        self.log.info("View %s" % view)
-
-        self.mc_hits.append(doc)
-        self.bulkCommit()
-
-
-    def getUseBulkCommits(self):
-        """Should SD perform bulk commits to CouchDB"""
-        return self.use_bulk_commits
+        self.dm.Save(doc)
             
-    def bulkCommit(self, force=False):
-        """Perform bulk commit of mchits
 
-        Commit to couchdb all mchits for the event and then clear cache"""
-        self.log.info('Bulk commit of mchits requested')
-        size = sys.getsizeof(self.mc_hits)
-        self.log.debug('Size of proposed digit bulk commit in bytes: %d' % size)
-        if size > self.commit_threshold or force:
-            self.log.info('Commiting %d bytes to CouchDB' % size)
-            try:
-                self.db.update(self.mc_hits)
-            except:
-                self.log.error('Failed to upload mchits to CouchDB, retrying...')
-                wait_time = random.randint(60,120) # wait between 60 s and 120 s
-                time.sleep(wait_time)
-                self.db.update(self.mc_hits)
-            self.mc_hits = []
+    def Shutdown(self):
+        if self.dm: self.dm.Shutdown()

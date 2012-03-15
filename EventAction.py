@@ -22,7 +22,7 @@ class VlenfEventAction(G4.G4UserEventAction):
 
         self.processors = []
         #self.processors.append(VlenfSimpleDigitizer())
-        self.processors.append(Compactor())
+        #self.processors.append(Compactor())
 
         #  (optionally) Used for telling SD to use bulk operations rather than
         #  individual commits.
@@ -41,9 +41,9 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.log.info('Processed event %d', event.GetEventID())
 
         #  Trick to tell the sensitive detector to perform a bulk commit.
-        if self.sd and self.sd.getUseBulkCommits():
-            self.log.debug('Calling bulk commit from EA')
-            self.sd.bulkCommit()
+        #if self.sd and self.sd.getUseBulkCommits():
+        #    self.log.debug('Calling bulk commit from EA')
+        #    self.sd.bulkCommit()
 
         #run_number = self.config.getRunNumber()
         #for processor in self.processors:

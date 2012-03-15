@@ -1,4 +1,5 @@
 import tempfile
+import sys
 import os
 import time
 import couchdb
@@ -13,6 +14,8 @@ number_of_events = 1000
 
 flags = '--log_level WARNING --logfileless'
 
+random.seed()
+
 for momentum in batch_queue_config.momenta:
     for pid in batch_queue_config.pids:
         for polarity in ['-', '+']:
@@ -21,16 +24,16 @@ for momentum in batch_queue_config.momenta:
             else:
                 db_name = 'malcolm_plus_%d_%d' % (momentum, pid)
                 
-            for run in range(1, 2):
-                server = random.choice(servers)
-                couch = couchdb.Server(server)
-                print momentum, pid, run
-                filename = tempfile.mkstemp()[1]
-                file = open(filename, 'w')
+            server = random.choice(servers)
+            server = 'http://gnomon:balls@172.16.84.2:8080/'
+            couch = couchdb.Server(server)
+            print momentum, pid
+            filename = tempfile.mkstemp()[1]
+            file = open(filename, 'w')
 
-                sleep_time = run - 1
-    
-                script = """
+            run = random.randint(1, sys.maxint)
+
+            script = """
 source /home/tunnell/env/gnomon/bin/activate
 export COUCHDB_URL=%(server_url)s
 cd $VIRTUAL_ENV/src/gnomon
@@ -39,10 +42,10 @@ time python digitize.py --name %(db_name)s %(flags)s --run %(run)d
 #./fit.py --name %(db_name)s %(flags)s --run %(run)d
 """ % {'momentum': momentum, 'db_name' : db_name, 'number_of_events' : number_of_events, 'pid' : pid, 'run' : run, 'flags':flags, 'server_url':server, 'polarity' : polarity}
                 
-                file.write(script)
-                file.close()
+            file.write(script)
+            file.close()
 
-                print script
-                time.sleep(10)
-                job_name = '%s_%s' % (db_name, run)
-                os.system('qsub -N %s %s' % (job_name, filename))
+            print script
+            time.sleep(10)
+            job_name = '%s_%s' % (db_name, run)
+            os.system('qsub -N %s %s' % (job_name, filename))
