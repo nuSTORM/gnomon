@@ -32,8 +32,14 @@ class WandsToroidField(G4.G4MagneticField):
         # Paremeterization from talk above
         bfield = G4.G4ThreeVector()
 
+        #  Ryan Bayes, March 15th, 2012, talk to Valencia grp.
+        B0 = 1.36 # T
+        B1 = 0.0406 # T m
+        B2 = 0.8 # T
+        H = 0.16 # 1/m
+
         if r != 0.0:
-            B = self.sign * self.PhenomModel(r)
+            B = self.sign * self.PhenomModel(r, B0, B1, B2, H)
             bfield.x = -1 * (pos.y / r) * B
             bfield.y =  1 * (pos.x / r) * B
         else:

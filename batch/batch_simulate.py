@@ -12,16 +12,13 @@ servers = ['http://gnomon:balls@tasd.fnal.gov:5984/',
            'http://gnomon:balls@172.16.84.2:8080/']
 
 number_of_events = 1000
-repeat_point = 10 # how many times to redo same point
+repeat_point = 1 # how many times to redo same point
 
 flags = '--log_level WARNING --logfileless'
 
 random.seed()
 
-try:
-    shutil.rmtree('/data/mice/gnomon')
-except:
-    pass
+tempdir = tempfile.mkdtemp()
 
 for momentum in batch_queue_config.momenta:
     for pid in batch_queue_config.pids:
@@ -32,12 +29,12 @@ for momentum in batch_queue_config.momenta:
                 else:
                     db_name = 'malcolm_plus_%d_%d' % (momentum, pid)
                 
-                server = random.choice(servers)
+                #server = random.choice(servers)
+                #server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
                 server = 'http://gnomon:balls@172.16.84.2:8080/'
                 couch = couchdb.Server(server)
                 print momentum, pid
-                filename = tempfile.mkstemp()[1]
-                file = open(filename, 'w')
+                file = open(os.path.join(tempdir, '%s_%d' % (db_name, i)), 'w')
 
                 run = random.randint(1, sys.maxint)
 
@@ -50,9 +47,14 @@ time python simulate.py --name %(db_name)s --vertex 2000 -2000 0 -p --momentum 0
                 
                 file.write(script)
                 file.close()
-
+                
                 print script
                 
                 job_name = '%s_%s' % (db_name, run)
-                time.sleep(1)
-                os.system('qsub -N %s %s' % (job_name, filename))
+                print 'filename', file.name
+                os.system('qsub -N %s %s' % (job_name, file.name))
+                time.sleep(2)
+
+
+shutil.rmtree(tempdir)
+

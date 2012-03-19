@@ -4,8 +4,6 @@ ways.  Oh, and we use USA spelling here, so use a 'zed' and like it."""
 import logging
 import sys
 
-import Configuration
-
 class VlenfSimpleDigitizer():
     """The VLENF digitizer where the energy deposited is multiplied by a generic
     energy scale."""
@@ -13,9 +11,6 @@ class VlenfSimpleDigitizer():
     def __init__(self):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
-
-        self.config = Configuration.DEFAULT()
-        self.commit_threshold = self.config.getCommitThreshold() 
 
         self.energy_scale = 80.0 # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)

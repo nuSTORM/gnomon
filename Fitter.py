@@ -8,8 +8,6 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
-import Configuration
-
 class VlenfPolynomialFitter():
     """The VLENF digitizer where the energy deposited is multiplied by a generic
     energy scale."""
@@ -17,11 +15,6 @@ class VlenfPolynomialFitter():
     def __init__(self):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
-
-        self.config = Configuration.DEFAULT()
-        self.commit_threshold = self.config.getCommitThreshold()
-
-        self.db = self.config.getCurrentDB()
 
         self.tracks = []
 
@@ -36,7 +29,10 @@ class VlenfPolynomialFitter():
         trans = view['trans']
  
         def dbexpl(t,p):
-            return(p[0] + p[1] * t**2)
+            if p[0] >= 0:
+                return(p[0] + p[1] * t**2)
+            else:
+                return(p[0] - p[1] * t**2)
 
         def residuals(p,data,t):
             err = data - dbexpl(t,p)
@@ -61,7 +57,6 @@ class VlenfPolynomialFitter():
         doc['params'] = list(bestparams)
         doc['z'] = list(z)
         doc['trans'] = list(trans)
-        doc['datafit'] = list(datafit)
         doc['good_of_fit'] = good_of_fit
         return doc
 
@@ -87,7 +82,15 @@ class VlenfPolynomialFitter():
                     short = True
         doc = {}
         doc['type'] = 'track'
-        doc['x'] = self.Fit(X_view)
-        doc['y'] = self.Fit(Y_view)
+        try:
+            doc['x'] = self.Fit(X_view)
+        except:
+            doc['x'] = None
+
+        try:
+            doc['y'] = self.Fit(Y_view)
+        except:
+            doc['y'] = None
+            
         doc['short'] = short
         return [doc]
