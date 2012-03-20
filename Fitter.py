@@ -43,21 +43,13 @@ class VlenfPolynomialFitter():
         bestparams = pbest[0]
         cov_x = pbest[1]
         good_of_fit = sum(pbest[2]['fvec'] ** 2)                                                        
-        #print 'best fit parameters ',bestparams                                                         
-        #print cov_x
         datafit = dbexpl(z,bestparams)
-        #plot(z,trans,'x',z,datafit,'r')
-        #self.log.error('data %s %s', str(z), str(trans))
-        #self.log.error('fit %s %s', str(z), str(datafit))
-        #xlabel('Time')
-        grid(True)
-        show()
 
         doc = {}
         doc['params'] = list(bestparams)
         doc['z'] = list(z)
         doc['trans'] = list(trans)
-        doc['good_of_fit'] = good_of_fit
+        doc['gof'] = good_of_fit
         return doc
 
     def Process(self, docs):
@@ -83,14 +75,27 @@ class VlenfPolynomialFitter():
         doc = {}
         doc['type'] = 'track'
         try:
-            doc['x'] = self.Fit(X_view)
-        except:
-            doc['x'] = None
+            fitx_doc = self.Fit(X_view)
+            fity_doc = self.Fit(Y_view)
 
-        try:
-            doc['y'] = self.Fit(Y_view)
+            for fit_doc in [fitx_doc, fity_doc]:
+                assert len(fit_doc['params']) == 2
+
+            doc['gof_x'] = fitx_doc['gof']
+            doc['gof_y'] = fity_doc['gof']
+
+            doc['x0'] = fitx_doc['params'][0]
+            doc['x1'] = fitx_doc['params'][1]
+            
+            doc['y0'] = fity_doc['params'][0]
+            doc['y1'] = fity_doc['params'][1]
+            
+            doc['x'] = fitx_doc
+            doc['y'] = fity_doc
+
+            doc['analyzable'] = True
         except:
-            doc['y'] = None
+            doc['analyzable'] = False
             
         doc['short'] = short
         return [doc]
