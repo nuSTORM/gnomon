@@ -30,15 +30,15 @@ class VlenfPolynomialFitter():
  
         def dbexpl(t,p):
             if p[0] >= 0:
-                return(p[0] + p[1] * t**2)
+                return(p[0] - p[1] * t + p[2] * t**2)
             else:
-                return(p[0] - p[1] * t**2)
+                return(p[0] - p[1] * t - p[2] * t**2)
 
         def residuals(p,data,t):
             err = data - dbexpl(t,p)
             return err
         
-        p0 = [0.5,1] # initial guesses                                                             
+        p0 = [1,1,1] # initial guesses                                                             
         pbest = leastsq(residuals,p0,args=(trans, z),full_output=1)
         bestparams = pbest[0]
         cov_x = pbest[1]
@@ -79,23 +79,26 @@ class VlenfPolynomialFitter():
             fity_doc = self.Fit(Y_view)
 
             for fit_doc in [fitx_doc, fity_doc]:
-                assert len(fit_doc['params']) == 2
+                assert len(fit_doc['params']) == 3
 
             doc['gof_x'] = fitx_doc['gof']
             doc['gof_y'] = fity_doc['gof']
 
             doc['x0'] = fitx_doc['params'][0]
             doc['x1'] = fitx_doc['params'][1]
+            doc['x2'] = fitx_doc['params'][2]
             
             doc['y0'] = fity_doc['params'][0]
             doc['y1'] = fity_doc['params'][1]
+            doc['y2'] = fity_doc['params'][2]
             
             doc['x'] = fitx_doc
             doc['y'] = fity_doc
 
             doc['analyzable'] = True
         except:
-            doc['analyzable'] = False
+            #doc['analyzable'] = False
+            raise
             
         doc['short'] = short
         return [doc]
