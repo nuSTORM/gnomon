@@ -51,8 +51,10 @@ if __name__ == "__main__":
     group = parser.add_argument_group('GeneratorAction', 'Input of particles to simulate')
     group.add_argument('--momentum', metavar='N', type=float, nargs=3, help='momentum MeV/c (requires particle)')
     group.add_argument('--pid', type=int, help='Geant4 particle number (requires particle, default=-13)')
+
     group1 = group.add_mutually_exclusive_group()
-    group1.add_argument('--genie', '-g', action='store_true', help='Use Genie events')
+    group1.add_argument('--genie', '-g', type=str, help="genie")
+
     group1.add_argument('--particle', '-p', action='store_true', help='Use particle gun')
 
     group2 = group.add_mutually_exclusive_group(required=True)
@@ -106,7 +108,7 @@ if __name__ == "__main__":
     else:
         if not args.genie:
             log.warning('No generator action set, assuming GenieGeneratorAction')
-        pga = GeneratorAction.GenieGeneratorAction()
+        pga = GeneratorAction.GenieGeneratorAction(args.genie)
         
     if args.vertex:
         pga.setVertex(args.vertex)

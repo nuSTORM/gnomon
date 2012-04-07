@@ -91,15 +91,19 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
 
-    def __init__(self):
+    def __init__(self, filename):
         VlenfGeneratorAction.__init__(self)
         self.event_list = self.get_next_events()
+        self.filename = filename
 
     def get_next_events(self):
-        f = ROOT.TFile('ntuple_neg14.root')
-        t = f.Get('gst')
-
-        n = t.GetEntries()
+        f = ROOT.TFile(self.filename)
+        try:
+            t = f.Get('gst')
+            n = t.GetEntries()
+        except:
+            self.log.critical('Could not open the ROOT file with Genie events')
+            raise
 
         for i in range(n):
             t.GetEntry(i)
