@@ -11,7 +11,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.world = None
         self.gdml_parser = G4.G4GDMLParser()
         self.sensitive_detector = None
-        self.filename = "gdml/iron_scint_bars.gdml"
+        self.filename = "data/iron_scint_bars.gdml"
         self.field_manager = None
         self.field_polarity = field_polarity
 
