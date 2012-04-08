@@ -82,9 +82,6 @@ class ProcessConfiguration():
 
         if self.db: return self.db # already exists
 
-        if name in self.couch:
-            self.log.warning('DB already exists: %s', name)
-                
         self.setupDB(couch, self.getDBName())
         self.db = couch[self.getDBName()]
         return self.db

@@ -9,7 +9,7 @@ from Digitizer import VlenfSimpleDigitizer
 from Fitter import VlenfPolynomialFitter
 
 from processors.Utils import Compactor
-from DataManager import CouchManager
+from DataManager import CouchManager, FileManager
 
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
@@ -30,6 +30,9 @@ class VlenfEventAction(G4.G4UserEventAction):
         
         # used to fetch mchits, only way given geant
         self.sd = None
+
+        # Used to fetch what Geant4 is runing
+        self.ga = None
         
     def BeginOfEventAction(self, event):
         """Executed at the beginning of an event, print hits"""
@@ -39,12 +42,21 @@ class VlenfEventAction(G4.G4UserEventAction):
     def setSD(self, sd):
         self.sd = sd
 
+    def setGA(self, ga):
+        """Set generatoraction"""
+        self.ga = ga
+
     def EndOfEventAction(self, event):
         """Executed at the end of an event, do nothing"""
         self.log.info('Processed event %d', event.GetEventID())
 
         docs = self.sd.getDocs()
         self.sd.clearDocs()
+
+        docs.append({'events':self.ga.getEvents(),
+                     'type':'primary',
+                     'event':event.GetEventID(),
+                     'run': self.config.getRunNumber()})
 
         for processor in self.processors:
             docs = processor.Process(docs)

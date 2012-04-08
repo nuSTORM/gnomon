@@ -9,7 +9,10 @@ import Geant4 as G4
 import ROOT
 
 import logging
+import sys
+import os
 import random
+import tempfile
 
 class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     """Base class for VLENF generator actions"""
@@ -37,7 +40,7 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
             x = random.uniform(-2500, 5000)
             y = random.uniform(-2500, 5000)
             z = random.uniform(-30*222, 30*222)
-            self.log.info('Using vertex %f %f %f', x, y, z)
+            self.log.debug('Using vertex %f %f %f', x, y, z)
             v.SetPosition(x,y,z)
         else:
             v.SetPosition(self.vertex[0] * G4.mm,
@@ -91,10 +94,30 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
 
-    def __init__(self, filename):
+    def __init__(self, filename, create=True):
         VlenfGeneratorAction.__init__(self)
         self.event_list = self.get_next_events()
         self.filename = filename
+
+        if create:  # a better interface should be created
+            self.generate_file()
+
+        self.events = {}  # Events that are being run
+
+    def getEvents(self):
+        return self.events
+
+    def generate_file(self):
+        id, filename = tempfile.mkstemp(suffix='.root')
+
+        #export GSPLOAD=$DATA_DIR/xsec.xml
+
+        fake_run = random.randint(1, sys.maxint) # avoids race conditions
+        os.system("GSPLOAD=data/xsec.xml gevgen -p -14 -r %d -t 1000260560 -n 100 -e 0.1,2.0 -f data/flux_file_mu.dat  > /dev/null" % fake_run)
+        os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" % (fake_run, filename))
+        os.system('rm gntp.%d.ghep.root' % fake_run)
+        self.filename = filename
+        
 
     def get_next_events(self):
         f = ROOT.TFile(self.filename)
@@ -151,8 +174,8 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             yield next_events
 
     def GeneratePrimaries(self, event):
-        events = next(self.event_list)
-        for particle in events:
+        self.events = next(self.event_list)
+        for particle in self.events:
             pp = G4.G4PrimaryParticle()
             pp.SetPDGcode(particle['code'])
 

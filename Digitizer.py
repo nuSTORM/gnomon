@@ -26,16 +26,18 @@ class VlenfSimpleDigitizer():
         hits_dict = {}
 
         for doc in docs:
-            print doc.keys()
-            number_run = doc['number_run']
-            number_event = doc['number_event']
+            if doc['type'] != 'mchit':
+                new_docs.append(doc)
+                continue
+
+            run = doc['run']
+            event = doc['event']
             layer = doc['layer']
             bar = doc['bar']
             view = doc['view']
             position_bar = doc['position_bar']
 
-            key = (number_run, number_event, layer, bar, view)
-            print type(key)
+            key = (run, event, layer, bar, view)
 
             if key not in hits_dict.keys():
                 hits_dict[key] = []
@@ -45,8 +47,8 @@ class VlenfSimpleDigitizer():
             
             digit = {}
             digit['type'] = 'digit'
-            digit['number_run'] = number_run
-            digit['number_event'] = number_event
+            digit['run'] = run
+            digit['event'] = event
             digit['layer'] = layer
             digit['bar'] = bar
             digit['view'] = view

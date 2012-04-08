@@ -137,10 +137,11 @@ if __name__ == "__main__":
     #  to perform a bulk commit of 'mchit's to the event store.  It's meant
     #  to be an optimization since writing tons of small 'mchit's individually
     #  to the database is slow.
-    #
-    #  This can be disabled for conceptually clarify in SD.py
     sd = detector.getSensitiveDetector()
     myEA.setSD(sd)
+
+    #  Grab initial values
+    myEA.setGA(pga)
 
     if args.display:
         gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")

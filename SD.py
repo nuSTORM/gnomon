@@ -89,7 +89,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['z'] = guess_z
 
         # 0.1 mm tolerance
-        self.log.debug('Finding bar longitudinal position: Guess in z: %f, Position in z: %f', guess_z, position.z)
+        #self.log.debug('Finding bar longitudinal position: Guess in z: %f, Position in z: %f', guess_z, position.z)
         diff = math.fabs(guess_z - position.z)
         threshold = self.thickness_bar/2 + 0.1 * G4.mm 
         assert diff <= threshold
@@ -106,7 +106,7 @@ class ScintSD(G4.G4VSensitiveDetector):
             doc['x'] = 0
 
         # 0.1 mm tolerance
-        self.log.debug('Finding bar transverse position: Guess in z: %f, Position in z: %f', guess_trans, trans)
+        #self.log.debug('Finding bar transverse position: Guess in z: %f, Position in z: %f', guess_trans, trans)
         diff = math.fabs(trans-guess_trans)
         threshold = self.width/2 + 1 * G4.mm
         assert diff <= threshold
@@ -141,8 +141,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['layer'] = theTouchable.GetCopyNumber(2)
         doc['view'] = view
 
-        doc['number_run'] = self.config.getRunNumber()
-        doc['number_event'] = self.event #self.config.getEventNumber()
+        doc['run'] = self.config.getRunNumber()
+        doc['event'] = self.event
 
         doc['position_bar']  = self.getMCHitBarPosition(doc['layer'],
                                                         doc['bar'],

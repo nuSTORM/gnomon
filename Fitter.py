@@ -53,10 +53,23 @@ class VlenfPolynomialFitter():
         return doc
 
     def Process(self, docs):
+        run = None
+        event = None
+
+        new_docs = []
+
         X_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
         Y_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
 
         for doc in docs:
+            if doc['type'] != 'digit':
+                new_docs.append(doc)
+                continue
+
+            if event == None: event = doc['event']
+            if run == None:   run   = doc['run']
+            assert run == doc['run'] and event == doc['event']
+                
             view, position = doc['view'], doc['position']
 
             if view == 'X':
@@ -74,6 +87,8 @@ class VlenfPolynomialFitter():
                     short = True
         doc = {}
         doc['type'] = 'track'
+        doc['run'] = run
+        doc['event'] = event
         try:
             fitx_doc = self.Fit(X_view)
             fity_doc = self.Fit(Y_view)
@@ -97,8 +112,9 @@ class VlenfPolynomialFitter():
 
             doc['analyzable'] = True
         except:
-            #doc['analyzable'] = False
-            raise
+            doc['analyzable'] = False
+            #raise
             
         doc['short'] = short
-        return [doc]
+        new_docs.append(doc)
+        return new_docs
