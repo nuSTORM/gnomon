@@ -53,7 +53,7 @@ if __name__ == "__main__":
     group.add_argument('--pid', type=int, help='Geant4 particle number (requires particle, default=-13)')
 
     group1 = group.add_mutually_exclusive_group()
-    group1.add_argument('--genie', '-g', type=str, help="genie")
+    group1.add_argument('--genie', '-g', choices=['mu_sig', 'mu_bar_bkg'], default='mu_sig')
 
     group1.add_argument('--particle', '-p', action='store_true', help='Use particle gun')
 
@@ -97,9 +97,6 @@ if __name__ == "__main__":
     exN03PL.SetDefaultCutValue(1.0 * mm)
     exN03PL.SetCutsWithDefault()
 
-    myEA = EventAction.VlenfEventAction()
-    gRunManager.SetUserAction(myEA)
-    
     #
     #  Generator actions
     #
@@ -108,7 +105,7 @@ if __name__ == "__main__":
     else:
         if not args.genie:
             log.warning('No generator action set, assuming GenieGeneratorAction')
-        pga = GeneratorAction.GenieGeneratorAction(args.genie)
+        pga = GeneratorAction.GenieGeneratorAction(args.genie, args.events)
         
     if args.vertex:
         pga.setVertex(args.vertex)
@@ -130,6 +127,9 @@ if __name__ == "__main__":
 
     gRunManager.SetUserAction(pga)
 
+    myEA = EventAction.VlenfEventAction(pga)
+    gRunManager.SetUserAction(myEA)
+
     gRunManager.Initialize()
 
     #  This is a trick that, if enabled, lets the event action notify the
@@ -139,9 +139,6 @@ if __name__ == "__main__":
     #  to the database is slow.
     sd = detector.getSensitiveDetector()
     myEA.setSD(sd)
-
-    #  Grab initial values
-    myEA.setGA(pga)
 
     if args.display:
         gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")

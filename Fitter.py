@@ -37,19 +37,24 @@ class VlenfPolynomialFitter():
         def residuals(p,data,t):
             err = data - dbexpl(t,p)
             return err
-        
-        p0 = [1,1,1] # initial guesses                                                             
-        pbest = leastsq(residuals,p0,args=(trans, z),full_output=1)
-        bestparams = pbest[0]
-        cov_x = pbest[1]
-        good_of_fit = sum(pbest[2]['fvec'] ** 2)                                                        
-        datafit = dbexpl(z,bestparams)
 
         doc = {}
-        doc['params'] = list(bestparams)
         doc['z'] = list(z)
         doc['trans'] = list(trans)
-        doc['gof'] = good_of_fit
+        
+        try:
+            p0 = [1,1,1] # initial guesses                                                             
+            pbest = leastsq(residuals,p0,args=(trans, z),full_output=1)
+            bestparams = pbest[0]
+            cov_x = pbest[1]
+            good_of_fit = sum(pbest[2]['fvec'] ** 2)                                                        
+            datafit = dbexpl(z,bestparams)
+            doc['params'] = list(bestparams)
+            doc['gof'] = good_of_fit
+        except:
+            doc['gof'] = 'FAIL'
+            doc['params'] = [0,0,0]
+            
         return doc
 
     def Process(self, docs):
@@ -89,32 +94,33 @@ class VlenfPolynomialFitter():
         doc['type'] = 'track'
         doc['run'] = run
         doc['event'] = event
-        try:
-            fitx_doc = self.Fit(X_view)
-            fity_doc = self.Fit(Y_view)
 
-            for fit_doc in [fitx_doc, fity_doc]:
-                assert len(fit_doc['params']) == 3
+        fitx_doc = self.Fit(X_view)
+        fity_doc = self.Fit(Y_view)
 
-            doc['gof_x'] = fitx_doc['gof']
-            doc['gof_y'] = fity_doc['gof']
+        for fit_doc in [fitx_doc, fity_doc]:
+            assert len(fit_doc['params']) == 3
 
-            doc['x0'] = fitx_doc['params'][0]
-            doc['x1'] = fitx_doc['params'][1]
-            doc['x2'] = fitx_doc['params'][2]
             
-            doc['y0'] = fity_doc['params'][0]
-            doc['y1'] = fity_doc['params'][1]
-            doc['y2'] = fity_doc['params'][2]
-            
-            doc['x'] = fitx_doc
-            doc['y'] = fity_doc
+        doc['gof_x'] = fitx_doc['gof']
+        doc['gof_y'] = fity_doc['gof']
 
-            doc['analyzable'] = True
-        except:
+        if doc['gof_x'] == 'FAIL' or doc['gof_y'] == 'FAIL':
             doc['analyzable'] = False
-            #raise
+        else:
+            doc['analyzable'] = True
+
+        doc['x0'] = fitx_doc['params'][0]
+        doc['x1'] = fitx_doc['params'][1]
+        doc['x2'] = fitx_doc['params'][2]
             
+        doc['y0'] = fity_doc['params'][0]
+        doc['y1'] = fity_doc['params'][1]
+        doc['y2'] = fity_doc['params'][2]
+            
+        doc['x'] = fitx_doc
+        doc['y'] = fity_doc
+
         doc['short'] = short
         new_docs.append(doc)
         return new_docs

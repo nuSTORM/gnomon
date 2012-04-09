@@ -34,9 +34,9 @@ class CouchManager(Manager):
         self.log.debug('Bulk commit requested')
         size = sys.getsizeof(self.docs)
 
-        self.log.debug('Size of docs in bytes: %d', size)
+        self.log.debug('Size of docs in KB: %d', size)
         if size > self.commit_threshold or force:
-            self.log.info('Commiting %d bytes to CouchDB' % size)
+            self.log.info('Commiting %d KB to CouchDB' % size)
             self.db.update(self.docs)
             self.docs = []
 

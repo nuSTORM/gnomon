@@ -94,18 +94,19 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
 
-    def __init__(self, filename, create=True):
+    def __init__(self, event_type, nevents):
         VlenfGeneratorAction.__init__(self)
         self.event_list = self.get_next_events()
-        self.filename = filename
 
-        if create:  # a better interface should be created
-            self.generate_file()
+        self.event_type = event_type
+        self.nevents = nevents
 
-        self.events = {}  # Events that are being run
+        self.generate_file()
 
-    def getEvents(self):
-        return self.events
+        self.mc_info = None  # Info on what is simulated
+
+    def getMCInfo(self):
+        return self.mc_info
 
     def generate_file(self):
         id, filename = tempfile.mkstemp(suffix='.root')
@@ -113,7 +114,13 @@ class GenieGeneratorAction(VlenfGeneratorAction):
         #export GSPLOAD=$DATA_DIR/xsec.xml
 
         fake_run = random.randint(1, sys.maxint) # avoids race conditions
-        os.system("GSPLOAD=data/xsec.xml gevgen -p -14 -r %d -t 1000260560 -n 100 -e 0.1,2.0 -f data/flux_file_mu.dat  > /dev/null" % fake_run)
+
+        if self.event_type == 'mu_bar_bkg':
+            os.system("GSPLOAD=data/xsec.xml gevgen -p -14 -r %d -t 1000260560 -n %d -e 0.1,2.0 -f data/flux_file_mu.dat  > /dev/null" % (fake_run, self.nevents))
+        elif self.event_type == 'mu_sig'
+            os.system("GSPLOAD=data/xsec.xml gevgen -p 14 -r %d -t 1000260560 -n %d -e 0.1,2.0 -f data/flux_file_e.dat  > /dev/null" % (fake_run, self.nevents))
+        else:
+            raise ValueError()
         os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" % (fake_run, filename))
         os.system('rm gntp.%d.ghep.root' % fake_run)
         self.filename = filename
@@ -155,14 +162,18 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
                 next_events.append(hadron_event)
 
+            event_type = {}
+
             self.log.debug('Event type:')
             for my_type in ['qel', 'res', 'dis', 'coh', 'dfr',
                          'imd', 'nuel', 'em']:
                 self.log.debug('\t%s:%d', my_type, t.__getattr__(my_type))
+                event_type[my_type] = t.__getattr__(my_type)
 
             self.log.debug('Propogator:')
             for prop in ['nc', 'cc']:
                 self.log.debug('\t%s:%d', prop, t.__getattr__(prop))
+                event_type[prop] = t.__getattr__(prop)
 
             self.log.debug('y: %f', t.y)
             try:
@@ -171,11 +182,14 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             except:
                 pass
 
-            yield next_events
+            yield next_events, event_type
 
     def GeneratePrimaries(self, event):
-        self.events = next(self.event_list)
-        for particle in self.events:
+        particles, event_type = next(self.event_list)
+
+        self.mc_info = {'particles' : particles, 'event_type' : event_type}
+
+        for particle in particles:
             pp = G4.G4PrimaryParticle()
             pp.SetPDGcode(particle['code'])
 
