@@ -8,7 +8,7 @@ class RecursiveLength:
         pass
 
     def getMaxDistance(z, points_x, points_y):
-        for 
+        pass
 
     def Process(self, docs):
         new_docs = []
@@ -20,8 +20,6 @@ class RecursiveLength:
 
             if 'classification' not in doc:
                 doc['classification'] = {}
-
-
 
             points_z = doc['x']['z'] + doc['y']['z']
 

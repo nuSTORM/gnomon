@@ -10,7 +10,7 @@ from Fitter import VlenfPolynomialFitter
 from Truth import AppendTruth
 from processors.Utils import Compactor
 from DataManager import CouchManager, FileManager
-from Classifier import Length, ContinousLength
+from Classifier import ContinousLength
 
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
@@ -28,7 +28,6 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.processors.append(VlenfSimpleDigitizer())
         self.processors.append(VlenfPolynomialFitter())
         self.processors.append(AppendTruth(pga))
-        self.processors.append(Length())
         self.processors.append(ContinousLength())
         self.processors.append(CouchManager())
         

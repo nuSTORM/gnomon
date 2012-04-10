@@ -105,6 +105,9 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
         self.mc_info = None  # Info on what is simulated
 
+    def __del__(self):
+        os.remove(self.filename)
+
     def getMCInfo(self):
         return self.mc_info
 
@@ -117,7 +120,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
         if self.event_type == 'mu_bar_bkg':
             os.system("GSPLOAD=data/xsec.xml gevgen -p -14 -r %d -t 1000260560 -n %d -e 0.1,2.0 -f data/flux_file_mu.dat  > /dev/null" % (fake_run, self.nevents))
-        elif self.event_type == 'mu_sig'
+        elif self.event_type == 'mu_sig':
             os.system("GSPLOAD=data/xsec.xml gevgen -p 14 -r %d -t 1000260560 -n %d -e 0.1,2.0 -f data/flux_file_e.dat  > /dev/null" % (fake_run, self.nevents))
         else:
             raise ValueError()
@@ -143,7 +146,10 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:
                 lepton_event['code'] = -14
             else:
-                lepton_event['code'] = -13
+                if self.event_type == 'mu_bar_bkg':
+                    lepton_event['code'] = -13
+                elif self.event_type == 'mu_sig':
+                    lepton_event['code'] = 13
             lepton_event['E'] = t.El
             lepton_event['px'] = t.pxl
             lepton_event['py'] = t.pyl
@@ -204,3 +210,5 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             v.SetPrimary(pp)
 
             event.AddPrimaryVertex(v)
+
+    
