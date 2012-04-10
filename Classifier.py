@@ -2,12 +2,13 @@
 
 import logging
 import sys
+import math
 
-class RecursiveLength:
+class ComputeHadronicEnergy:
+    def __init__(self):
+        self.threshold = 40.0
+
     def Shutdown(self):
-        pass
-
-    def getMaxDistance(z, points_x, points_y):
         pass
 
     def Process(self, docs):
@@ -21,12 +22,28 @@ class RecursiveLength:
             if 'classification' not in doc:
                 doc['classification'] = {}
 
-            points_z = doc['x']['z'] + doc['y']['z']
 
-            points_z.sort()
-            points_z.reverse()
+            E_hadron = 0.0
 
-            doc['classification']['length'] = value_max - value_min
+            for view_name in ['x', 'y']:
+                whole_view = doc[view_name]
+                good_view = doc['extracted_%s' % view_name]
+                
+                # Inefficient, but clean code
+                all_points = zip(whole_view['z'], whole_view['trans'])
+                good_points = zip(good_view['z'], good_view['trans'])
+
+                # O(n**2) algorithm, yuck.
+                for z0, x0 in all_points:
+                    is_good = False
+                    for z1, x1 in good_points:
+                        if math.hypot(z1 - z0, x1 - x0) < self.threshold:
+                            is_good = True
+
+                    if not is_good:
+                        E_hadron += 1
+
+            doc['classification']['E_hadron'] = E_hadron
 
             new_docs.append(doc)
 

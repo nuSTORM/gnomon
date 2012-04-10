@@ -8,6 +8,110 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
+class ExtractTrack():
+    """Extract track"""
+
+    def __init__(self):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+
+    def ExtractFromView(self, z, x):
+        #  Create a lookup table
+        point_dict = {}
+        for z0, x0 in zip(z,x):
+            if z0 not in point_dict:
+                point_dict[z0] = []
+            point_dict[z0].append(x0)
+                
+        #  Grab points in 'z' with hits, and reverse sort
+        keys = point_dict.keys()
+        keys.sort()
+        keys.reverse()
+
+        if len(keys) == 0:
+            return [], [], 0.0
+
+        length = 0.0
+        new_z, new_x = [ keys[0] ], [ point_dict[keys[0]][0] ]
+        for z1 in keys:
+            z0 = new_z[-1]
+            x0 = new_x[-1]
+            best_z, best_x = None, None
+            
+            for x1 in point_dict[z1]:
+                if best_z == None and best_x == None:
+                    best_z = z1
+                    best_x = x1
+                    
+                dz = z1 - z0
+                dx = x1 - x0
+                    
+                if math.hypot(dz, dx) < math.hypot(best_z - z0, best_x - x0):
+                    best_z = z1
+                    best_x = x1
+                        
+            if math.hypot(best_z - z0, best_x - x0) > 200.0:  # threshold
+                
+                return new_z, new_x, length
+            
+            length += math.hypot(best_z - z0, best_x - x0)
+            new_z.append(best_z)
+            new_x.append(best_x)
+        return new_z, new_x, length
+                    
+    def Process(self, docs):
+        run = None
+        event = None
+
+        new_docs = []
+                
+        X_view = {'trans' : [], 'z' : []}
+        Y_view = {'trans' : [], 'z' : []}
+
+        for doc in docs:
+            if doc['type'] != 'digit':
+                new_docs.append(doc)
+                continue
+
+            if event == None: event = doc['event']
+            if run == None:   run   = doc['run']
+            assert run == doc['run'] and event == doc['event']
+            
+            view, position = doc['view'], doc['position']
+            
+            if view == 'X':
+                X_view['trans'].append(position['x'])
+                X_view['z'].append(position['z'])
+            else:
+                Y_view['trans'].append(position['y'])
+                Y_view['z'].append(position['z'])
+
+
+        doc = {}
+        doc['type'] = 'track'
+        doc['run'] = run
+        doc['event'] = event
+        doc['x'] = X_view
+        doc['y'] = Y_view
+
+        doc['classification'] = {}
+
+        z, trans, l = self.ExtractFromView(X_view['z'], X_view['trans'])
+
+        doc['classification']['length_x']   = l
+        doc['extracted_x'] = {'z' : z, 'trans' : trans}
+        
+        z, trans, l = self.ExtractFromView(Y_view['z'], Y_view['trans'])
+
+        doc['classification']['length_y']   = l
+        doc['extracted_y'] = {'z' : z, 'trans' : trans}
+        
+        new_docs.append(doc)
+        return new_docs
+
+    def Shutdown(self):
+        pass
+
 class VlenfPolynomialFitter():
     """The VLENF digitizer where the energy deposited is multiplied by a generic
     energy scale."""
@@ -21,12 +125,12 @@ class VlenfPolynomialFitter():
     def Shutdown(self):
         pass
 
-    def Fit(self, view):
+    def Fit(self, z, trans):
         """Returns results of fit
 
         """
-        z = view['z']
-        trans = view['trans']
+        z = np.array(z)
+        trans = np.array(trans)
  
         def dbexpl(t,p):
             if p[0] >= 0:
@@ -39,11 +143,9 @@ class VlenfPolynomialFitter():
             return err
 
         doc = {}
-        doc['z'] = list(z)
-        doc['trans'] = list(trans)
         
         try:
-            p0 = [1,1,1] # initial guesses                                                             
+            p0 = [1,0,0] # initial guesses                                                             
             pbest = leastsq(residuals,p0,args=(trans, z),full_output=1)
             bestparams = pbest[0]
             cov_x = pbest[1]
@@ -58,69 +160,34 @@ class VlenfPolynomialFitter():
         return doc
 
     def Process(self, docs):
-        run = None
-        event = None
-
         new_docs = []
-
-        X_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
-        Y_view = {'trans' : numpy.array([]), 'z' : numpy.array([])}
-
         for doc in docs:
-            if doc['type'] != 'digit':
+            if 'type' not in doc or doc['type'] != 'track':
                 new_docs.append(doc)
                 continue
 
-            if event == None: event = doc['event']
-            if run == None:   run   = doc['run']
-            assert run == doc['run'] and event == doc['event']
-                
-            view, position = doc['view'], doc['position']
+            fitx_doc = self.Fit(doc['extracted_x']['z'], doc['extracted_x']['trans'])
+            fity_doc = self.Fit(doc['extracted_y']['z'], doc['extracted_y']['trans'])
 
-            if view == 'X':
-                X_view['trans'] = append(X_view['trans'], position['x'])
-                X_view['z'] = append(X_view['z'], position['z'])
+            for fit_doc in [fitx_doc, fity_doc]:
+                assert len(fit_doc['params']) == 3
+
+            doc['gof_x'] = fitx_doc['gof']
+            doc['gof_y'] = fity_doc['gof']
+
+            if doc['gof_x'] == 'FAIL' or doc['gof_y'] == 'FAIL':
+                doc['analyzable'] = False
             else:
-                Y_view['trans'] = append(Y_view['trans'], position['y'])
-                Y_view['z'] = append(Y_view['z'], position['z'])
-                
+                doc['analyzable'] = True
 
-        short = False
-        for view in [X_view, Y_view]:
-            for key in view:
-                if len(view[key]) < 10:
-                    short = True
-        doc = {}
-        doc['type'] = 'track'
-        doc['run'] = run
-        doc['event'] = event
-
-        fitx_doc = self.Fit(X_view)
-        fity_doc = self.Fit(Y_view)
-
-        for fit_doc in [fitx_doc, fity_doc]:
-            assert len(fit_doc['params']) == 3
-
+            doc['x0'] = fitx_doc['params'][0]
+            doc['x1'] = fitx_doc['params'][1]
+            doc['x2'] = fitx_doc['params'][2]
             
-        doc['gof_x'] = fitx_doc['gof']
-        doc['gof_y'] = fity_doc['gof']
-
-        if doc['gof_x'] == 'FAIL' or doc['gof_y'] == 'FAIL':
-            doc['analyzable'] = False
-        else:
-            doc['analyzable'] = True
-
-        doc['x0'] = fitx_doc['params'][0]
-        doc['x1'] = fitx_doc['params'][1]
-        doc['x2'] = fitx_doc['params'][2]
+            doc['y0'] = fity_doc['params'][0]
+            doc['y1'] = fity_doc['params'][1]
+            doc['y2'] = fity_doc['params'][2]
             
-        doc['y0'] = fity_doc['params'][0]
-        doc['y1'] = fity_doc['params'][1]
-        doc['y2'] = fity_doc['params'][2]
             
-        doc['x'] = fitx_doc
-        doc['y'] = fity_doc
-
-        doc['short'] = short
-        new_docs.append(doc)
+            new_docs.append(doc)
         return new_docs

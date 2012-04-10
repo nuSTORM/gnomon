@@ -6,11 +6,11 @@ import logging
 import Geant4 as G4
 import Configuration
 from Digitizer import VlenfSimpleDigitizer
-from Fitter import VlenfPolynomialFitter
+from Fitter import VlenfPolynomialFitter, ExtractTrack
 from Truth import AppendTruth
 from processors.Utils import Compactor
 from DataManager import CouchManager, FileManager
-from Classifier import ContinousLength
+from Classifier import ComputeHadronicEnergy
 
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
@@ -26,9 +26,10 @@ class VlenfEventAction(G4.G4UserEventAction):
 
         self.processors = []
         self.processors.append(VlenfSimpleDigitizer())
+        self.processors.append(ExtractTrack())
         self.processors.append(VlenfPolynomialFitter())
         self.processors.append(AppendTruth(pga))
-        self.processors.append(ContinousLength())
+        self.processors.append(ComputeHadronicEnergy())
         self.processors.append(CouchManager())
         
         # used to fetch mchits, only way given geant
