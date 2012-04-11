@@ -8,6 +8,66 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
+class MakeDoublets():
+    """Make doublets of adjacent hits"""
+
+    def __init__(self):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+
+    def Shutdown(self):
+        pass
+
+    def Process(self, docs):
+        {'layer': 221, 'run': 5738448814368238378, 'counts_adc': 403.2399750058647, 'position': {'y': -2035.0, 'x': 0, 'z': -5.0}, 'bar': 46, 'type': 'digit', 'event': 8, 'view': 'Y'}, {'layer': 221, 'run': 5738448814368238378, 'counts_adc': 226.93215268344736, 'position': {'y': 0, 'x': 1775.0, 'z': -15.0}, 'bar': 427, 'type': 'digit', 'event': 8, 'view': 'X'}
+
+        new_docs = []
+
+        #  Generate a dictionary with the key being a layer and the value being
+        #  the digit document
+        layer_dict = {}
+        for doc in docs:
+            if 'type' not in doc or doc['type'] != 'digit':
+                new_docs.append(doc)
+
+            if doc['layer'] not in layer_dict:
+                layer_dict[doc['layer']] = []
+
+            layer_dict[doc['layer']].append(doc)
+                          
+                
+        for layer, docs_in_same_layer in layer_dict.iteritems():
+
+            # For every layer, make a dictionary indexed by bar value with the
+            # value being the doc
+            bar_dict = {}
+            for doc in docs_in_same_layer:
+                if doc['bar'] in bar_dict:
+                    self.log.error('Two digits for the same layer/bar combo found', doc, bar_dict)
+                    raise LookupError()
+                
+                bar_dict[doc['bar']] = doc
+
+            keys = bar_dict.keys()
+            keys.sort()
+
+            seen = []
+
+            for i, key in enumerate(keys):
+                if key in seen or i+1 == len(keys):
+                    continue
+
+#{'layer': 221, 'run': 5738448814368238378, 'counts_adc': 226.93215268344736, 'position': {'y': 0, 'x': 1775.0, 'z': -15\
+.0}, 'bar': 427, 'type': 'digit', 'event': 8, 'view': 'X'}
+
+                    
+                if keys[i+1] - key == 1:
+                    seen.append(keys[i+1])
+                    
+                print i, key, keys[i+1]
+        
+        return docs
+
 class ExtractTrack():
     """Extract track"""
 
