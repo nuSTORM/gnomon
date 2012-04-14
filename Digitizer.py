@@ -63,6 +63,8 @@ class VlenfSimpleDigitizer():
             for partial_digit in value:
                 total_counts_adc += partial_digit['counts_adc']
 
+            total_counts_adc = int(total_counts_adc)
+
             if total_counts_adc > self.getThreshold():
                 partial_digit['counts_adc'] = total_counts_adc
                 new_docs.append(partial_digit)

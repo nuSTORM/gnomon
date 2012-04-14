@@ -117,11 +117,14 @@ class GenieGeneratorAction(VlenfGeneratorAction):
         #export GSPLOAD=$DATA_DIR/xsec.xml
 
         fake_run = random.randint(1, sys.maxint) # avoids race conditions
+        seed = random.randint(1, sys.maxint) # avoids race conditions
 
+
+        env_vars = 'GSPLOAD=data/xsec.xml GSEED=%d' % seed
         if self.event_type == 'mu_bar_bkg':
-            os.system("GSPLOAD=data/xsec.xml gevgen -p -14 -r %d -t 1000260560 -n %d -e 0.1,2.0 -f data/flux_file_mu.dat  > /dev/null" % (fake_run, self.nevents))
+            os.system("%s gevgen -p -14 -r %d -t 1000260560 -n %d -e 0.1,2.0 -f data/flux_file_mu.dat  > /dev/null" % (env_vars, fake_run, self.nevents))
         elif self.event_type == 'mu_sig':
-            os.system("GSPLOAD=data/xsec.xml gevgen -p 14 -r %d -t 1000260560 -n %d -e 0.1,2.0 -f data/flux_file_e.dat  > /dev/null" % (fake_run, self.nevents))
+            os.system("%s gevgen -p 14 -r %d -t 1000260560 -n %d -e 0.1,2.0 -f data/flux_file_e.dat  > /dev/null" % (env_vars, fake_run, self.nevents))
         else:
             raise ValueError()
         os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" % (fake_run, filename))

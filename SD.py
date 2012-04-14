@@ -65,7 +65,7 @@ class ScintSD(G4.G4VSensitiveDetector):
             return 'X'
         elif str(lv.GetName())[-1] == 'Y':
             return 'Y'
-        
+
         self.log.error('Cannot determine view for %s', lv.GetName())
         raise 'Cannot determine view for %s' % lv.GetName()
         return view
@@ -74,25 +74,28 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc = {}
 
         guess_z = self.thickness_layer * layer_number
+        guess_z -= self.thickness_bar / 2 # Go to middle of bar
 
         #  TODO This requires more investigation.  See issue #4
         #  Ordering in increasing beam-axis, ie z-axis: steel, X, Y
         if view == 'X':
-            guess_z += self.thickness_layer - 2 * self.thickness_bar
+            guess_z += self.thickness_layer - 1.5 * self.thickness_bar
         else:
-            guess_z += self.thickness_layer - 1 * self.thickness_bar
+            guess_z += self.thickness_layer - 0.5 * self.thickness_bar
 
-        guess_z += self.thickness_bar / 2 # Go to middle of bar
 
         guess_z -= self.thickness_layer * self.layers/2 # Set 0 to middle
 
         doc['z'] = guess_z
 
-        # 0.1 mm tolerance
-        #self.log.debug('Finding bar longitudinal position: Guess in z: %f, Position in z: %f', guess_z, position.z)
         diff = math.fabs(guess_z - position.z)
-        threshold = self.thickness_bar/2 + 0.1 * G4.mm 
-        assert diff <= threshold
+        threshold = self.thickness_bar/2 + 0.1 * G4.mm   # 0.1 mm tolerance
+
+        try:
+            assert diff <= threshold
+        except:
+            self.log.error('Bad longitudinal position: Guess in z: %f, Position in z: %f', guess_z, position.z)
+            raise
 
         guess_trans = bar_number
         guess_trans = self.width * (guess_trans - self.bars/2) + self.width/2
@@ -105,11 +108,14 @@ class ScintSD(G4.G4VSensitiveDetector):
             doc['y'] = guess_trans
             doc['x'] = 0
 
-        # 0.1 mm tolerance
-        #self.log.debug('Finding bar transverse position: Guess in z: %f, Position in z: %f', guess_trans, trans)
         diff = math.fabs(trans-guess_trans)
-        threshold = self.width/2 + 1 * G4.mm
-        assert diff <= threshold
+        threshold = self.width/2 + 1 * G4.mm  # 0.1 mm tolerance
+
+        try:
+            assert diff <= threshold
+        except:
+            self.log.error('Bad transverse position: Guess in z: %f, Position in z: %f', guess_trans, trans)
+            raise
 
         return doc
 
@@ -150,4 +156,4 @@ class ScintSD(G4.G4VSensitiveDetector):
                                                         position)
 
         self.docs.append(doc)
-            
+

@@ -5,9 +5,6 @@ import sys
 import math
 
 class ComputeHadronicEnergy:
-    def __init__(self):
-        self.threshold = 40.0
-
     def Shutdown(self):
         pass
 
@@ -30,18 +27,23 @@ class ComputeHadronicEnergy:
                 good_view = doc['extracted_%s' % view_name]
                 
                 # Inefficient, but clean code
-                all_points = zip(whole_view['z'], whole_view['trans'])
-                good_points = zip(good_view['z'], good_view['trans'])
+                all_points = zip(whole_view['z'], whole_view['trans'], whole_view['E'])
+                good_points = zip(good_view['z'], good_view['trans'], good_view['E'])
+
+                if len(all_points) < 3:
+                    continue
 
                 # O(n**2) algorithm, yuck.
-                for z0, x0 in all_points:
+                for z0, x0, E0 in all_points:
                     is_good = False
-                    for z1, x1 in good_points:
-                        if math.hypot(z1 - z0, x1 - x0) < self.threshold:
+                    for z1, x1, E1 in good_points:
+                        if z1 == z0 and x1 == x0:
                             is_good = True
 
                     if not is_good:
-                        E_hadron += 1
+                        E_hadron += E0
+
+                doc['classification']['fraction_of_track_used_%s' % view_name] = float(len(good_points))/len(all_points)
 
             doc['classification']['E_hadron'] = E_hadron
 
