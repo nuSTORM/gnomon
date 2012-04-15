@@ -8,7 +8,6 @@ import Configuration
 from Digitizer import VlenfSimpleDigitizer
 from Fitter import VlenfPolynomialFitter, ExtractTrack
 from Truth import AppendTruth
-from processors.Utils import Compactor
 from DataManager import CouchManager, FileManager
 from Classifier import ComputeHadronicEnergy
 
