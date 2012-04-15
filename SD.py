@@ -116,8 +116,6 @@ class ScintSD(G4.G4VSensitiveDetector):
         copyNo = theTouchable.GetCopyNumber(0)
         motherCopyNo = theTouchable.GetCopyNumber(1)
 
-        print theTouchable.GetTranslation(0).z
-        
         pv = preStepPoint.GetPhysicalVolume()
         dedx = step.GetTotalEnergyDeposit()
         lv = pv.GetMotherLogical()

@@ -8,7 +8,6 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
-
 class ExtractTrack():
     """Extract track"""
 
@@ -51,7 +50,7 @@ class ExtractTrack():
                 if math.hypot(dz, dx) < math.hypot(z1 - z0, best_x - x0):
                     best_x = x1
 
-            if math.hypot(z1 - z0, best_x - x0) > 50.0:  # threshold
+            if math.hypot(z1 - z0, best_x - x0) > 100.0:  # threshold, BUG FIXME, GDML
 
                 return new_z, new_x, length
 
