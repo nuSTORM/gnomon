@@ -70,21 +70,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         raise 'Cannot determine view for %s' % lv.GetName()
         return view
 
-    def getMCHitBarPosition(self, layer_number, bar_number, view, position):
+    def getMCHitBarPosition(self, layer_number, bar_number, view, position, guess_z):
         doc = {}
-
-        guess_z = self.thickness_layer * layer_number
-        guess_z -= self.thickness_bar / 2 # Go to middle of bar
-
-        #  TODO This requires more investigation.  See issue #4
-        #  Ordering in increasing beam-axis, ie z-axis: steel, X, Y
-        if view == 'X':
-            guess_z += self.thickness_layer - 1.5 * self.thickness_bar
-        else:
-            guess_z += self.thickness_layer - 0.5 * self.thickness_bar
-
-
-        guess_z -= self.thickness_layer * self.layers/2 # Set 0 to middle
 
         doc['z'] = guess_z
 
@@ -94,7 +81,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         try:
             assert diff <= threshold
         except:
-            self.log.error('Bad longitudinal position: Guess in z: %f, Position in z: %f', guess_z, position.z)
+            self.log.error('Bad longitudinal position: Guess in z: %f, Position in z: %f, View: %s', guess_z, position.z, view)
             raise
 
         guess_trans = bar_number
@@ -129,6 +116,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         copyNo = theTouchable.GetCopyNumber(0)
         motherCopyNo = theTouchable.GetCopyNumber(1)
 
+        print theTouchable.GetTranslation(0).z
+        
         pv = preStepPoint.GetPhysicalVolume()
         dedx = step.GetTotalEnergyDeposit()
         lv = pv.GetMotherLogical()
@@ -153,7 +142,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['position_bar']  = self.getMCHitBarPosition(doc['layer'],
                                                         doc['bar'],
                                                         doc['view'],
-                                                        position)
+                                                        position,
+                                                        theTouchable.GetTranslation(0).z)
 
         self.docs.append(doc)
 

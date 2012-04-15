@@ -7,7 +7,7 @@
     <constant name="length" value="5000"/>
     <constant name="width" value="10"/>
     <constant name="thickness_bar" value="10"/>  <!-- z -->
-    <constant name="thickness_steel" value="20"/>  <!-- z -->
+    <constant name="thickness_steel" value="30"/>  <!-- z -->
 
     <constant name="thickness_layer" value="2*thickness_bar + thickness_steel"/>  <!-- z -->
     
@@ -67,7 +67,7 @@
 
     <box lunit="mm" name="LayerSolid" x="length" y="length" z="thickness_layer"/>
     <box lunit="mm" name="CalorimeterSolid" x="length" y="length" z="thickness_layer * layers"/> 
-    <box lunit="m" name="WorldSolid" x="6" y="6" z="20"/> <!-- note units-->
+    <box lunit="m" name="WorldSolid" x="6" y="6" z="30"/> <!-- note units-->
   </solids>
 
   <structure>
@@ -118,7 +118,7 @@
       <solidref ref="LayerSolid"/>
       <physvol name="SteelPlanePhysical">
         <volumeref ref="SteelPlane"/>
-        <position name="SteelPlane_pos" unit="mm" x="0" y="0" z="-20"/>
+        <position name="SteelPlane_pos" unit="mm" x="0" y="0" z="-30"/>
       </physvol>
 
       <physvol name="ScintillatorPlaneXPhysical">
