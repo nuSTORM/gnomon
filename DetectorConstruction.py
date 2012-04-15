@@ -1,3 +1,5 @@
+"""Construct VLENF geometry"""
+
 import Geant4 as G4
 from SD import ScintSD
 
