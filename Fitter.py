@@ -113,7 +113,7 @@ class ExtractTrack():
                 dz = z1 - z0
                 dx = x1 - x0
 
-                # Compute distance and compare to best
+                # Compute distance and compare to best: reject x1?
                 if math.hypot(dz, dx) < math.hypot(z1 - z0, best_x - x0):
                     # The previous best was rejected, so add it to the unextracted list
                     leftovers.append((z1, best_x))
@@ -121,7 +121,7 @@ class ExtractTrack():
                     best_x = x1
                 else:
                     #  Distance too far compared to best, so unextracted
-                    leftovers.append((z1, best_x))
+                    leftovers.append((z1, x1))
 
             #  Make sure we aren't jumping too far.  If we are, throw the best
             # and leftovers into the unextracted bin
