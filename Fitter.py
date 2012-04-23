@@ -8,6 +8,52 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
+class EmptyTrackFromDigits():
+    """ Prepare for track extraction """
+
+    def Shutdown(self):
+        pass
+
+    def Process(self, docs):
+        run = None
+        event = None
+        
+        new_docs = []
+
+        tracks = {'x' : {}, 'y': {}}
+        tracks['x']['LEFTOVERS'] = []
+        tracks['y']['LEFTOVERS'] = []
+        
+        for doc in docs:
+            if doc['type'] != 'digit':
+                new_docs.append(doc)
+                continue
+            
+            if event == None: event = doc['event']
+            if run == None:   run   = doc['run']
+            assert run == doc['run'] and event == doc['event']
+            
+            view, position = doc['view'], doc['position']
+            
+            if view == 'X':
+                tracks['x']['LEFTOVERS'].append((position['z'], position['x']))
+            else:
+                tracks['y']['LEFTOVERS'].append((position['z'], position['y']))
+                
+        doc = {}
+        doc['type'] = 'track'
+
+        doc['run'] = run
+        doc['event'] = event
+
+        doc['analyzable'] = True
+        doc['classification'] = {}
+        doc['tracks'] = tracks
+
+        new_docs.append(doc)
+
+        return new_docs
+
 class ExtractTrack():
     """Extract track"""
 
@@ -17,10 +63,21 @@ class ExtractTrack():
 
         self.bar_width = 10.0 # get from GDML!! BUG FIXME
 
-    def ExtractFromView(self, z, x):
-        #  Create a lookup table
+    def ExtractFromView(self, zx_list):
+        """Extract a track from a collection of points.
+
+        @param xz_list
+
+          A list of (z,x) coordinates.
+
+        @return
+          A list of the following values: a list of extracted points, a list of
+          unextracted values, and a length.
+        """
+
+        #  Create a lookup table index by 'z' coordinate
         point_dict = {}
-        for z0, x0 in zip(z,x):
+        for z0, x0 in zx_list:
             if z0 not in point_dict:
                 point_dict[z0] = []
             point_dict[z0].append(x0)
@@ -30,92 +87,93 @@ class ExtractTrack():
         keys.sort()
         keys.reverse()
 
+        #  If there are no points, just return now
         if len(keys) == 0:
             return [], [], 0.0
 
         length = 0.0
-        new_z, new_x = [ keys[0] ], [ point_dict[keys[0]][0] ]
+        extracted = [(keys[0],point_dict[keys[0]][0])]
+        unextracted = []
+
         for z1 in keys:
-            z0 = new_z[-1]
-            x0 = new_x[-1]
-            best_x = None
+            # Grab last point so we can make sure that we aren't stepping too
+            # far between planes.  Note this is the -1 plane.
+            z0, x0 = extracted[-1]
+
+            best_x = None  #  Best 'x' in this plane
+
+            leftovers = []
 
             for x1 in point_dict[z1]:
+                # Set if unset
                 if best_x == None:
                     best_x = x1
 
+                # Differentials
                 dz = z1 - z0
                 dx = x1 - x0
 
+                # Compute distance and compare to best
                 if math.hypot(dz, dx) < math.hypot(z1 - z0, best_x - x0):
+                    # The previous best was rejected, so add it to the unextracted list
+                    leftovers.append((z1, best_x))
+
                     best_x = x1
+                else:
+                    #  Distance too far compared to best, so unextracted
+                    leftovers.append((z1, best_x))
 
+            #  Make sure we aren't jumping too far.  If we are, throw the best
+            # and leftovers into the unextracted bin
             if math.hypot(z1 - z0, best_x - x0) > 100.0:  # threshold, BUG FIXME, GDML
+                leftovers.append((z1, best_x))
+                for point in leftovers:
+                    unextracted.append(point)
+                break  # This should jump to final return
 
-                return new_z, new_x, length
-
+            # Compute length
             length += math.hypot(z1 - z0, best_x - x0)
-            new_z.append(z1)
-            new_x.append(best_x)
 
-            # Determine if there are neighbors (ie. doublets)
-            for x_other in point_dict[z1]:
-                if math.fabs(x_other - best_x) == self.bar_width:
-                    new_z.append(z1)
-                    new_x.append(x_other)
+            #  Store points
+            extracted.append((z1, best_x))
 
-        return new_z, new_x, length
+            # Determine if there are hit neighbors (ie. doublets)
+
+            for z,x in leftovers:
+                if math.fabs(x - best_x) == self.bar_width:
+                    extracted.append((z,x))
+                else:
+                    unextracted.append((z,x))
+
+        return extracted, unextracted, length
 
     def Process(self, docs):
-        run = None
-        event = None
-
-        new_docs = []
-
-        X_view = {'trans' : [], 'z' : [], 'E' : []}
-        Y_view = {'trans' : [], 'z' : [], 'E': [] }
-
+        new_docs = []  # Documents to be returned
+        
         for doc in docs:
-            if doc['type'] != 'digit':
+            if doc['type'] != 'track' or not doc['analyzable']:
                 new_docs.append(doc)
                 continue
 
-            if event == None: event = doc['event']
-            if run == None:   run   = doc['run']
-            assert run == doc['run'] and event == doc['event']
+            tracks = doc['tracks']
+            for view in ['x', 'y']:
+                points = tracks[view]['LEFTOVERS']
 
-            view, position = doc['view'], doc['position']
+                extracted, unextracted, l = self.ExtractFromView(points)
 
-            if view == 'X':
-                X_view['trans'].append(position['x'])
-                X_view['z'].append(position['z'])
-                X_view['E'].append(doc['counts_adc'])
-            else:
-                Y_view['trans'].append(position['y'])
-                Y_view['z'].append(position['z'])
-                Y_view['E'].append(doc['counts_adc'])
+                tracks[view][l] = extracted
+                tracks[view]['LEFTOVERS'] = unextracted
 
+                if 'length_%s' % view not in doc['classification']:
+                    doc['classification']['length_%s' % view]   = l
+                    
+                if extracted == []:
+                    doc['analyzable'] = False
 
-        doc = {}
-        doc['type'] = 'track'
-        doc['run'] = run
-        doc['event'] = event
-        doc['x'] = X_view
-        doc['y'] = Y_view
+            doc['tracks'] = tracks
 
-        doc['classification'] = {}
+            new_docs.append(doc)
 
-        z, trans, l = self.ExtractFromView(X_view['z'], X_view['trans'])
-
-        doc['classification']['length_x']   = l
-        doc['extracted_x'] = {'z' : z, 'trans' : trans, 'E': X_view['E']}
-
-        z, trans, l = self.ExtractFromView(Y_view['z'], Y_view['trans'])
-
-        doc['classification']['length_y']   = l
-        doc['extracted_y'] = {'z' : z, 'trans' : trans, 'E': Y_view['E']}
-
-        new_docs.append(doc)
         return new_docs
 
     def Shutdown(self):
@@ -134,14 +192,16 @@ class VlenfPolynomialFitter():
     def Shutdown(self):
         pass
 
-    def Fit(self, z, trans):
+    def Fit(self, zx):
         """Returns results of fit
 
         """
 
+        z, trans = zip(*zx)
+
         assert len(trans) == len(z)
         ndf = len(z) - 3
-        
+
         z = np.array(z)
         trans = np.array(trans)
 
@@ -178,12 +238,16 @@ class VlenfPolynomialFitter():
     def Process(self, docs):
         new_docs = []
         for doc in docs:
-            if 'type' not in doc or doc['type'] != 'track':
+            if 'type' not in doc or doc['type'] != 'track' or doc['analyzable'] == False:
                 new_docs.append(doc)
                 continue
 
-            fitx_doc = self.Fit(doc['extracted_x']['z'], doc['extracted_x']['trans'])
-            fity_doc = self.Fit(doc['extracted_y']['z'], doc['extracted_y']['trans'])
+            tracks = doc['tracks']
+
+            lx = doc['classification']['length_x']
+            fitx_doc = self.Fit(tracks['x'][lx])
+            ly = doc['classification']['length_y']
+            fity_doc = self.Fit(tracks['y'][ly])
 
             for fit_doc in [fitx_doc, fity_doc]:
                 assert len(fit_doc['params']) == 3
