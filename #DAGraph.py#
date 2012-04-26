@@ -1,0 +1,12 @@
+class Vertex():
+    pass
+
+class Edge():
+    pass
+
+class DAG():
+    def __init__(self):
+        self.graph = {}
+
+    pass
+    

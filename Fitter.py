@@ -8,6 +8,8 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
+from Graph import DAG
+
 class EmptyTrackFromDigits():
     """ Prepare for track extraction """
 
@@ -54,6 +56,37 @@ class EmptyTrackFromDigits():
 
         return new_docs
 
+class CreateDAG():
+    """ Create directed acyclic graph"""
+    
+    def __init__(self):
+        self.dag = DAG()
+
+    def Shutdown(self):
+        pass
+    
+    def Process(self, docs):
+        run = None
+        event = None
+        
+        new_docs = []
+
+        nodes = []
+        
+        for doc in docs:
+            if doc['type'] != 'track':
+                new_docs.append(doc)
+                continue
+
+            tracks = doc['tracks']
+            for view in ['x', 'y']:
+                points = tracks[view]['LEFTOVERS']
+                
+                print points
+
+        return docs
+
+            
 class ExtractTrack():
     """Extract track"""
 
@@ -63,6 +96,26 @@ class ExtractTrack():
 
         self.bar_width = 10.0 # get from GDML!! BUG FIXME
 
+    def MakeDoublets(self, extracted, points):
+        new_extracted = extracted
+        new_unextracted = []
+
+        for z0, x0 in points:
+            for z1, x1 in extracted:
+                if z0 == z1 and math.fabs(x0 - x1) <= self.bar_width:
+                    if (z0, x0) not in new_extracted:
+                        new_extracted.append((z0, x0))
+                    
+
+        for point in points:
+            if point not in new_extracted:
+                new_unextracted.append(point)
+
+        assert len(new_extracted) >= len(extracted)
+        assert len(new_extracted) + len(new_unextracted) == len(points)
+        
+        return new_extracted, new_unextracted
+
     def ExtractFromView(self, zx_list):
         """Extract a track from a collection of points.
 
@@ -71,8 +124,7 @@ class ExtractTrack():
           A list of (z,x) coordinates.
 
         @return
-          A list of the following values: a list of extracted points, a list of
-          unextracted values, and a length.
+          A list of the following values: a list of extracted points and length
         """
 
         #  Create a lookup table index by 'z' coordinate
@@ -89,15 +141,18 @@ class ExtractTrack():
 
         #  If there are no points, just return now
         if len(keys) == 0:
-            return [], [], 0.0
+            return [], 0.0
 
         length = 0.0
-        extracted = [(keys[0],point_dict[keys[0]][0])]
-        unextracted = []
+        extracted = []
 
         for z1 in keys:
             # Grab last point so we can make sure that we aren't stepping too
             # far between planes.  Note this is the -1 plane.
+            if len(extracted) == 0:
+                extracted = [(z1, point_dict[keys[0]][0])]
+                continue
+            
             z0, x0 = extracted[-1]
 
             best_x = None  #  Best 'x' in this plane
@@ -115,20 +170,11 @@ class ExtractTrack():
 
                 # Compute distance and compare to best: reject x1?
                 if math.hypot(dz, dx) < math.hypot(z1 - z0, best_x - x0):
-                    # The previous best was rejected, so add it to the unextracted list
-                    leftovers.append((z1, best_x))
-
                     best_x = x1
-                else:
-                    #  Distance too far compared to best, so unextracted
-                    leftovers.append((z1, x1))
 
             #  Make sure we aren't jumping too far.  If we are, throw the best
             # and leftovers into the unextracted bin
             if math.hypot(z1 - z0, best_x - x0) > 100.0:  # threshold, BUG FIXME, GDML
-                leftovers.append((z1, best_x))
-                for point in leftovers:
-                    unextracted.append(point)
                 break  # This should jump to final return
 
             # Compute length
@@ -137,15 +183,7 @@ class ExtractTrack():
             #  Store points
             extracted.append((z1, best_x))
 
-            # Determine if there are hit neighbors (ie. doublets)
-
-            for z,x in leftovers:
-                if math.fabs(x - best_x) == self.bar_width:
-                    extracted.append((z,x))
-                else:
-                    unextracted.append((z,x))
-
-        return extracted, unextracted, length
+        return extracted, length
 
     def Process(self, docs):
         new_docs = []  # Documents to be returned
@@ -159,15 +197,15 @@ class ExtractTrack():
             for view in ['x', 'y']:
                 points = tracks[view]['LEFTOVERS']
 
-                extracted, unextracted, l = self.ExtractFromView(points)
-
+                extracted, l = self.ExtractFromView(points)
+                extracted, unextracted = self.MakeDoublets(extracted, points)
                 tracks[view][l] = extracted
                 tracks[view]['LEFTOVERS'] = unextracted
 
                 if 'length_%s' % view not in doc['classification']:
                     doc['classification']['length_%s' % view]   = l
                     
-                if extracted == []:
+                if points == [] or extracted == []:
                     doc['analyzable'] = False
 
             doc['tracks'] = tracks

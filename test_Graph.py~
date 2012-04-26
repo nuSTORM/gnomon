@@ -1,0 +1,33 @@
+from unittest import TestCase
+from Graph import DAG
+
+points = [[5385,-1605],[5335,-1595], [5285,-1595]]
+
+class TestDAG(TestCase):
+    def setUp(self):
+        self.dag = DAG()
+
+    def test_CreateGetVertices(self):
+        dag = DAG()
+        graph = dag.CreateVertices(points)
+
+        for z, x in points:
+            self.assertIn((z, x), graph.keys())
+            self.assertIn((z, x), dag.GetVertices(graph))
+        print graph
+
+    def test_CreateDirectedEdges(self):
+        dag = DAG()
+        graph = {(5385, -1605): {}, (5285, -1595): {}, (5335, -1595): {}}
+
+        
+        graph = dag.CreateDirectedEdges(points, graph)
+
+    def test_CutLongEdges(self):
+        graph = {(5385, -1605): {},
+                 (5285, -1595): {(5385, -1605): 100.4987562112089, (5335, -1595): 50.0},
+                 (5335, -1595): {(5385, -1605): 50.99019513592785}}
+
+        dag = DAG()
+        graph = CutLongEdges(graph)
+        self.assertNotIn((5385, -1605), graph[(5285, -1595)])
