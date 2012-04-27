@@ -52,5 +52,6 @@ class TestDAG(TestCase):
 
             graph[v][w] = weight
 
-        DAG().LongestPath(graph)
-        raise ValueError()
+        self.assertEqual([(5, 6), (2, 5), (0, 2)],
+                         DAG().LongestPath(graph))
+

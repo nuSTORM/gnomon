@@ -63,9 +63,6 @@ class DAG():
                     length_to[w] = length_to[v] + edges[w]
                     edge_to[w] = (v,w)
 
-        print length_to
-        print edge_to
-
         path = []
         current_point = 6
         while current_point != 0:
@@ -73,7 +70,7 @@ class DAG():
             path.append((v,w))
             current_point = v
 
-        print path
+        return path
 
         
         

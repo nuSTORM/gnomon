@@ -11,6 +11,8 @@ class DAG():
         self.graph = {}
 
     def CreateVertices(self, points):
+        points.sort()
+        
         graph = {}
 
         for z, x in points:
@@ -42,13 +44,43 @@ class DAG():
                     new_graph[key][endpoint] = distance
         
         return new_graph
+
+    def LongestPath(self, graph):
+        verts = self.GetVertices(graph)
+
+        length_to = {}
+        edge_to = {}
+
+        for v in verts:
+            edges = graph[v]
+            for w in edges.keys():
+                if w not in length_to:
+                    length_to[w] = 0
+                if v not in length_to:
+                    length_to[v] = 0
+                    
+                if length_to[w] <= length_to[v] + edges[w]:
+                    length_to[w] = length_to[v] + edges[w]
+                    edge_to[w] = (v,w)
+
+        print length_to
+        print edge_to
+
+        path = []
+        current_point = 6
+        while current_point != 0:
+            v, w = edge_to[current_point]
+            path.append((v,w))
+            current_point = v
+
+        print path
+
         
         
     def ProcessPoints(self, points):
-        points = points.sort()
-
         graph = CreateVertices(points)
-        CreateDirectedEdges(points, graph)
+        graph = CreateDirectedEdges(points, graph)
+        graph = CutLongEdges(graph)
         
         i = 0
 
