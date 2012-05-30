@@ -4,9 +4,7 @@ import couchdb
 
 
 def run(all, mchits, digits, tracks):
-    server_list = ['http://gnomon:balls@tasd.fnal.gov:5984/',
-                   'http://gnomon:harry@gnomon.iriscouch.com/',
-                   'http://gnomon:balls@172.16.84.2:8080/',]
+    server_list = ['http://gnomon:balls@tasd.fnal.gov:5984/']
     
     for server in server_list:
         server = couchdb.Server(server)

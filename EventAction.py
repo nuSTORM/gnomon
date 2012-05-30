@@ -27,6 +27,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.processors.append(VlenfSimpleDigitizer())
         self.processors.append(EmptyTrackFromDigits())
         self.processors.append(CreateDAG())
+        #self.processors.append(CreateDAG())
         #self.processors.append(ExtractTrack())
         #self.processors.append(ExtractTrack())
         #self.processors.append(VlenfPolynomialFitter())

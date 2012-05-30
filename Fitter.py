@@ -10,6 +10,29 @@ from scipy.optimize import leastsq
 
 from Graph import DAG
 
+bar_width = 10.0 # get from GDML!! BUG FIXME
+layer_width = 40.0
+width_threshold = 5*bar_width
+
+def MakeDoublets(extracted, points):
+    new_extracted = extracted
+    new_unextracted = []
+    
+    for z0, x0 in points:
+        for z1, x1 in extracted:
+            if z0 == z1 and math.fabs(x0 - x1) <= width_threshold:
+                if (z0, x0) not in new_extracted:
+                    new_extracted.append((z0, x0))
+                    
+    for point in points:
+        if point not in new_extracted:
+            new_unextracted.append(point)
+            
+    assert len(new_extracted) >= len(extracted)
+    assert len(new_extracted) + len(new_unextracted) == len(points)
+    
+    return new_extracted, new_unextracted
+
 class EmptyTrackFromDigits():
     """ Prepare for track extraction """
 
@@ -59,9 +82,6 @@ class EmptyTrackFromDigits():
 class CreateDAG():
     """ Create directed acyclic graph"""
     
-    def __init__(self):
-        self.dag = DAG()
-
     def Shutdown(self):
         pass
     
@@ -79,12 +99,35 @@ class CreateDAG():
                 continue
 
             tracks = doc['tracks']
+            doc['graph'] = {}
             for view in ['x', 'y']:
                 points = tracks[view]['LEFTOVERS']
                 
-                print points
+                dag = DAG()
+                graph = dag.CreateVertices(points)
+                #print '1', graph
+                graph = dag.CreateDirectedEdges(points, graph)
+                #print '2', graph
+                graph = dag.CutLongEdges(graph, math.sqrt(width_threshold**2 + layer_width**2))
+                #print '3', graph
+                
+                length, path = dag.LongestPath(graph)
+                #print '4', path
 
-        return docs
+                if path == []:
+                    doc['analyzable'] = False
+
+                extracted, unextracted = MakeDoublets(path, points)
+                tracks[view][length] = extracted
+                tracks[view]['LEFTOVERS'] = unextracted
+
+                #doc['graph'][view] = graph
+                
+            doc['tracks'] = tracks
+
+            new_docs.append(doc)
+
+        return new_docs
 
             
 class ExtractTrack():
@@ -93,28 +136,6 @@ class ExtractTrack():
     def __init__(self):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
-
-        self.bar_width = 10.0 # get from GDML!! BUG FIXME
-
-    def MakeDoublets(self, extracted, points):
-        new_extracted = extracted
-        new_unextracted = []
-
-        for z0, x0 in points:
-            for z1, x1 in extracted:
-                if z0 == z1 and math.fabs(x0 - x1) <= self.bar_width:
-                    if (z0, x0) not in new_extracted:
-                        new_extracted.append((z0, x0))
-                    
-
-        for point in points:
-            if point not in new_extracted:
-                new_unextracted.append(point)
-
-        assert len(new_extracted) >= len(extracted)
-        assert len(new_extracted) + len(new_unextracted) == len(points)
-        
-        return new_extracted, new_unextracted
 
     def ExtractFromView(self, zx_list):
         """Extract a track from a collection of points.
@@ -198,7 +219,7 @@ class ExtractTrack():
                 points = tracks[view]['LEFTOVERS']
 
                 extracted, l = self.ExtractFromView(points)
-                extracted, unextracted = self.MakeDoublets(extracted, points)
+                extracted, unextracted = MakeDoublets(extracted, points)
                 tracks[view][l] = extracted
                 tracks[view]['LEFTOVERS'] = unextracted
 
