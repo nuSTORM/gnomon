@@ -3,7 +3,10 @@ import math
 distance_threshold = 0.1
 angle_threshold = 3 * ((13.6/200) * math.sqrt(4.0/3.52))
 
-from pygraph.classes.graph import graph
+from pygraph.classes.digraph import digraph
+from pygraph.algorithms import critical
+from pygraph.algorithms.searching import breadth_first_search
+from pygraph.algorithms import minmax
 
 class Graph():
     def __init__(self):
@@ -25,9 +28,7 @@ class Graph():
         Returns a dictionary object with keys that are 2tuples
         represnting a point.
         """
-        points.sort()
-        
-        gr = graph()
+        gr = digraph()
 
         for z, x in points:
             node = (z,x)
@@ -51,65 +52,48 @@ class Graph():
             for z1, x1 in points:
                 dz = z1 - z0
                 if dz > 0.0:  # make sure arrow in right direction
-                    #if dz - layer_width < distance_threshold:  # only adjacents
-                    dx = x1 - x0
+                    if dz - layer_width < distance_threshold:  # only adjacents
+                        dx = x1 - x0
 
-                    angle = math.atan(dx/dz)
+                        angle = math.atan(dx/dz)
 
-                    if dx > 20:
-                        continue
+                        if dx > 20:
+                            continue
 
-                    # Weights are negative to in order to use shortest path
-                    # algorithms on the graph.
-                    weight = -1 * math.hypot(dz, dx)
+                        # Weights are negative to in order to use shortest path
+                        # algorithms on the graph.
+                        weight = -1 * math.hypot(dz, dx)
 
-                    edge = ((z0,x0),(z1, x1))
+                        edge = ((z0,x0),(z1, x1))
                         
-                    gr.add_edge(edge, wt=weight)
-                        
+                        gr.add_edge(edge, wt=weight)
+
+        # Ensure that it is already transitively reduced
+        assert len(critical.transitive_edges(gr)) == 0
+        
         return gr
 
-    def TransitiveReduction(self, graph):
-        new_graph = {}
 
-        # Iterate over start : final location key-pairs, and
-        # assume that it's topological sorted.  Tell 
-        for start1, endpoints1 in graph.iteritems():
-            # Start fresh
-            new_graph[key] = {}
-
-            # For every end-point
-            for endpoint1 in endpoints1:
-                # Find where the end-point can go
-                for start2, endpoints2 in graph.iteritems():
-                    # If the endpoint1 isn't the starting point, skip
-                    if start2 != endpoint1:
-                        pass
-
-                    # Else compute dtheta/dz
-                    graph[start1][start2]
-                    
-                        
+    def FindMST(self, gr):
+        """Minimal spaning tree"
+        parent_node = self.FindParentNode(gr)
         
+        st, order = breadth_first_search(gr, root=min)
+        gst = digraph()
+        gst.add_spanning_tree(st)
 
-    def CutHighAngleEdges(self, graph):
-        """ Remove edges of too high a relative angle. ie dtheta/dz """
-        new_graph = {}
+        return gst
 
-        # For every initial point
-        for key, endpoints in graph.iteritems():
-            # Start fresh for end-points
-            new_graph[key] = {}
+    def LongestPath(self, gr):
+        parent_node = self.FindParentNode(gr)
+        
+        # Remember: weights are negative
+        st, distance = minmax.shortest_path_bellman_ford(gr, parent_node)
+        print 'dist', distance
 
-            # For each endpoint, make sure distance isn't too long
-            for endpoint, my_tuple in endpoints.iteritems():
-                distance, angle = my_tuple
-
-                if angle < angle_threshold:
-                    new_graph[key][endpoint] = distance
-
-        print new_graph
-        return new_graph
+        gst = digraph()
+        gst.add_spanning_tree(st)
+        return gst
 
     def LongestPath(self, graph):
         verts = self.GetVertices(graph)
