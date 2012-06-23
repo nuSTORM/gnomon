@@ -1,14 +1,24 @@
 import math
 
-class Vertex():
-    pass
+distance_threshold = 0.1
+angle_threshold = 3 * ((13.6/200) * math.sqrt(4.0/3.52))
 
-class Edge():
-    pass
+from pygraph.classes.graph import graph
 
-class DAG():
+class Graph():
     def __init__(self):
         self.graph = {}
+
+        self.is_mst = False
+        self.is_dag = False
+
+    def FindParentNode(self, gr):
+        minimum_node = None
+
+        for node in gr.nodes():
+            if minimum_node == None or node[0] < minimum_node[0]:
+                minimum_node = node
+        return minimum_node
 
     def CreateVertices(self, points):
         """
@@ -17,12 +27,13 @@ class DAG():
         """
         points.sort()
         
-        graph = {}
+        gr = graph()
 
         for z, x in points:
-            graph[(z,x)] = {}
+            node = (z,x)
+            gr.add_nodes([node])
 
-        return graph
+        return gr
             
     def GetVertices(self, graph):
         """Return topologically sorted"""
@@ -30,23 +41,59 @@ class DAG():
         these_keys.sort()
         return these_keys
 
-    def CreateDirectedEdges(self, points, graph):
+    def CreateDirectedEdges(self, points, gr, layer_width):
         """
         Take each key (ie. point) in the graph and for that point
-        create an edge to every point downstream of it
+        create an edge to every point downstream of it where the weight
+        of the edge is the tuple (distance, angle)
         """
         for z0, x0 in points:
             for z1, x1 in points:
-                if z1 > z0:
-                    dz = z1 - z0
+                dz = z1 - z0
+                if dz > 0.0:  # make sure arrow in right direction
+                    #if dz - layer_width < distance_threshold:  # only adjacents
                     dx = x1 - x0
 
-                    graph[(z0,x0)][(z1, x1)] = math.hypot(dz, dx)
-                        
-        return graph
+                    angle = math.atan(dx/dz)
 
-    def CutLongEdges(self, graph, threshold=30):
-        """ Remove all long edges"""
+                    if dx > 20:
+                        continue
+
+                    # Weights are negative to in order to use shortest path
+                    # algorithms on the graph.
+                    weight = -1 * math.hypot(dz, dx)
+
+                    edge = ((z0,x0),(z1, x1))
+                        
+                    gr.add_edge(edge, wt=weight)
+                        
+        return gr
+
+    def TransitiveReduction(self, graph):
+        new_graph = {}
+
+        # Iterate over start : final location key-pairs, and
+        # assume that it's topological sorted.  Tell 
+        for start1, endpoints1 in graph.iteritems():
+            # Start fresh
+            new_graph[key] = {}
+
+            # For every end-point
+            for endpoint1 in endpoints1:
+                # Find where the end-point can go
+                for start2, endpoints2 in graph.iteritems():
+                    # If the endpoint1 isn't the starting point, skip
+                    if start2 != endpoint1:
+                        pass
+
+                    # Else compute dtheta/dz
+                    graph[start1][start2]
+                    
+                        
+        
+
+    def CutHighAngleEdges(self, graph):
+        """ Remove edges of too high a relative angle. ie dtheta/dz """
         new_graph = {}
 
         # For every initial point
@@ -55,11 +102,13 @@ class DAG():
             new_graph[key] = {}
 
             # For each endpoint, make sure distance isn't too long
-            for endpoint, distance in endpoints.iteritems():
-                if distance < threshold:
+            for endpoint, my_tuple in endpoints.iteritems():
+                distance, angle = my_tuple
+
+                if angle < angle_threshold:
                     new_graph[key][endpoint] = distance
 
-        print graph
+        print new_graph
         return new_graph
 
     def LongestPath(self, graph):

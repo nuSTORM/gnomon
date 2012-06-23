@@ -8,7 +8,9 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
-from Graph import DAG
+from pygraph.readwrite import markup
+from pygraph.classes.digraph import digraph
+from Graph import Graph
 
 bar_width = 10.0 # get from GDML!! BUG FIXME
 layer_width = 40.0
@@ -103,17 +105,23 @@ class CreateDAG():
             for view in ['x', 'y']:
                 points = tracks[view]['LEFTOVERS']
                 
-                dag = DAG()
-                graph = dag.CreateVertices(points)
-                #print '1', graph
-                graph = dag.CreateDirectedEdges(points, graph)
-                #print '2', graph
-                graph = dag.CutLongEdges(graph, math.sqrt(width_threshold**2 + layer_width**2))
-                #print '3', graph
-                
-                length, path = dag.LongestPath(graph)
+                dag = Graph()
+                gr = dag.CreateVertices(points)
+                doc['graph']['gr0'] = markup.write(gr)
+                gr = dag.CreateDirectedEdges(points, gr, layer_width)
+                doc['graph']['gr1'] = markup.write(gr)
+
+                gr = dag.FindMST(gr)
+                doc['graph']['gr2'] = markup.write(gr)
+
+                gr = dag.LongestPath(gr)
+                doc['graph']['gr3'] = markup.write(gr)
+
+                #graph = dag.CutHighAngleEdges(graph)
+                #length, path = dag.LongestPath(graph)
                 #print '4', path
 
+                """
                 if path == []:
                     doc['analyzable'] = False
 
@@ -121,9 +129,10 @@ class CreateDAG():
                 tracks[view][length] = extracted
                 tracks[view]['LEFTOVERS'] = unextracted
 
+                """
                 #doc['graph'][view] = graph
                 
-            doc['tracks'] = tracks
+            #doc['tracks'] = tracks
 
             new_docs.append(doc)
 
