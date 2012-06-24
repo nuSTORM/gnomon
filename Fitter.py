@@ -121,8 +121,8 @@ class CreateDAG():
 
                 # RemovePreexisting(previous)
 
-                gr = dag.FindMST(gr)
-                doc['graph']['gr2'] = markup.write(gr)
+                #gr = dag.FindMST(gr)
+                #doc['graph']['gr2'] = markup.write(gr)
 
                 print 'sort:', sorting.topological_sorting(gr)
                 if gr.edges() == []:
@@ -134,7 +134,7 @@ class CreateDAG():
                 if float(length) == 0.0:
                     doc['analyzable'] = False
 
-                tracks[view][length] = grl #extracted
+                tracks[view][length] = grl
                 tracks[view]['LEFTOVERS'] = gr.nodes()
                 
             doc['tracks'] = tracks

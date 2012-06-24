@@ -44,10 +44,10 @@ class Graph():
         """
         for z0, x0 in points:
             for z1, x1 in points:
-                dz = z1 - z0
+                dz = z1 - z0 # no fabs because we check arrow direction
                 if dz > 0.0:  # make sure arrow in right direction
                     if dz - layer_width < distance_threshold:  # only adjacents
-                        dx = x1 - x0
+                        dx = math.fabs(x1 - x0)
 
                         angle = math.atan(dx/dz)
 
@@ -56,7 +56,7 @@ class Graph():
 
                         # Weights are negative to in order to use shortest path
                         # algorithms on the graph.
-                        weight = 1.0/math.hypot(dz, dx)
+                        weight = -1 * math.hypot(dz, dx)
 
                         edge = ((z0,x0),(z1, x1))
                         
@@ -68,23 +68,34 @@ class Graph():
         return gr
 
 
-    def FindMST(self, gr):
-        """Minimal spaning tree"""
-        parent_node = self.FindParentNode(gr)
-        
-        st, order = breadth_first_search(gr, root=parent_node)
-        gst = digraph()
-        gst.add_spanning_tree(st)
-        return gst
-
     def LongestPath(self, gr):
         parent_node = self.FindParentNode(gr)
         
         # Remember: weights are negative
-        st, distance = minmax.shortest_path(gr, parent_node)
+        st, distance = minmax.shortest_path_bellman_ford(gr, parent_node)
 
         nodes = distance.keys()
-        nodes.append(parent_node)
+        
+        # Find the farthest node, which is end of track
+        min_key = None
+        for key, value in distance.iteritems():
+            if min_key == None or value < distance[min_key]:
+                min_key = key
+        max_distance = distance[min_key]
 
-        return nodes, sum(distance.values())
+        # Then swim back to the parent node.  Record the path.
+        node_list = [min_key]
+        i = 0
+        while parent_node not in node_list:
+            node_list.append(st[node_list[-1]])
+            del st[node_list[-1]]
+
+            i += 1
+            if i > 10000:
+                print node_list
+                raise ValueError()
+            
+        
+
+        return node_list, max_distance
 
