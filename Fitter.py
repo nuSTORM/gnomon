@@ -8,7 +8,7 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
-from pygraph.readwrite import markup
+#from pygraph.readwrite import markup
 from pygraph.classes.digraph import digraph
 from pygraph.algorithms import sorting
 from Graph import Graph
@@ -113,28 +113,22 @@ class CreateDAG():
                 self.log.info('Working on view %s' % view)
                 points = tracks[view]['LEFTOVERS']
 
+                #doc['graph']['gr1'] = markup.write(gr)
+
                 dag = Graph()
                 gr = dag.CreateVertices(points)
-                doc['graph']['gr0'] = markup.write(gr)
                 gr = dag.CreateDirectedEdges(points, gr, layer_width)
-                doc['graph']['gr1'] = markup.write(gr)
-
-                # RemovePreexisting(previous)
-
-                #gr = dag.FindMST(gr)
-                #doc['graph']['gr2'] = markup.write(gr)
-
-                print 'sort:', sorting.topological_sorting(gr)
                 if gr.edges() == []:
                     continue
 
-                grl, length = dag.LongestPath(gr)
-                doc['graph']['gr3'] = markup.write(gr)
+                gr1, length1, gr = dag.LongestPath(gr)
+                gr2, length2, gr = dag.LongestPath(gr)
 
-                if float(length) == 0.0:
+                if float(length1) == 0.0:
                     doc['analyzable'] = False
 
-                tracks[view][length] = grl
+                tracks[view][length1] = gr1
+                tracks[view][length2] = gr2
                 tracks[view]['LEFTOVERS'] = gr.nodes()
                 
             doc['tracks'] = tracks

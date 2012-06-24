@@ -1,7 +1,7 @@
 import math
 
 distance_threshold = 0.1
-angle_threshold = 3 * ((13.6/200) * math.sqrt(4.0/3.52))
+bar_width = 10.0
 
 from pygraph.classes.digraph import digraph
 from pygraph.algorithms import critical
@@ -88,14 +88,25 @@ class Graph():
         i = 0
         while parent_node not in node_list:
             node_list.append(st[node_list[-1]])
-            del st[node_list[-1]]
 
             i += 1
             if i > 10000:
                 print node_list
                 raise ValueError()
-            
-        
 
-        return node_list, max_distance
+        node_list2 = []
+        for node1 in node_list:
+            for node2 in gr.nodes():
+                z1, x1 = node1
+                z2, x2 = node2
+                dx = math.fabs(x1 - x2)
+
+                if z1 == z2 and math.fabs(dx - bar_width) < distance_threshold:
+                    node_list2.append(node2)
+
+        for node in node_list + node_list2:
+            if node:
+                gr.del_node(node)
+
+        return node_list, -1*max_distance, gr
 
