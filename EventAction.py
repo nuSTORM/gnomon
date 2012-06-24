@@ -27,12 +27,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.processors.append(VlenfSimpleDigitizer())
         self.processors.append(EmptyTrackFromDigits())
         self.processors.append(CreateDAG())
-        #self.processors.append(CreateDAG())
-        #self.processors.append(ExtractTrack())
-        #self.processors.append(ExtractTrack())
-        #self.processors.append(VlenfPolynomialFitter())
         self.processors.append(AppendTruth(pga))
-        #self.processors.append(ComputeHadronicEnergy())
         self.processors.append(CouchManager())
         
         # used to fetch mchits, only way given geant

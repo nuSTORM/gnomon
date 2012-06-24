@@ -10,6 +10,7 @@ from scipy.optimize import leastsq
 
 from pygraph.readwrite import markup
 from pygraph.classes.digraph import digraph
+from pygraph.algorithms import sorting
 from Graph import Graph
 
 bar_width = 10.0 # get from GDML!! BUG FIXME
@@ -83,6 +84,10 @@ class EmptyTrackFromDigits():
 
 class CreateDAG():
     """ Create directed acyclic graph"""
+
+    def __init__(self):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
     
     def Shutdown(self):
         pass
@@ -102,37 +107,37 @@ class CreateDAG():
 
             tracks = doc['tracks']
             doc['graph'] = {}
+
+            previous = []
             for view in ['x', 'y']:
+                self.log.info('Working on view %s' % view)
                 points = tracks[view]['LEFTOVERS']
-                
+
                 dag = Graph()
                 gr = dag.CreateVertices(points)
                 doc['graph']['gr0'] = markup.write(gr)
                 gr = dag.CreateDirectedEdges(points, gr, layer_width)
                 doc['graph']['gr1'] = markup.write(gr)
 
+                # RemovePreexisting(previous)
+
                 gr = dag.FindMST(gr)
                 doc['graph']['gr2'] = markup.write(gr)
 
-                gr = dag.LongestPath(gr)
+                print 'sort:', sorting.topological_sorting(gr)
+                if gr.edges() == []:
+                    continue
+
+                grl, length = dag.LongestPath(gr)
                 doc['graph']['gr3'] = markup.write(gr)
 
-                #graph = dag.CutHighAngleEdges(graph)
-                #length, path = dag.LongestPath(graph)
-                #print '4', path
-
-                """
-                if path == []:
+                if float(length) == 0.0:
                     doc['analyzable'] = False
 
-                extracted, unextracted = MakeDoublets(path, points)
-                tracks[view][length] = extracted
-                tracks[view]['LEFTOVERS'] = unextracted
-
-                """
-                #doc['graph'][view] = graph
+                tracks[view][length] = grl #extracted
+                tracks[view]['LEFTOVERS'] = gr.nodes()
                 
-            #doc['tracks'] = tracks
+            doc['tracks'] = tracks
 
             new_docs.append(doc)
 

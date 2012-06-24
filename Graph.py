@@ -36,12 +36,6 @@ class Graph():
 
         return gr
             
-    def GetVertices(self, graph):
-        """Return topologically sorted"""
-        these_keys = graph.keys()
-        these_keys.sort()
-        return these_keys
-
     def CreateDirectedEdges(self, points, gr, layer_width):
         """
         Take each key (ie. point) in the graph and for that point
@@ -62,7 +56,7 @@ class Graph():
 
                         # Weights are negative to in order to use shortest path
                         # algorithms on the graph.
-                        weight = -1 * math.hypot(dz, dx)
+                        weight = 1.0/math.hypot(dz, dx)
 
                         edge = ((z0,x0),(z1, x1))
                         
@@ -75,23 +69,22 @@ class Graph():
 
 
     def FindMST(self, gr):
-        """Minimal spaning tree"
+        """Minimal spaning tree"""
         parent_node = self.FindParentNode(gr)
         
-        st, order = breadth_first_search(gr, root=min)
+        st, order = breadth_first_search(gr, root=parent_node)
         gst = digraph()
         gst.add_spanning_tree(st)
-
         return gst
 
     def LongestPath(self, gr):
         parent_node = self.FindParentNode(gr)
         
         # Remember: weights are negative
-        st, distance = minmax.shortest_path_bellman_ford(gr, parent_node)
-        print 'dist', distance
+        st, distance = minmax.shortest_path(gr, parent_node)
 
-        gst = digraph()
-        gst.add_spanning_tree(st)
-        return gst
+        nodes = distance.keys()
+        nodes.append(parent_node)
+
+        return nodes, sum(distance.values())
 
