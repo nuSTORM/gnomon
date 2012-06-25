@@ -122,12 +122,23 @@ class GenieGeneratorAction(VlenfGeneratorAction):
         max_energy = 5.0
 
         env_vars = 'GSPLOAD=data/xsec.xml GSEED=%d' % seed
+        """
         if self.event_type == 'mu_bar_bkg':
             os.system("%s gevgen -p -14 -r %d -t 1000260560 -n %d -e 0.1,%f -f data/flux_file_mu.dat  > /dev/null" % (env_vars, fake_run, self.nevents, max_energy))
         elif self.event_type == 'mu_sig':
             os.system("%s gevgen -p 14 -r %d -t 1000260560 -n %d -e 0.1,%f -f data/flux_file_e.dat  > /dev/null" % (env_vars, fake_run, self.nevents, max_energy))
         else:
             raise ValueError()
+        """
+        if self.event_type == 'mu_bar_bkg':
+            command = "%s gevgen -p -14 -r %d -t 1000260560 -n %d -e %f  > /dev/null" % (env_vars, fake_run, self.nevents, max_energy)
+            print command
+            os.system(command)
+        elif self.event_type == 'mu_sig':
+            os.system("%s gevgen -p 14 -r %d -t 1000260560 -n %d -e %f  > /dev/null" % (env_vars, fake_run, self.nevents, max_energy))
+        else:
+            raise ValueError()
+        
         os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" % (fake_run, filename))
         os.system('rm gntp.%d.ghep.root' % fake_run)
         self.filename = filename
