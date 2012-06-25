@@ -7,6 +7,7 @@ from pygraph.classes.digraph import digraph
 from pygraph.algorithms import critical
 from pygraph.algorithms.searching import breadth_first_search
 from pygraph.algorithms import minmax
+from pygraph.algorithms import accessibility
 
 class Graph():
     def __init__(self):
@@ -16,12 +17,26 @@ class Graph():
         self.is_dag = False
 
     def FindParentNode(self, gr):
-        minimum_node = None
+        transitive_closure = accessibility.accessibility(gr)
 
-        for node in gr.nodes():
-            if minimum_node == None or node[0] < minimum_node[0]:
-                minimum_node = node
-        return minimum_node
+        try:
+            most_accesisible_node = None
+            for node_in, nodes_out in transitive_closure.iteritems():
+                if most_accesisible_node == None:
+                    most_accesisible_node = node_in
+
+                max_value = len(transitive_closure[most_accesisible_node])
+                this_value = len(nodes_out)
+                
+                if this_value > max_value:
+                    most_accesisible_node = node_in
+        except:
+            print transitive_closure.keys()
+            raise
+                
+                        
+
+        return most_accesisible_node
 
     def CreateVertices(self, points):
         """
@@ -51,7 +66,7 @@ class Graph():
 
                         angle = math.atan(dx/dz)
 
-                        if dx > 20:
+                        if dx > 5*bar_width:
                             continue
 
                         # Weights are negative to in order to use shortest path
@@ -94,6 +109,7 @@ class Graph():
                 print node_list
                 raise ValueError()
 
+        #  Grab doublets
         node_list2 = []
         for node1 in node_list:
             for node2 in gr.nodes():
