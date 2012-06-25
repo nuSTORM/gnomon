@@ -17,25 +17,6 @@ bar_width = 10.0 # get from GDML!! BUG FIXME
 layer_width = 40.0
 width_threshold = 5*bar_width
 
-def MakeDoublets(extracted, points):
-    new_extracted = extracted
-    new_unextracted = []
-    
-    for z0, x0 in points:
-        for z1, x1 in extracted:
-            if z0 == z1 and math.fabs(x0 - x1) <= width_threshold:
-                if (z0, x0) not in new_extracted:
-                    new_extracted.append((z0, x0))
-                    
-    for point in points:
-        if point not in new_extracted:
-            new_unextracted.append(point)
-            
-    assert len(new_extracted) >= len(extracted)
-    assert len(new_extracted) + len(new_unextracted) == len(points)
-    
-    return new_extracted, new_unextracted
-
 class EmptyTrackFromDigits():
     """ Prepare for track extraction """
 
@@ -82,8 +63,8 @@ class EmptyTrackFromDigits():
 
         return new_docs
 
-class CreateDAG():
-    """ Create directed acyclic graph"""
+class ExtractTracks():
+    """Extract tracks with graph theoretic concepts"""
 
     def __init__(self):
         self.log = logging.getLogger('root')
@@ -141,114 +122,6 @@ class CreateDAG():
         return new_docs
 
             
-class ExtractTrack():
-    """Extract track"""
-
-    def __init__(self):
-        self.log = logging.getLogger('root')
-        self.log = self.log.getChild(self.__class__.__name__)
-
-    def ExtractFromView(self, zx_list):
-        """Extract a track from a collection of points.
-
-        @param xz_list
-
-          A list of (z,x) coordinates.
-
-        @return
-          A list of the following values: a list of extracted points and length
-        """
-
-        #  Create a lookup table index by 'z' coordinate
-        point_dict = {}
-        for z0, x0 in zx_list:
-            if z0 not in point_dict:
-                point_dict[z0] = []
-            point_dict[z0].append(x0)
-
-        #  Grab points in 'z' with hits, and reverse sort
-        keys = point_dict.keys()
-        keys.sort()
-        keys.reverse()
-
-        #  If there are no points, just return now
-        if len(keys) == 0:
-            return [], 0.0
-
-        length = 0.0
-        extracted = []
-
-        for z1 in keys:
-            # Grab last point so we can make sure that we aren't stepping too
-            # far between planes.  Note this is the -1 plane.
-            if len(extracted) == 0:
-                extracted = [(z1, point_dict[keys[0]][0])]
-                continue
-            
-            z0, x0 = extracted[-1]
-
-            best_x = None  #  Best 'x' in this plane
-
-            leftovers = []
-
-            for x1 in point_dict[z1]:
-                # Set if unset
-                if best_x == None:
-                    best_x = x1
-
-                # Differentials
-                dz = z1 - z0
-                dx = x1 - x0
-
-                # Compute distance and compare to best: reject x1?
-                if math.hypot(dz, dx) < math.hypot(z1 - z0, best_x - x0):
-                    best_x = x1
-
-            #  Make sure we aren't jumping too far.  If we are, throw the best
-            # and leftovers into the unextracted bin
-            if math.hypot(z1 - z0, best_x - x0) > 100.0:  # threshold, BUG FIXME, GDML
-                break  # This should jump to final return
-
-            # Compute length
-            length += math.hypot(z1 - z0, best_x - x0)
-
-            #  Store points
-            extracted.append((z1, best_x))
-
-        return extracted, length
-
-    def Process(self, docs):
-        new_docs = []  # Documents to be returned
-        
-        for doc in docs:
-            if doc['type'] != 'track' or not doc['analyzable']:
-                new_docs.append(doc)
-                continue
-
-            tracks = doc['tracks']
-            for view in ['x', 'y']:
-                points = tracks[view]['LEFTOVERS']
-
-                extracted, l = self.ExtractFromView(points)
-                extracted, unextracted = MakeDoublets(extracted, points)
-                tracks[view][l] = extracted
-                tracks[view]['LEFTOVERS'] = unextracted
-
-                if 'length_%s' % view not in doc['classification']:
-                    doc['classification']['length_%s' % view]   = l
-                    
-                if points == [] or extracted == []:
-                    doc['analyzable'] = False
-
-            doc['tracks'] = tracks
-
-            new_docs.append(doc)
-
-        return new_docs
-
-    def Shutdown(self):
-        pass
-
 class VlenfPolynomialFitter():
     """The VLENF digitizer where the energy deposited is multiplied by a generic
     energy scale."""
