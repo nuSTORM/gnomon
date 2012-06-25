@@ -11,8 +11,8 @@ servers = ['http://gnomon:balls@tasd.fnal.gov:5984/',
            'http://gnomon:harry@gnomon.iriscouch.com/',
            'http://gnomon:balls@172.16.84.2:8080/']
 
-number_of_events = 100
-repeat_point = 1 # how many times to redo same point
+number_of_events = 20
+repeat_point = 5 # how many times to redo same point
 
 flags = '--log_level WARNING --logfileless'
 

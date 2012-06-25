@@ -124,5 +124,7 @@ class Graph():
             if node:
                 gr.del_node(node)
 
+
+        node_list = [x for x in node_list if x != None]
         return node_list, -1*max_distance, gr
 

@@ -130,6 +130,9 @@ class CreateDAG():
                 tracks[view][length1] = gr1
                 tracks[view][length2] = gr2
                 tracks[view]['LEFTOVERS'] = gr.nodes()
+
+                doc['classification']['%s_length1' % view] = length1
+                doc['classification']['%s_length2' % view] = length2
                 
             doc['tracks'] = tracks
 
