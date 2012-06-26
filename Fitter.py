@@ -102,8 +102,11 @@ class ExtractTracks():
                 if gr.edges() == []:
                     continue
 
-                gr1, length1, gr = dag.LongestPath(gr)
-                gr2, length2, gr = dag.LongestPath(gr)
+                parent_node = dag.FindParentNode(gr)
+                gr1, length1, gr = dag.ComputeLongestPath(gr, parent_node)
+
+                parent_node = dag.FindParentNode(gr)
+                gr2, length2, gr = dag.ComputeLongestPath(gr, parent_node)
 
                 if float(length1) == 0.0:
                     doc['analyzable'] = False

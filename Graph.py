@@ -13,28 +13,20 @@ class Graph():
     def __init__(self):
         self.graph = {}
 
-        self.is_mst = False
-        self.is_dag = False
-
     def FindParentNode(self, gr):
         transitive_closure = accessibility.accessibility(gr)
 
-        try:
-            most_accesisible_node = None
-            for node_in, nodes_out in transitive_closure.iteritems():
-                if most_accesisible_node == None:
-                    most_accesisible_node = node_in
 
-                max_value = len(transitive_closure[most_accesisible_node])
-                this_value = len(nodes_out)
+        most_accesisible_node = None
+        for node_in, nodes_out in transitive_closure.iteritems():
+            if most_accesisible_node == None:
+                most_accesisible_node = node_in
                 
-                if this_value > max_value:
-                    most_accesisible_node = node_in
-        except:
-            print transitive_closure.keys()
-            raise
+            max_value = len(transitive_closure[most_accesisible_node])
+            this_value = len(nodes_out)
                 
-                        
+            if this_value > max_value:
+                most_accesisible_node = node_in
 
         return most_accesisible_node
 
@@ -83,12 +75,11 @@ class Graph():
         return gr
 
 
-    def LongestPath(self, gr):
-        parent_node = self.FindParentNode(gr)
-        
+    def GetFarthestNode(self, gr, node):
+        """node is start node"""
         # Remember: weights are negative
-        st, distance = minmax.shortest_path_bellman_ford(gr, parent_node)
-
+        st, distance = minmax.shortest_path_bellman_ford(gr, node)
+        
         nodes = distance.keys()
         
         # Find the farthest node, which is end of track
@@ -96,10 +87,29 @@ class Graph():
         for key, value in distance.iteritems():
             if min_key == None or value < distance[min_key]:
                 min_key = key
-        max_distance = distance[min_key]
 
+        return min_key
+        
+
+    def NegateGraph(self, gr):
+        for edge in gr.edges():
+            weight = gr.edge_weight(edge)
+            gr.set_edge_weight(edge, -1 * weight)
+        return gr
+
+    def ComputeLongestPath(self, gr, parent_node):
+        parent_node = self.FindParentNode(gr)
+        
+        farthest_node = self.GetFarthestNode(gr, parent_node)
+
+        gr = self.NegateGraph(gr)
+        st, distance = minmax.shortest_path_bellman_ford(gr, parent_node)
+        gr = self.NegateGraph(gr)
+
+        max_distance = distance[farthest_node]
+        
         # Then swim back to the parent node.  Record the path.
-        node_list = [min_key]
+        node_list = [farthest_node]
         i = 0
         while parent_node not in node_list:
             node_list.append(st[node_list[-1]])
@@ -126,5 +136,5 @@ class Graph():
 
 
         node_list = [x for x in node_list if x != None]
-        return node_list, -1*max_distance, gr
+        return node_list, max_distance, gr
 
