@@ -14,7 +14,7 @@ from Classifier import ComputeHadronicEnergy
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
 
-    def __init__(self, pga=None):
+    def __init__(self, pga=None, TA=None):
         """execute the constructor of the parent class G4UserEventAction"""
         G4.G4UserEventAction.__init__(self)
 
@@ -29,7 +29,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.processors.append(ExtractTracks())
         self.processors.append(VlenfPolynomialFitter())
         self.processors.append(EnergyDeposited())
-        self.processors.append(AppendTruth(pga))
+        self.processors.append(AppendTruth(pga, TA))
         self.processors.append(CouchManager())
         
         # used to fetch mchits, only way given geant

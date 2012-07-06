@@ -21,6 +21,7 @@ import g4py.ExN03pl
 # gnomon
 import Configuration
 import EventAction
+import TrackingAction
 import GeneratorAction
 from DetectorConstruction import VlenfDetectorConstruction
 import Logging
@@ -127,7 +128,10 @@ if __name__ == "__main__":
 
     gRunManager.SetUserAction(pga)
 
-    myEA = EventAction.VlenfEventAction(pga)
+    myTA = TrackingAction.TrackingAction()
+    gRunManager.SetUserAction(myTA)
+
+    myEA = EventAction.VlenfEventAction(pga, myTA)
     gRunManager.SetUserAction(myEA)
 
     gRunManager.Initialize()
