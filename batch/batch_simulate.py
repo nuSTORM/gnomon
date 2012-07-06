@@ -4,6 +4,7 @@ import os
 import time
 import couchdb
 import shutil
+import math
 import random
 import batch_queue_config
 
@@ -11,8 +12,8 @@ servers = ['http://gnomon:balls@tasd.fnal.gov:5984/',
            'http://gnomon:harry@gnomon.iriscouch.com/',
            'http://gnomon:balls@172.16.84.2:8080/']
 
-number_of_events = 100
-repeat_point = 10 # how many times to redo same point
+number_of_events = 100000
+repeat_point = 2 # how many times to redo same point
 
 flags = '--log_level WARNING --logfileless'
 
@@ -46,8 +47,16 @@ time python simulate.py --name %(db_name)s --vertex 2000 -2000 0 -g %(db_name)s 
                 
         job_name = '%s_%s' % (db_name, run)
         print 'filename', file.name
-        os.system('qsub -l cput=1:00:00 -N %s %s' % (job_name, file.name))
-        time.sleep(2)
+
+        hours = float(number_of_events) / 1000.0
+        hours = math.ceil(hours)
+        extra_commands = '-l cput=%d:00:00' % hours
+
+        command = 'qsub %s -N %s %s' % (extra_commands, job_name, file.name)
+
+        print command
+        os.system(command)
+        time.sleep(1)
 
 
 shutil.rmtree(tempdir)

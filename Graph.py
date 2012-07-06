@@ -37,8 +37,8 @@ class Graph():
         """
         gr = digraph()
 
-        for z, x in points:
-            node = (z,x)
+        for z, x, Q in points:
+            node = (z, x, Q)
             gr.add_nodes([node])
 
         return gr
@@ -49,8 +49,8 @@ class Graph():
         create an edge to every point downstream of it where the weight
         of the edge is the tuple (distance, angle)
         """
-        for z0, x0 in points:
-            for z1, x1 in points:
+        for z0, x0, Q0 in points:
+            for z1, x1, Q1 in points:
                 dz = z1 - z0 # no fabs because we check arrow direction
                 if dz > 0.0:  # make sure arrow in right direction
                     if dz - layer_width < distance_threshold:  # only adjacents
@@ -65,7 +65,7 @@ class Graph():
                         # algorithms on the graph.
                         weight = -1 * math.hypot(dz, dx)
 
-                        edge = ((z0,x0),(z1, x1))
+                        edge = ((z0,x0, Q0), (z1, x1, Q1))
                         
                         gr.add_edge(edge, wt=weight)
 
@@ -123,8 +123,8 @@ class Graph():
         node_list2 = []
         for node1 in node_list:
             for node2 in gr.nodes():
-                z1, x1 = node1
-                z2, x2 = node2
+                z1, x1, Q1 = node1
+                z2, x2, Q2 = node2
                 dx = math.fabs(x1 - x2)
 
                 if z1 == z2 and math.fabs(dx - bar_width) < distance_threshold:
