@@ -1,7 +1,6 @@
 import math
 import Geant4 as G4
 
-
 class WandsToroidField(G4.G4MagneticField):
     "Toroid Field from Bob Wands simulation parameterization"
 
@@ -11,6 +10,8 @@ class WandsToroidField(G4.G4MagneticField):
             self.sign = 1
         elif focus == '-':
             self.sign = -1
+        elif focus == '0':
+            self.sign = 0
         else:
             raise ValueError
 
@@ -26,11 +27,18 @@ class WandsToroidField(G4.G4MagneticField):
         return field
 
     def GetFieldValue(self, pos, time):
+        bfield = G4.G4ThreeVector()
+
+        # Set to zero, only change if r != 0 and sign != 0
+        bfield.x = 0
+        bfield.y = 0
+        bfield.z = 0.
+        
+        if self.sign == 0:
+            return bfield * G4.tesla
+
         # From Bob Wands, 1 cm plate, Jan. 30
         r = math.sqrt(pos.x ** 2 + pos.y ** 2)
-
-        # Paremeterization from talk above
-        bfield = G4.G4ThreeVector()
 
         #  Ryan Bayes, March 15th, 2012, talk to Valencia grp.
         B0 = 1.36 # T
@@ -42,10 +50,5 @@ class WandsToroidField(G4.G4MagneticField):
             B = self.sign * self.PhenomModel(r, B0, B1, B2, H)
             bfield.x = -1 * (pos.y / r) * B
             bfield.y =  1 * (pos.x / r) * B
-        else:
-            bfield.x = 0
-            bfield.y = 0
-
-        bfield.z = 0.
 
         return bfield * G4.tesla

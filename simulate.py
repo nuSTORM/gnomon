@@ -14,10 +14,6 @@ from Geant4 import HepRandom, gRunManager
 from Geant4 import gTransportationManager, gApplyUICommand, mm
 sys.stdout = temp  # Then return sys.stdout
 
-# g4py
-#import g4py.ExN03geom
-import g4py.ExN03pl
-
 # gnomon
 import Configuration
 import EventAction
@@ -40,7 +36,7 @@ if __name__ == "__main__":
                         type=int, default=0)
     parser.add_argument('--logfileless', action='store_true',
                         help='this will disable writing out a log file')
-    parser.add_argument('--polarity', choices=['+','-'], default='+', help='field polarity')
+    parser.add_argument('--polarity', choices=['+','-','0'], default='+', help='field polarity')
 
     group = parser.add_argument_group('Visualization', 'event display')
     group.add_argument('--display', action='store_true', help='event display')
@@ -93,7 +89,7 @@ if __name__ == "__main__":
     detector = VlenfDetectorConstruction(field_polarity=args.polarity)
     gRunManager.SetUserInitialization(detector)
 
-    exN03PL = g4py.ExN03pl.PhysicsList()
+    exN03PL = G4.G4physicslists.QGSP_BERT()
     gRunManager.SetUserInitialization(exN03PL)
     exN03PL.SetDefaultCutValue(1.0 * mm)
     exN03PL.SetCutsWithDefault()

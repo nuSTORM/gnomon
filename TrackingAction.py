@@ -8,9 +8,9 @@ import Configuration
 
 def ConvertG4ThreeVectorToDict(g4vector):
     dictvector = {}
-    dictvector['x'] = g4vector.x()
-    dictvector['y'] = g4vector.y()
-    dictvector['z'] = g4vector.z()
+    dictvector['x'] = g4vector.x
+    dictvector['y'] = g4vector.y
+    dictvector['z'] = g4vector.z
     return dictvector
 
 class TrackingAction(G4.G4UserTrackingAction):
@@ -32,6 +32,7 @@ class TrackingAction(G4.G4UserTrackingAction):
         return temp
 
     def PreUserTrackingAction(self, track):
+        print 'pre'
         cp = track.GetCreatorProcess()
         if not cp:
             return

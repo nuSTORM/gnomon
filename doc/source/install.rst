@@ -217,6 +217,7 @@ Next go to your download directory and run the following commands::
   cmake -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -DGEANT4_INSTALL_DATA=True -DGEANT4_USE_OPENGL_X11:BOOL=ON -DGEANT4_USE_GDML:BOOL=ON ../geant4.9.5
   make install
 
+You then need to add $VIRTUAL_ENV/src/geant4.9.5-build/geant4make.sh to your $VIRTUAL_ENV/bin/activate file.
 
 Step 6: g4py
 ^^^^^^^^^^^^

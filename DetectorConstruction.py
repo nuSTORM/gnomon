@@ -26,6 +26,11 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
 
     def Construct(self):
         """Construct the VLENF from a GDML file"""
+
+        gnm = G4.G4NistManager.Instance()
+        gnm.FindOrBuildMaterial('G4_Fe')
+
+        
         # Parse the GDML
         self.gdml_parser.Read(self.filename)
         self.world = self.gdml_parser.GetWorldVolume()
@@ -53,11 +58,18 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
 
         lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
         assert lv.GetName() == "SteelPlane"
+
+
+        # field
         self.field_manager = G4.G4FieldManager()
         self.myField = MagneticField.WandsToroidField(self.field_polarity)
         self.field_manager.SetDetectorField(self.myField)
         self.field_manager.CreateChordFinder(self.myField)
         lv.SetFieldManager(self.field_manager, False)
+        
+
+        from Geant4 import G4Material
+        print 'material', G4Material.GetMaterialTable()
 
         # Return pointer to world volume
         return self.world

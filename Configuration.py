@@ -90,7 +90,7 @@ class ProcessConfiguration():
         return run
 
     def getCommitThreshold(self):
-        return 10 * 1024 # kbytes, ie. 1 MB
+        return 1024 # kbytes, ie. 1 MB
         
 
 class MockDB():
