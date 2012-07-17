@@ -23,8 +23,9 @@ class AppendTruth:
         try:
             self.ta.FetchThenClear()
         except AttributeError:
-            self.log.warning('Disabling: no MC info in GeneratorAction')
-            self.enabled = False
+            pass
+        #self.log.warning('Disabling: no MC info in GeneratorAction')
+        #    self.enabled = False
         
     def Shutdown(self):
         pass
@@ -38,7 +39,7 @@ class AppendTruth:
         new_docs = []
         for doc in docs:
             doc['mc'] = self.pga.getMCInfo()
-            doc['mc']['tracking'] = self.ta.FetchThenClear()
+            #doc['mc']['tracking'] = self.ta.FetchThenClear()
             new_docs.append(doc)
         return new_docs
 

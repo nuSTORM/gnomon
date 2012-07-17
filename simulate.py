@@ -118,8 +118,7 @@ if __name__ == "__main__":
 
     
     if is_neutrino_code(args.pid):
-        pga = GeneratorAction.GenieGeneratorAction(args.events, args.pid)
-        pga.setEnergyDistribution(args.energy)
+        pga = GeneratorAction.GenieGeneratorAction(args.events, args.pid, args.energy)
     else:
         pga = GeneratorAction.SingleParticleGeneratorAction()
         pga.setTotalEnergy(args.energy)

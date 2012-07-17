@@ -66,6 +66,63 @@ class EmptyTrackFromDigits():
 
         return new_docs
 
+
+class Containment():
+        """Penetration Depth
+
+        Measured in terms of iron planes.  95% containment computed
+        """
+
+        def Shutdown(self):
+            pass
+
+        def Process(self, docs):
+            new_docs = []
+
+            for doc in docs:
+                if not doc['analyzable']:
+                    continue
+
+                hits = {}  # key: z, value: number of hits
+                nhits = 0
+
+                for view in ['x', 'y']:
+                    main_track = doc['classification']['%s_length1' % view]
+
+                    for track, points in doc['tracks'][view].iteritems():
+                        for z, x, Q in points:
+                            if z not in hits:
+                                hits[z] = 0
+                            hits[z] += 1
+                            nhits += 1
+
+
+                z_min = None
+
+                z_keys = hits.keys()
+                z_keys.sort()
+
+
+                current_sum = 0
+
+                contained_95 = None
+                
+                for z in z_keys:
+                    if z_min == None or z < z_min:
+                        z_min = z
+
+                    current_sum += hits[z]
+
+                    if contained_95 == None:  # If already found, skip
+                        if float(current_sum) / nhits > 0.95:
+                            contained_95 = z - z_min
+
+                doc['classification']['containment'] = contained_95
+                
+                new_docs.append(doc)
+        
+            return new_docs
+                
 class EnergyDeposited():
     """ blah """
 
@@ -86,7 +143,7 @@ class EnergyDeposited():
 
             Q_dict = {}  # key z, value list of q
             Q_dict_main_track = {}
-            
+
             for view in ['x', 'y']:
                 main_track = doc['classification']['%s_length1' % view]
 

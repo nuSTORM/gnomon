@@ -21,12 +21,11 @@ random.seed()
 
 tempdir = tempfile.mkdtemp()
 
-for db_name in ['mu_sig', 'mu_bar_bkg']:
+for db_settings in [('m', -14), ('e', 14), ('e', 12)]:
     polarity = '-'
 
     for i in range(repeat_point):
         server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
-        #server = 'http://gnomon:balls@172.16.84.2:8080/'
 
         couch = couchdb.Server(server)
         file = open(os.path.join(tempdir, '%s_%d' % (db_name, i)), 'w')

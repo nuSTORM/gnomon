@@ -57,8 +57,8 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
     def SetPosition(self, v):
         if self.vertex == 'uniform':
-            x = random.uniform(-2500, 5000)
-            y = random.uniform(-2500, 5000)
+            x = random.uniform(-2500, 2500)
+            y = random.uniform(-2500, 2500)
             z = random.uniform(-30*222, 30*222)
             self.log.debug('Using vertex %f %f %f', x, y, z)
             v.SetPosition(x,y,z)
@@ -92,6 +92,14 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         self.log.info('Energy set to (MeV): %s', str(energy))
         self.energy = float(energy)
 
+    def getMCInfo(self):
+        info = {}
+        info['particle_energy'] = self.energy
+        info['pid'] = self.pid
+        info['generator_action'] = 'SingleParticleGeneratorAction'
+        return info
+
+
     def setPID(self, pid):
         if not isinstance(pid, int):
             raise ValueError('PID must be integer')
@@ -113,9 +121,9 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
 
-    def __init__(self, nevents, pid):
+    def __init__(self, nevents, pid, energy_distribution):
         VlenfGeneratorAction.__init__(self)
-        self.energy_distribution = 5.0
+        self.energy_distribution = energy_distribution
         self.pid = pid
         self.nevents = nevents
         
@@ -124,9 +132,6 @@ class GenieGeneratorAction(VlenfGeneratorAction):
         self.generate_file()
 
         self.mc_info = None  # Info on what is simulated
-
-    def setEnergyDistribution(self, var):
-        self.energy_distribution = var # TODO. CHECK INPUT!
 
     def __del__(self):
         os.remove(self.filename)
