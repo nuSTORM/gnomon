@@ -32,7 +32,6 @@ class TrackingAction(G4.G4UserTrackingAction):
         return temp
 
     def PreUserTrackingAction(self, track):
-        print 'pre'
         cp = track.GetCreatorProcess()
         if not cp:
             return

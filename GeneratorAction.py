@@ -13,6 +13,24 @@ import sys
 import os
 import random
 import tempfile
+import math
+
+def lookup_cc_partner(nu_pid):
+    """Lookup the charge current partner
+
+    Takes as an input neutrino nu_pid is a PDG code, then returns
+    the charged lepton partner.  So 12 (nu_e) returns 11.  Keeps sign
+    """
+
+    neutrino_type = math.fabs(nu_pid)
+    assert neutrino_type in [12, 14, 16]
+
+    cc_partner = neutrino_type - 1  # get e, mu, tau
+    cc_partner = math.copysign(cc_partner, nu_pid) # make sure matter/antimatter
+    cc_partner = int(cc_partner)  # convert to int
+    
+    return cc_partner
+
 
 class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     """Base class for VLENF generator actions"""
@@ -25,6 +43,8 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
         self.vertex = (0, 0, 0)  #  mm
         self.log.debug('Default vertex: %s', str(self.vertex))
+
+        self.pid = 13 # PDG code
 
     def check3Vector(self, value):
         if not isinstance(value, list):
@@ -63,14 +83,14 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
     def __init__(self):
         VlenfGeneratorAction.__init__(self)
         
-        self.momentum = (0, 0, 1) # MeV/c
-        self.pid = -13
+        self.beam_direction = G4.G4ThreeVector(0, 0, 1)
 
-    def setMomentum(self, momentum):
-        self.check3Vector(momentum)
+    def setTotalEnergy(self, energy):
+        if not isinstance(energy, (int, float)):
+            raise NotImplementedError("This function can only take numbers as the energy")
 
-        self.log.info('Momentum set to (MeV): %s', str(momentum))
-        self.momentum = momentum
+        self.log.info('Energy set to (MeV): %s', str(energy))
+        self.energy = float(energy)
 
     def setPID(self, pid):
         if not isinstance(pid, int):
@@ -81,9 +101,8 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         pp = G4.G4PrimaryParticle()
         pp.SetPDGcode(self.pid)
 
-        pp.SetMomentum(self.momentum[0],
-                       self.momentum[1],
-                       self.momentum[2]) # MeV/c
+        pp.SetMomentumDirection(self.beam_direction)
+        pp.SetTotalEnergy(self.energy)
 
         v = G4.G4PrimaryVertex()
         self.SetPosition(v)
@@ -94,16 +113,20 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
 
-    def __init__(self, event_type, nevents):
+    def __init__(self, nevents, pid):
         VlenfGeneratorAction.__init__(self)
-        self.event_list = self.get_next_events()
-
-        self.event_type = event_type
+        self.energy_distribution = 5.0
+        self.pid = pid
         self.nevents = nevents
+        
+        self.event_list = self.get_next_events()
 
         self.generate_file()
 
         self.mc_info = None  # Info on what is simulated
+
+    def setEnergyDistribution(self, var):
+        self.energy_distribution = var # TODO. CHECK INPUT!
 
     def __del__(self):
         os.remove(self.filename)
@@ -114,32 +137,34 @@ class GenieGeneratorAction(VlenfGeneratorAction):
     def generate_file(self):
         id, filename = tempfile.mkstemp(suffix='.root')
 
-        #export GSPLOAD=$DATA_DIR/xsec.xml
-
         fake_run = random.randint(1, sys.maxint) # avoids race conditions
-        seed = random.randint(1, sys.maxint) # avoids race conditions
+        seed = random.randint(1, sys.maxint)
 
         max_energy = 5.0
 
         env_vars = 'GSPLOAD=data/xsec.xml GSEED=%d' % seed
 
-        if self.event_type == 'mu_bar_bkg':
-            os.system("%s gevgen -p -14 -r %d -t 1000260560 -n %d -e 0.1,%f -f data/flux_file_mu.dat  > /dev/null" % (env_vars, fake_run, self.nevents, max_energy))
-        elif self.event_type == 'mu_sig':
-            os.system("%s gevgen -p 14 -r %d -t 1000260560 -n %d -e 0.1,%f -f data/flux_file_e.dat  > /dev/null" % (env_vars, fake_run, self.nevents, max_energy))
+        command = '%s gevgen' % env_vars
+
+        command += ' -p %d' % self.pid
+        command += ' -r %d' % fake_run
+        command += ' -t 1000260560'
+        command += ' -n %d' % self.nevents
+
+        if self.energy_distribution == 'm':
+            command += ' -e 0.1,%f -f data/flux_file_mu.dat' % max_energy
+        elif self.energy_distribution == 'e':
+            command += ' -e 0.1,%f -f data/flux_file_e.dat' % max_energy
+        elif type(self.energy_distribution) == float:
+            command += ' -e %f' % self.energy_distribution
         else:
-            raise ValueError()
-        """
-        if self.event_type == 'mu_bar_bkg':
-            command = "%s gevgen -p -14 -r %d -t 1000260560 -n %d -e %f  > /dev/null" % (env_vars, fake_run, self.nevents, max_energy)
-            print command
-            os.system(command)
-        elif self.event_type == 'mu_sig':
-            os.system("%s gevgen -p 14 -r %d -t 1000260560 -n %d -e %f  > /dev/null" % (env_vars, fake_run, self.nevents, max_energy))
-        else:
-            raise ValueError()
-        """
+            raise ValueError('bad energy distribution')
+
+        command += ' > /dev/null' # shut it up
+
+        self.log.critical('Running the command: %s', command)
         
+        os.system(command)
         os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" % (fake_run, filename))
         os.system('rm gntp.%d.ghep.root' % fake_run)
         self.filename = filename
@@ -161,14 +186,12 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             lepton_event = {}
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:
                 assert(t.__getattr__('nc') == 1)
-                lepton_event['code'] = -14
+                lepton_event['code'] = self.pid
             elif t.__getattr__('nc') == 1:
                 raise ValueError()
             else:
-                if self.event_type == 'mu_bar_bkg':
-                    lepton_event['code'] = -13
-                elif self.event_type == 'mu_sig':
-                    lepton_event['code'] = 13
+                lepton_event['code'] = lookup_cc_partner(self.pid)
+
             lepton_event['E'] = t.El
             lepton_event['px'] = t.pxl
             lepton_event['py'] = t.pyl
@@ -202,12 +225,10 @@ class GenieGeneratorAction(VlenfGeneratorAction):
                 event_type[prop] = t.__getattr__(prop)
 
             self.log.debug('y: %f', t.y)
-            try:
-                self.log.debug('m_l: %f', math.sqrt(t.El ** 2 -
-                                        (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2)))
-            except:
-                pass
 
+            event_type['incoming_neutrino'] = t.__getattr__('neu')
+            event_type['neutrino_energy'] = t.__getattr__('Ev')
+            
             yield next_events, event_type
 
     def GeneratePrimaries(self, event):
@@ -217,6 +238,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
         for particle in particles:
             pp = G4.G4PrimaryParticle()
+            self.log.debug('Adding particle with PDG code %d' % particle['code'])
             pp.SetPDGcode(particle['code'])
 
             particle['px'], particle['py'], particle['pz'] = \
