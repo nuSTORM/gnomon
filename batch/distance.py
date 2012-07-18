@@ -10,8 +10,8 @@ import batch_queue_config
 
 server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
 
-number_of_events = 10000
-repeat_point = 3 # how many times to redo same point
+number_of_events = 100000
+repeat_point = 1 # how many times to redo same point
 
 flags = '--log_level WARNING'
 
@@ -54,7 +54,7 @@ time python simulate.py --name distance --vertex 0 0 0 --events %(number_of_even
         command = 'qsub %s -N %s %s' % (extra_commands, job_name, file.name)
 
         print command
-        os.system(command)
+        #os.system(command)
         time.sleep(1)
 
 

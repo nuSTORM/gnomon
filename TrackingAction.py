@@ -22,7 +22,7 @@ class TrackingAction(G4.G4UserTrackingAction):
 
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
-        
+
         self.config = Configuration.DEFAULT()
         self.info = {}
 
@@ -35,7 +35,7 @@ class TrackingAction(G4.G4UserTrackingAction):
         cp = track.GetCreatorProcess()
         if not cp:
             return
-        
+
         cp_name = cp.GetProcessName()
 
         if str(cp_name) != 'Decay':
@@ -55,9 +55,9 @@ class TrackingAction(G4.G4UserTrackingAction):
 
         mom = ConvertG4ThreeVectorToDict(track.GetMomentum())
         this_info['momentum'] = mom
-        
+
         this_info['pdg_code'] = int(pdg_code)
-        
+
         self.info['decay_to_muon'].append(this_info)
 
     def PostUserTrackingAction(self, track):
@@ -75,9 +75,9 @@ class TrackingAction(G4.G4UserTrackingAction):
         self.info['pion_info'].append(this_info)
 
 
-            
 
 
 
-        
-        
+
+
+

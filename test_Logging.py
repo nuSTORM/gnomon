@@ -23,7 +23,7 @@ class TestLogging(TestCase):
 
     def test_setupLogging(self):
         Logging.setupLogging('WARNING', 'testname')
-        
+
         self.assertNotEqual(sys.stdout, sys.__stdout__)
         self.assertNotEqual(sys.stderr, sys.__stderr__)
 
@@ -35,9 +35,9 @@ class TestLogging(TestCase):
             parser = argparse.ArgumentParser()
             with self.assertRaises(exceptions.SystemExit):
                 parser.parse_args(['--log_level', level_name])
-                
+
             Logging.addLogLevelOptionToArgs(parser)
-        
+
             with self.assertRaises(exceptions.SystemExit):
                 parser.parse_args(['--log_level'])
 

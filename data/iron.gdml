@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
+
+
+  <define>
+    <!-- bar info.  units are 'mm' -->
+    <constant name="length" value="5000"/>
+  </define>
+
+
+  <materials>
+    <!-- Define the Iron's material properties -->
+    <material Z="26" name="IronMaterial" state="solid">
+      <MEE unit="eV" value="286"/>
+      <D unit="g/cm3" value="7.87"/>
+      <atom unit="g/mole" value="55.85"/>
+    </material>
+
+    <!-- Define the scintillator's material properties -->
+    <element Z="6" name="CarbonElement">
+      <atom unit="g/mole" value="12.01"/>
+    </element>
+
+    <element Z="1" name="HydrogenElement">
+      <atom unit="g/mole" value="1.01"/>
+    </element>
+    <material name="ScintillatorMaterial" state="solid">
+      <MEE unit="eV" value="64.6844741120544"/>
+      <D unit="g/cm3" value="1.032"/>
+      <fraction n="0.914544377696929" ref="CarbonElement"/>
+      <fraction n="0.0854556223030713" ref="HydrogenElement"/>
+    </material>
+
+    <!-- Now define what's "outside" our detector -->
+    <material Z="1" name="Galactic" state="gas">
+      <T unit="K" value="2.73"/>
+      <P unit="pascal" value="3e-18"/>
+      <MEE unit="eV" value="19.2"/>
+      <D unit="g/cm3" value="1e-25"/>
+      <atom unit="g/mole" value="1.01"/>
+    </material>
+  </materials>
+
+  <!-- There are only two shapes we build our geometry out of: steel plates and
+       scintillator bars.  There's also the artificial shape of the world volume
+       but that's just for Geant4's sake -->
+  <solids>
+    <box lunit="mm" name="SteelPlateSolid" x="length" y="length" z="thickness_steel"/>
+    
+    <!-- x means x-view, etc. -->
+    <box lunit="mm" name="ScintillatorXBarSolid" x="width" y="length" z="thickness_bar"/>
+    <box lunit="mm" name="ScintillatorYBarSolid" x="length" y="width" z="thickness_bar"/>
+
+    <box lunit="mm" name="ScintillatorPlaneXSolid" x="length" y="length" z="thickness_bar"/>
+    <box lunit="mm" name="ScintillatorPlaneYSolid" x="length" y="length" z="thickness_bar"/>
+
+    <box lunit="mm" name="LayerSolid" x="length" y="length" z="thickness_layer"/>
+    <box lunit="mm" name="CalorimeterSolid" x="length" y="length" z="thickness_layer * layers"/> 
+    <box lunit="m" name="WorldSolid" x="6" y="6" z="30"/> <!-- note units-->
+  </solids>
+
+  <structure>
+    <volume name="SteelPlane">
+      <materialref ref="IronMaterial"/>
+      <solidref ref="SteelPlateSolid"/>
+    </volume>
+    
+    <!-- define bars -->
+    <volume name="ScintillatorBarX">
+      <materialref ref="ScintillatorMaterial"/>
+      <solidref ref="ScintillatorXBarSolid"/>
+    </volume>
+    <volume name="ScintillatorBarY">
+      <materialref ref="ScintillatorMaterial"/>
+      <solidref ref="ScintillatorYBarSolid"/>
+    </volume>
+
+    <!-- define scintillator planes -->
+    <volume name="ScintillatorPlaneX">
+      <materialref ref="Galactic"/>
+      <solidref ref="ScintillatorPlaneXSolid"/>
+      <replicavol number="500">
+        <volumeref ref="ScintillatorBarX"/>
+        <replicate_along_axis>
+          <direction x="1"/>
+          <width unit="mm" value="width"/>
+          <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol>
+    </volume>
+    <volume name="ScintillatorPlaneY">
+      <materialref ref="Galactic"/>
+      <solidref ref="ScintillatorPlaneYSolid"/>
+      <replicavol number="500">
+        <volumeref ref="ScintillatorBarY"/>
+        <replicate_along_axis>
+          <direction y="1"/>
+          <width unit="mm" value="width"/>
+          <offset unit="mm" value="0"/>
+	  </replicate_along_axis>
+      </replicavol>
+    </volume>
+    
+
+    <volume name="LayerOfPlanes">
+      <materialref ref="Galactic"/>
+      <solidref ref="LayerSolid"/>
+      <physvol name="SteelPlanePhysical">
+        <volumeref ref="SteelPlane"/>
+        <position name="SteelPlane_pos" unit="mm" x="0" y="0" z="-20"/>
+      </physvol>
+
+      <physvol name="ScintillatorPlaneXPhysical">
+        <volumeref ref="ScintillatorPlaneX"/>
+        <position name="ScintillatorPlaneX_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+
+      <physvol name="ScintillatorPlaneYPhysical">
+        <volumeref ref="ScintillatorPlaneY"/>
+        <position name="ScintillatorPlaneY_pos" unit="mm" x="0" y="0" z="10"/>
+      </physvol>
+    </volume>
+
+    <volume name="Calorimeter">
+      <materialref ref="Galactic"/>
+      <solidref ref="CalorimeterSolid"/>
+
+      <replicavol number="444">
+        <volumeref ref="LayerOfPlanes"/> 
+        <replicate_along_axis>
+          <direction z="1"/>
+          <width unit="mm" value="thickness_layer"/>
+          <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol> 
+    </volume>
+
+    <volume name="World">
+      <materialref ref="Galactic"/>
+      <solidref ref="WorldSolid"/>
+      <physvol name="CalorimeterPhys">
+        <volumeref ref="Calorimeter"/>
+        <position name="Calorimeter_pos" unit="mm" x="0" y="0" z="0.0"/>
+      </physvol>
+    </volume>
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="World"/>
+  </setup>
+
+</gdml>

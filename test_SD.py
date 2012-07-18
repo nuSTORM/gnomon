@@ -24,21 +24,21 @@ class TestSD(TestCase):
                              self.width,
                              self.thickness_layer,
                              self.thickness_bar)
-                             
+
 
     def test_setEventNumber(self):
         for i in range(10):
             self.sd.setEventNumber(i)
             self.assertEqual(i, self.sd.event)
 
-        with self.assertRaises(TypeError): 
-            self.sd.setEventNumber('string')
-            
         with self.assertRaises(TypeError):
-            self.sd.setEventNumber(3.4) 
+            self.sd.setEventNumber('string')
 
-        with self.assertRaises(TypeError):  
-            self.sd.setEventNumber(None) 
+        with self.assertRaises(TypeError):
+            self.sd.setEventNumber(3.4)
+
+        with self.assertRaises(TypeError):
+            self.sd.setEventNumber(None)
 
     def test_getNumberOfBars(self):
         self.assertEqual(self.sd.getNumberOfBars(), self.bars)
@@ -77,7 +77,7 @@ class TestSD(TestCase):
 
 
         bad_position = MockG4ThreeVector()  # wrong position, updated at end
-        
+
         for value in values:
             layer_number = value[0]
             bar_number = value[1]
@@ -90,8 +90,8 @@ class TestSD(TestCase):
             with self.assertRaises(AssertionError):
                 self.sd.getMCHitBarPosition(layer_number, bar_number, view,
                                          bad_position)
-            
+
             self.sd.getMCHitBarPosition(layer_number, bar_number, view, position)
             bad_position = position # this will be wrong position for next value
-        
-            
+
+

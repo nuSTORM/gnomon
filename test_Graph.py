@@ -20,7 +20,7 @@ class TestDAG(TestCase):
         dag = DAG()
         graph = {(5385, -1605): {}, (5285, -1595): {}, (5335, -1595): {}}
 
-        
+
         graph = dag.CreateDirectedEdges(points, graph)
 
     def test_CutLongEdges(self):

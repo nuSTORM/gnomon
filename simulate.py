@@ -50,7 +50,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the NuSTORM experiment magnetized iron detectors')
 
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
-    
+
     parser.add_argument('--name', '-n', help='DB in CouchDB for output',
                         type=str, required=True)
     parser.add_argument('--events', help='how many events to simulate',
@@ -68,12 +68,12 @@ if __name__ == "__main__":
     group2 = group.add_mutually_exclusive_group(required=True)
     group2.add_argument('--vertex', metavar='N', type=float, nargs=3, help='Vertex location (mm)')
     group2.add_argument('--uniform', '-u', action='store_true', help='Vertex uniformly distributed')
-    
+
 
     group = parser.add_argument_group('Visualization', 'event display')
     group.add_argument('--display', action='store_true', help='event display')
     group.add_argument('--view', choices=['XY', 'ZY', 'ZX'], default='ZX')
-    
+
     parser.add_argument('--pause', action='store_true',
                         help='pause after each event, require return')
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     else:
         Configuration.run = args.run
     Configuration.name = args.name
-    
+
     config = Configuration.DEFAULT()
 
     rand_engine = G4.Ranlux64Engine()
@@ -116,14 +116,14 @@ if __name__ == "__main__":
     #  Generator actions
     #
 
-    
+
     if is_neutrino_code(args.pid):
         pga = GeneratorAction.GenieGeneratorAction(args.events, args.pid, args.energy)
     else:
         pga = GeneratorAction.SingleParticleGeneratorAction()
         pga.setTotalEnergy(args.energy)
         pga.setPID(args.pid)
-        
+
     if args.vertex:
         pga.setVertex(args.vertex)
     elif args.uniform:
@@ -168,7 +168,7 @@ if __name__ == "__main__":
         #import GUI
         #app = GUI.VlenfApp()
         #app.mainloop()
-    
+
     if args.pause:
         for i in range(args.events):
             gRunManager.BeamOn(1)

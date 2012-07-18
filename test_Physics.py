@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     Configuration.run = random.randint(1, sys.maxint)
     Configuration.name = 'physics_test'
-    
+
     config = Configuration.DEFAULT()
 
     rand_engine = G4.Ranlux64Engine()

@@ -7,7 +7,7 @@ bad_verticies = [[0,1],
 good_verticies = [[1,2,3],
                   [0.1,0.2,0.3],
                   [0,1.0,2]]
-                 
+
 
 class TestVlenfGeneratorAction(TestCase):
     def setUp(self):
@@ -20,7 +20,7 @@ class TestVlenfGeneratorAction(TestCase):
         for bad_vertex in bad_verticies:
             with self.assertRaises(ValueError):
                 self.ga.check3Vector(bad_vertex)
-            
+
         for good_vertex in good_verticies:
             self.ga.check3Vector(good_vertex)
 
@@ -37,14 +37,14 @@ class TestVlenfGeneratorAction(TestCase):
         for good_vertex in good_verticies:
             self.ga.setVertex(good_vertex)
             self.assertEqual(good_vertex, self.ga.vertex)
-        
+
         self.ga.setVertex('uniform')
         self.assertEqual('uniform', self.ga.vertex)
 
 class TestSingleParticleGeneratorAction(TestCase):
     def setUp(self):
         self.ga = GA.SingleParticleGeneratorAction()
-        
+
     def test_types_setMomentum(self):
         for bad_vertex in bad_verticies:
             with self.assertRaises(ValueError):
@@ -73,7 +73,7 @@ class TestSingleParticleGeneratorAction(TestCase):
 class TestGenieGeneratorAction(TestCase):
     def setUp(self):
         self.ga = GA.GenieGeneratorAction()
-        
+
     def test_get_next_events(self):
         pass
 

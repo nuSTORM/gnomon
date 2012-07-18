@@ -1,7 +1,9 @@
 """Add truth values to data stream"""
 
+
 import logging
 import sys
+
 
 class AppendTruth:
     def __init__(self, pga, TA):
@@ -26,7 +28,7 @@ class AppendTruth:
             pass
         #self.log.warning('Disabling: no MC info in GeneratorAction')
         #    self.enabled = False
-        
+
     def Shutdown(self):
         pass
 
@@ -42,4 +44,3 @@ class AppendTruth:
             #doc['mc']['tracking'] = self.ta.FetchThenClear()
             new_docs.append(doc)
         return new_docs
-

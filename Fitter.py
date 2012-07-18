@@ -310,10 +310,7 @@ class VlenfPolynomialFitter():
         trans = np.array(trans)
 
         def dbexpl(t,p):
-            if p[0] >= 0:
-                return(p[0] - p[1] * t + p[2] * t**2)
-            else:
-                return(p[0] - p[1] * t - p[2] * t**2)
+            return(p[0] - p[1] * t + p[2] * t**2)
 
         def residuals(p,data,t):
             err = data - dbexpl(t,p)
