@@ -19,10 +19,10 @@ random.seed()
 
 tempdir = tempfile.mkdtemp()
 
-for db_settings in [('e', 12), ('m', -14), ('e', 14)]:
+for db_settings in [('m', -14)]:#('e', 12), ('m', -14), ('e', 14)]:
     energy_dist, pid = db_settings
     db_name = "_".join(map(str, db_settings))
-    db_name = '%s_3' % db_name
+    db_name = '%s' % db_name
 
     for i in range(repeat_point):
         file = open(os.path.join(tempdir, '%s_%d' % (db_name, i)), 'w')

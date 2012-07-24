@@ -190,10 +190,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
             lepton_event = {}
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:
-                assert(t.__getattr__('nc') == 1)
-                lepton_event['code'] = self.pid
-            elif t.__getattr__('nc') == 1:
-                raise ValueError()
+                lepton_event['code'] = self.pid # Either NC or ES
             else:
                 lepton_event['code'] = lookup_cc_partner(self.pid)
 

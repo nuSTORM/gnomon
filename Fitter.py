@@ -362,18 +362,29 @@ class VlenfPolynomialFitter():
             clsf['gof_x'] = fitx_doc['gof']
             clsf['gof_y'] = fity_doc['gof']
 
-            if clsf['gof_x'] == 'FAIL' or clsf['gof_y'] == 'FAIL':
-                doc['analyzable'] = False
-            else:
+            try:
+                assert clsf['gof_x'] != 'FAIL'
+                assert clsf['gof_y'] != 'FAIL'
                 doc['analyzable'] = True
+                
+                rf = {}  #  raw fit
+                rf['x'] = fitx_doc['params']
+                rf['y'] = fity_doc['params']
+                rf['x2'] = fitx_doc['params'][2]
 
-            clsf['x0'] = fitx_doc['params'][0]
-            clsf['x1'] = fitx_doc['params'][1]
-            clsf['x2'] = fitx_doc['params'][2]
+                rf['y0'] = fity_doc['params'][0]
+                rf['y1'] = fity_doc['params'][1]
+                rf['y2'] = fity_doc['params'][2]
 
-            clsf['y0'] = fity_doc['params'][0]
-            clsf['y1'] = fity_doc['params'][1]
-            clsf['y2'] = fity_doc['params'][2]
+                clsf['fit_poly'] = rf
+                
+                clsf['curve'] = rf['x0'] * rf['x2'] + rf['y0'] * rf['y2']
+                clsf['curve'] = clsf['curve'] / math.hypot(rf['x0'], rf['y0'])
+
+                
+            except:
+                doc['analyzable'] = False
+            
             doc['classification'] = clsf
 
             new_docs.append(doc)
