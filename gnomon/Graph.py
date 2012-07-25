@@ -21,10 +21,10 @@ class Graph():
         for node_in, nodes_out in transitive_closure.iteritems():
             if most_accesisible_node == None:
                 most_accesisible_node = node_in
-                
+
             max_value = len(transitive_closure[most_accesisible_node])
             this_value = len(nodes_out)
-                
+
             if this_value > max_value:
                 most_accesisible_node = node_in
 
@@ -42,7 +42,7 @@ class Graph():
             gr.add_nodes([node])
 
         return gr
-            
+
     def CreateDirectedEdges(self, points, gr, layer_width):
         """
         Take each key (ie. point) in the graph and for that point
@@ -66,12 +66,12 @@ class Graph():
                         weight = -1 * math.hypot(dz, dx)
 
                         edge = ((z0,x0, Q0), (z1, x1, Q1))
-                        
+
                         gr.add_edge(edge, wt=weight)
 
         # Ensure that it is already transitively reduced
         assert len(critical.transitive_edges(gr)) == 0
-        
+
         return gr
 
 
@@ -79,9 +79,9 @@ class Graph():
         """node is start node"""
         # Remember: weights are negative
         st, distance = minmax.shortest_path_bellman_ford(gr, node)
-        
+
         nodes = distance.keys()
-        
+
         # Find the farthest node, which is end of track
         min_key = None
         for key, value in distance.iteritems():
@@ -89,7 +89,7 @@ class Graph():
                 min_key = key
 
         return min_key
-        
+
 
     def NegateGraph(self, gr):
         for edge in gr.edges():
@@ -99,7 +99,7 @@ class Graph():
 
     def ComputeLongestPath(self, gr, parent_node):
         parent_node = self.FindParentNode(gr)
-        
+
         farthest_node = self.GetFarthestNode(gr, parent_node)
 
         gr = self.NegateGraph(gr)
@@ -107,7 +107,7 @@ class Graph():
         gr = self.NegateGraph(gr)
 
         max_distance = distance[farthest_node]
-        
+
         # Then swim back to the parent node.  Record the path.
         node_list = [farthest_node]
         i = 0
@@ -137,4 +137,3 @@ class Graph():
 
         node_list = [x for x in node_list if x != None]
         return node_list, max_distance, gr
-

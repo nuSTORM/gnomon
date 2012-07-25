@@ -33,7 +33,7 @@ class WandsToroidField(G4.G4MagneticField):
         bfield.x = 0
         bfield.y = 0
         bfield.z = 0.
-        
+
         if self.sign == 0:
             return bfield * G4.tesla
 

@@ -19,21 +19,21 @@ class VlenfEventAction(G4.G4UserEventAction):
 
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
-        
+
         self.config = Configuration.DEFAULT()
 
         self.processors = []
         self.processors.append(VlenfSimpleDigitizer())
         self.processors.append(Fitter.EmptyTrackFromDigits())
 
-        
-        
+
+
         self.processors.append(Fitter.ExtractTracks())
         self.processors.append(Fitter.VlenfPolynomialFitter())
         self.processors.append(Fitter.EnergyDeposited())
         self.processors.append(AppendTruth(pga, TA))
         self.processors.append(CouchManager())
-        
+
         # used to fetch mchits, only way given geant
         self.sd = None
 
@@ -58,7 +58,3 @@ class VlenfEventAction(G4.G4UserEventAction):
     def Shutdown(self):
         for processor in self.processors:
             processor.Shutdown()
-
-
-        
-        

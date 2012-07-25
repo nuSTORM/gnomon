@@ -13,8 +13,8 @@ def addLogLevelOptionToArgs(parser):
                         default='INFO')
 
 class StreamToLogger(object):
-    """                                                                                                                            
-    Fake file-like stream object that redirects writes to a logger instance.                                                       
+    """
+    Fake file-like stream object that redirects writes to a logger instance.
     """
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
@@ -46,9 +46,9 @@ def setupLogging(console_level, name):
     stderr_logger = logging.getLogger('root').getChild('STDERR')
     sl = StreamToLogger(stderr_logger, logging.ERROR)
     sys.stderr = sl
-    
+
     logger.info('Starting up Gnomon (PID: %d)', os.getpid())
 
     logger.info('Using log filename: %s', output_filename)
-        
+
     logger.info('Start time: %s', time.ctime())

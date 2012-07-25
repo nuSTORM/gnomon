@@ -48,7 +48,7 @@ class CouchManager(Manager):
     def Shutdown(self):
         self.log.debug('Shutdown()')
         self.Commit(force=True)
-        
+
 
 class FileManager(Manager):
     def __init__(self):
@@ -66,7 +66,7 @@ class FileManager(Manager):
         except OSError: pass # already exists
 
         self.file_name = '%s_%s_%d' % (type, Configuration.name, Configuration.run)
-        
+
         self.file_path = os.path.join(self.dir, self.file_name)
         self.file_path_lock = os.path.join(self.dir, '%s.lock' % self.file_name)
 
@@ -75,7 +75,7 @@ class FileManager(Manager):
 
         if os.path.exists(self.file_path_lock):
             raise ValueError('Lock file exists!')
-        
+
         self.file = open(self.file_path, 'w')
 
         # Create lock file
@@ -92,7 +92,7 @@ class FileManager(Manager):
         self.file.close()
 
         #self.SendToCouch(self.file_path_tmp)
-        
+
         os.remove(self.file_path_lock)
         #shutil.move(self.file_path_tmp, self.file_path_failed)
         #    raise
@@ -103,7 +103,7 @@ class FileManager(Manager):
 
 def SendToCouch(filename):
     dir = '/data/mice/gnomon/'
-    
+
     Configuration.run = int(filename.split('_')[-1])
     Configuration.name = '_'.join(filename.split('_')[1:-1])
 
@@ -117,13 +117,13 @@ def SendToCouch(filename):
             couch_dm.Save(pickle.load(file))
         except (EOFError, pickle.UnpicklingError):
             break
-        
+
     couch_dm.Shutdown()
 
 
 if __name__ == "__main__":
     dir = '/data/mice/gnomon/'
-    
+
     for filename in os.listdir(dir):
         if filename.endswith('.lock'):
             continue
@@ -132,7 +132,6 @@ if __name__ == "__main__":
         if os.path.exists(lock_path):
             continue
 
-        
+
         SendToCouch(filename)
         os.remove(filename)
-

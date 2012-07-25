@@ -14,7 +14,7 @@ class VlenfSimpleDigitizer():
 
         self.energy_scale = 80.0 # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
-        
+
         self.threshold = None
         self.setThreshold()
 
@@ -44,7 +44,7 @@ class VlenfSimpleDigitizer():
 
             dedx = doc['dedx']
             counts_adc = dedx * self.energy_scale
-            
+
             digit = {}
             digit['type'] = 'digit'
             digit['run'] = run
@@ -54,7 +54,7 @@ class VlenfSimpleDigitizer():
             digit['view'] = view
             digit['counts_adc'] = counts_adc
             digit['position'] = position_bar  # this should be derived
-            
+
             hits_dict[key].append(digit)
 
 
@@ -79,4 +79,3 @@ class VlenfSimpleDigitizer():
 
     def getThreshold(self):
         return self.threshold
-

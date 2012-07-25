@@ -67,7 +67,7 @@ class EmptyTrackFromDigits():
 
         return new_docs
 
-                
+
 class EnergyDeposited():
     """ blah """
 
@@ -75,8 +75,8 @@ class EnergyDeposited():
         pass
 
     def Process(self, docs):
-        new_docs = []   
-        
+        new_docs = []
+
         for doc in docs:
             if not doc['analyzable']:
                 new_docs.append(doc)
@@ -160,7 +160,7 @@ class EnergyDeposited():
 
 
             del doc['tracks']
-            
+
             new_docs.append(doc)
 
         return new_docs
@@ -306,7 +306,7 @@ class VlenfPolynomialFitter():
                 tracks = doc['tracks']
 
                 assert 'lengths' in clsf
-                
+
                 lx = clsf['lengths']['x'][0]
                 fitx_doc = self.Fit(tracks['x'][lx])
                 ly = clsf['lengths']['y'][0]
@@ -318,7 +318,7 @@ class VlenfPolynomialFitter():
                 assert fitx_doc['gof'] != 'FAIL'
                 assert fity_doc['gof'] != 'FAIL'
                 doc['analyzable'] = True
-                
+
                 rf = {}  #  raw fit
 
                 rf['gof'] = {'x': fitx_doc['gof'], 'y': fity_doc['gof']}
@@ -335,14 +335,14 @@ class VlenfPolynomialFitter():
                 rf['B'] = self.field.PhenomModel(math.hypot(x0, y0))
 
                 rf['p_MeV'] = 300 * rf['B'] * rf['R'] / 1000  # MeV
-                
+
                 clsf['fit_poly'] = rf
 
             except Exception, err:
                 self.log.exception('Error from polynomial fitter:')
                 #  Something bad happened... mark event not analyzable
                 doc['analyzable'] = False
-            
+
             doc['classification'] = clsf
 
             new_docs.append(doc)

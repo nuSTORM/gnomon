@@ -28,7 +28,7 @@ def lookup_cc_partner(nu_pid):
     cc_partner = neutrino_type - 1  # get e, mu, tau
     cc_partner = math.copysign(cc_partner, nu_pid) # make sure matter/antimatter
     cc_partner = int(cc_partner)  # convert to int
-    
+
     return cc_partner
 
 
@@ -73,16 +73,16 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
             self.vertex = 'uniform'
         else:
             self.check3Vector(vertex)
-            
+
             self.log.info('Vertex set to (mm): %s', str(vertex))
             self.vertex = vertex
-        
+
 
 class SingleParticleGeneratorAction(VlenfGeneratorAction):
     """Generate single particle at specific point"""
     def __init__(self):
         VlenfGeneratorAction.__init__(self)
-        
+
         self.beam_direction = G4.G4ThreeVector(0, 0, 1)
 
     def setTotalEnergy(self, energy):
@@ -104,7 +104,7 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         if not isinstance(pid, int):
             raise ValueError('PID must be integer')
         self.pid = pid
-        
+
     def GeneratePrimaries(self, event):
         pp = G4.G4PrimaryParticle()
         pp.SetPDGcode(self.pid)
@@ -117,7 +117,7 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         v.SetPrimary(pp)
 
         event.AddPrimaryVertex(v)
-    
+
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
 
@@ -126,7 +126,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
         self.energy_distribution = energy_distribution
         self.pid = pid
         self.nevents = nevents
-        
+
         self.event_list = self.get_next_events()
 
         self.generate_file()
@@ -168,12 +168,12 @@ class GenieGeneratorAction(VlenfGeneratorAction):
         command += ' > /dev/null' # shut it up
 
         self.log.critical('Running the command: %s', command)
-        
+
         os.system(command)
         os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" % (fake_run, filename))
         os.system('rm gntp.%d.ghep.root' % fake_run)
         self.filename = filename
-        
+
 
     def get_next_events(self):
         f = ROOT.TFile(self.filename)
@@ -230,7 +230,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
             event_type['incoming_neutrino'] = t.__getattr__('neu')
             event_type['neutrino_energy'] = t.__getattr__('Ev')
-            
+
             yield next_events, event_type
 
     def GeneratePrimaries(self, event):
@@ -254,5 +254,3 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             v.SetPrimary(pp)
 
             event.AddPrimaryVertex(v)
-
-    

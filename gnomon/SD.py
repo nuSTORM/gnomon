@@ -144,4 +144,3 @@ class ScintSD(G4.G4VSensitiveDetector):
                                                         theTouchable.GetTranslation(0).z)
 
         self.docs.append(doc)
-
