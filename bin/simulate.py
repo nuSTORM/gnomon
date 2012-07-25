@@ -69,14 +69,6 @@ if __name__ == "__main__":
     group2.add_argument('--vertex', metavar='N', type=float, nargs=3, help='Vertex location (mm)')
     group2.add_argument('--uniform', '-u', action='store_true', help='Vertex uniformly distributed')
 
-
-    group = parser.add_argument_group('Visualization', 'event display')
-    group.add_argument('--display', action='store_true', help='event display')
-    group.add_argument('--view', choices=['XY', 'ZY', 'ZX'], default='ZX')
-
-    parser.add_argument('--pause', action='store_true',
-                        help='pause after each event, require return')
-
     args = parser.parse_args()
 
     Logging.setupLogging(args.log_level, args.name)
@@ -148,33 +140,7 @@ if __name__ == "__main__":
     sd = detector.getSensitiveDetector()
     myEA.setSD(sd)
 
-    if args.display:
-        gApplyUICommand("/vis/sceneHandler/create OGLSX OGLSX")
-        gApplyUICommand("/vis/viewer/create OGLSX oglsxviewer")
-        gApplyUICommand("/vis/drawVolume")
-        gApplyUICommand("/vis/scene/add/trajectories")
-        gApplyUICommand("/tracking/storeTrajectory 1")
-        gApplyUICommand("/vis/scene/endOfEventAction accumulate")
-        gApplyUICommand("/vis/scene/endOfRunAction accumulate")
-        gApplyUICommand("/vis/viewer/select oglsxviewer")
-        gApplyUICommand("/vis/scene/add/trajectories")
-
-        if args.view == 'XY':
-            gApplyUICommand("/vis/viewer/set/viewpointVector 0 0 -1")
-        elif args.view == 'ZY':
-            gApplyUICommand("/vis/viewer/set/viewpointVector -1 0 0")
-        elif args.view == 'ZX':
-            gApplyUICommand("/vis/viewer/set/viewpointVector -1 100000 0")
-        #import GUI
-        #app = GUI.VlenfApp()
-        #app.mainloop()
-
-    if args.pause:
-        for i in range(args.events):
-            gRunManager.BeamOn(1)
-            raw_input()
-    else:
-        gRunManager.BeamOn(args.events)
+    gRunManager.BeamOn(args.events)
 
 
     myEA.Shutdown()

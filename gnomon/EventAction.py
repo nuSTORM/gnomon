@@ -9,7 +9,6 @@ from Digitizer import VlenfSimpleDigitizer
 import Fitter
 from Truth import AppendTruth
 from DataManager import CouchManager, FileManager
-from Classifier import ComputeHadronicEnergy
 
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
