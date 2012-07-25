@@ -3,22 +3,23 @@ import urlparse
 import os
 
 
-#remote_url = 'http://gnomon:harry@gnomon.iriscouch.com/' 
-remote_url = 'http://gnomon:balls@tasd.fnal.gov:5984/'
-#remote_url = 'http://gnomon:balls@heplnm071.pp.rl.ac.uk:5984/'
-remote_couch = couchdb.Server(remote_url)
+master_url = 'http://gnomon:balls@tasd.fnal.gov:5984/'
+master_couch = couchdb.Server(master_url)
 
-#local_url = 'http://gnomon:harry@gnomon.iriscouch.com/'
-
-local_url = 'http://gnomon:balls@172.16.84.2:8080/'
-local_couch =couchdb.Server(local_url)
+slave_url = 'http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/'
+slave_couch =couchdb.Server(slave_url)
 
 be_continous=False
 
-for db_name in ['mu_bar_bkg2', 'mu_sig2']:
-    local_link = urlparse.urljoin(local_url, db_name)
-    dest_link =  urlparse.urljoin(remote_url, db_name)
-    print local_link, '<-', dest_link
-    local_couch.replicate(dest_link, local_link, continous=be_continous, create_target=True)
+for dbname in master_couch:
+    if dbname[0] != '_':
+        slave_link  =  urlparse.urljoin(slave_url, dbname)
+        master_link =  urlparse.urljoin(master_url, dbname)
+
+        print dbname
+        print '\tmaster:', master_link
+        print '\tslave:', slave_link
+
+        slave_couch.replicate(master_link, slave_link, continous=be_continous, create_target=True)
 
             

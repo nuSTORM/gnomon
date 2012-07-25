@@ -10,19 +10,19 @@ import batch_queue_config
 server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
 polarity = '-'
 
-number_of_events = 100000
-repeat_point = 1 # how many times to redo same point
+number_of_events = 100
+repeat_point = 10 # how many times to redo same point
 
-flags = '--log_level WARNING'
+flags = '--log_level DEBUG'
 
 random.seed()
 
 tempdir = tempfile.mkdtemp()
 
-for db_settings in [('m', -14)]:#('e', 12), ('m', -14), ('e', 14)]:
+for db_settings in [('e', 12), ('m', -14), ('e', 14)]:
     energy_dist, pid = db_settings
     db_name = "_".join(map(str, db_settings))
-    db_name = '%s' % db_name
+    db_name = '%s_3' % db_name
 
     for i in range(repeat_point):
         file = open(os.path.join(tempdir, '%s_%d' % (db_name, i)), 'w')

@@ -8,10 +8,11 @@ from matplotlib import *
 from pylab import *
 from scipy.optimize import leastsq
 
-#from pygraph.readwrite import markup
 from pygraph.classes.digraph import digraph
 from pygraph.algorithms import sorting
 from Graph import Graph
+
+import MagneticField
 
 bar_width = 10.0 # get from GDML!! BUG FIXME
 layer_width = 40.0
@@ -66,62 +67,6 @@ class EmptyTrackFromDigits():
 
         return new_docs
 
-
-class Containment():
-        """Penetration Depth
-
-        Measured in terms of iron planes.  95% containment computed
-        """
-
-        def Shutdown(self):
-            pass
-
-        def Process(self, docs):
-            new_docs = []
-
-            for doc in docs:
-                if not doc['analyzable']:
-                    continue
-
-                hits = {}  # key: z, value: number of hits
-                nhits = 0
-
-                for view in ['x', 'y']:
-                    main_track = doc['classification']['%s_length1' % view]
-
-                    for track, points in doc['tracks'][view].iteritems():
-                        for z, x, Q in points:
-                            if z not in hits:
-                                hits[z] = 0
-                            hits[z] += 1
-                            nhits += 1
-
-
-                z_min = None
-
-                z_keys = hits.keys()
-                z_keys.sort()
-
-
-                current_sum = 0
-
-                contained_95 = None
-                
-                for z in z_keys:
-                    if z_min == None or z < z_min:
-                        z_min = z
-
-                    current_sum += hits[z]
-
-                    if contained_95 == None:  # If already found, skip
-                        if float(current_sum) / nhits > 0.95:
-                            contained_95 = z - z_min
-
-                doc['classification']['containment'] = contained_95
-                
-                new_docs.append(doc)
-        
-            return new_docs
                 
 class EnergyDeposited():
     """ blah """
@@ -134,6 +79,7 @@ class EnergyDeposited():
         
         for doc in docs:
             if not doc['analyzable']:
+                new_docs.append(doc)
                 continue
 
             n_hits = 0
@@ -145,7 +91,7 @@ class EnergyDeposited():
             Q_dict_main_track = {}
 
             for view in ['x', 'y']:
-                main_track = doc['classification']['%s_length1' % view]
+                main_track = doc['classification']['lengths'][view][0]
 
                 for track, points in doc['tracks'][view].iteritems():
                     for z, x, Q in points:
@@ -212,11 +158,12 @@ class EnergyDeposited():
 
             doc['classification'] = c
 
+
+            del doc['tracks']
+            
             new_docs.append(doc)
 
         return new_docs
-
-            
 
 class ExtractTracks():
     """Extract tracks with graph theoretic concepts"""
@@ -242,14 +189,11 @@ class ExtractTracks():
                 continue
 
             tracks = doc['tracks']
-            doc['graph'] = {}
 
             previous = []
             for view in ['x', 'y']:
                 self.log.info('Working on view %s' % view)
                 points = tracks[view]['LEFTOVERS']
-
-                #doc['graph']['gr1'] = markup.write(gr)
 
                 dag = Graph()
                 gr = dag.CreateVertices(points)
@@ -274,9 +218,12 @@ class ExtractTracks():
                 tracks[view][length3] = gr3
                 tracks[view]['LEFTOVERS'] = gr.nodes()
 
-                doc['classification']['%s_length1' % view] = length1
-                doc['classification']['%s_length2' % view] = length2
-                doc['classification']['%s_length3' % view] = length3
+                lengths = [length1, length2, length3]
+
+                if 'lengths' not in doc['classification']:
+                    doc['classification']['lengths'] = {}
+
+                doc['classification']['lengths'][view] = lengths
 
             doc['tracks'] = tracks
 
@@ -290,6 +237,8 @@ class VlenfPolynomialFitter():
     def __init__(self):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
+
+        self.field = MagneticField.WandsToroidField('+')
 
         self.tracks = []
 
@@ -336,6 +285,13 @@ class VlenfPolynomialFitter():
 
         return doc
 
+    def _rotate(self, x, y):
+        value = [0, 0, 0]
+        for i in range(3):
+            value[i] = x[0] * x[i] + y[0] * y[i]
+            value[i] /= math.hypot(x[0], y[0])
+        return value
+
     def Process(self, docs):
         new_docs = []
         for doc in docs:
@@ -343,49 +299,52 @@ class VlenfPolynomialFitter():
                 new_docs.append(doc)
                 continue
 
-            tracks = doc['tracks']
-
-            if 'x_length1' not in doc['classification'] or\
-                   'y_length1' not in doc['classification']:
-                continue
-
-            lx = doc['classification']['x_length1']
-            fitx_doc = self.Fit(tracks['x'][lx])
-            ly = doc['classification']['y_length1']
-            fity_doc = self.Fit(tracks['y'][ly])
-
-            for fit_doc in [fitx_doc, fity_doc]:
-                assert len(fit_doc['params']) == 3
-
             clsf = doc['classification']
 
-            clsf['gof_x'] = fitx_doc['gof']
-            clsf['gof_y'] = fity_doc['gof']
-
             try:
-                assert clsf['gof_x'] != 'FAIL'
-                assert clsf['gof_y'] != 'FAIL'
+
+                tracks = doc['tracks']
+
+                assert 'lengths' in clsf
+                
+                lx = clsf['lengths']['x'][0]
+                fitx_doc = self.Fit(tracks['x'][lx])
+                ly = clsf['lengths']['y'][0]
+                fity_doc = self.Fit(tracks['y'][ly])
+
+                for fit_doc in [fitx_doc, fity_doc]:
+                    assert len(fit_doc['params']) == 3
+
+                assert fitx_doc['gof'] != 'FAIL'
+                assert fity_doc['gof'] != 'FAIL'
                 doc['analyzable'] = True
                 
                 rf = {}  #  raw fit
+
+                rf['gof'] = {'x': fitx_doc['gof'], 'y': fity_doc['gof']}
+
                 rf['x'] = fitx_doc['params']
+                x0, x1, x2 = rf['x']
+
                 rf['y'] = fity_doc['params']
-                rf['x2'] = fitx_doc['params'][2]
+                y0, y1,y2 = rf['y']
 
-                rf['y0'] = fity_doc['params'][0]
-                rf['y1'] = fity_doc['params'][1]
-                rf['y2'] = fity_doc['params'][2]
+                rf['u'] = self._rotate(rf['x'], rf['y'])
 
+                rf['R'] = (1 + rf['u'][1]**2)**(1.5)/(2 * rf['u'][2]) # mm
+                rf['B'] = self.field.PhenomModel(math.hypot(x0, y0))
+
+                rf['p_MeV'] = 300 * rf['B'] * rf['R'] / 1000  # MeV
+                
                 clsf['fit_poly'] = rf
-                
-                clsf['curve'] = rf['x0'] * rf['x2'] + rf['y0'] * rf['y2']
-                clsf['curve'] = clsf['curve'] / math.hypot(rf['x0'], rf['y0'])
 
-                
-            except:
+            except Exception, err:
+                self.log.exception('Error from polynomial fitter:')
+                #  Something bad happened... mark event not analyzable
                 doc['analyzable'] = False
             
             doc['classification'] = clsf
 
             new_docs.append(doc)
+
         return new_docs

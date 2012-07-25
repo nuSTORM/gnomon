@@ -6,7 +6,7 @@ import logging
 import Geant4 as G4
 import Configuration
 from Digitizer import VlenfSimpleDigitizer
-from Fitter import VlenfPolynomialFitter, EmptyTrackFromDigits, ExtractTracks, EnergyDeposited, Containment
+import Fitter
 from Truth import AppendTruth
 from DataManager import CouchManager, FileManager
 from Classifier import ComputeHadronicEnergy
@@ -25,11 +25,13 @@ class VlenfEventAction(G4.G4UserEventAction):
 
         self.processors = []
         self.processors.append(VlenfSimpleDigitizer())
-        self.processors.append(EmptyTrackFromDigits())
-        self.processors.append(ExtractTracks())
-        self.processors.append(VlenfPolynomialFitter())
-        self.processors.append(EnergyDeposited())
-        self.processors.append(Containment())
+        self.processors.append(Fitter.EmptyTrackFromDigits())
+
+        
+        
+        self.processors.append(Fitter.ExtractTracks())
+        self.processors.append(Fitter.VlenfPolynomialFitter())
+        self.processors.append(Fitter.EnergyDeposited())
         self.processors.append(AppendTruth(pga, TA))
         self.processors.append(CouchManager())
         

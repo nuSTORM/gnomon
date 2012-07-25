@@ -41,10 +41,12 @@ class CouchManager(Manager):
             self.docs = []
 
     def Save(self, doc):
+        self.log.debug('Save()')
         self.docs.append(doc)
         self.Commit()
 
     def Shutdown(self):
+        self.log.debug('Shutdown()')
         self.Commit(force=True)
         
 
