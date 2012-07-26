@@ -34,7 +34,8 @@ def PopulateArgs(parser):
     """
     schema = fetchJSONConfigConfig('ConfigurationSchema.json')
     for key, value in schema['properties'].iteritems():
-        print key,value
+        if key == 'name':
+            continue
         if 'type' in value:
             if value['type'] == 'string':
                 if 'enum' in value:
@@ -50,7 +51,7 @@ def PopulateArgs(parser):
 class ConfigurationBase():
     """Base class for all configuration classes"""
 
-    def __init__(self, name, run=0):
+    def __init__(self, name, run=0, overload=None):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
 
@@ -67,7 +68,7 @@ class ConfigurationBase():
         if self.json is not None:
             raise RuntimeError("Can only set configuration once", self.json)
 
-        schema = getSchema()
+        schema = fetchJSONConfigConfig('ConfigurationSchema.json')
         validictory.validate(config_json, schema)
 
         config_json['name'] = self.name
@@ -81,7 +82,7 @@ class ConfigurationBase():
 class LocalConfiguration(ConfigurationBase):
     """Configuration fetched from disk"""
 
-    def __init__(self, name, run=0):
+    def __init__(self, name, run=0, overload=None):
         """Setup the CouchDB configuration manager.
 
         The default connection is to localhost's port 5984.  This can be
@@ -91,6 +92,11 @@ class LocalConfiguration(ConfigurationBase):
         ConfigurationBase.__init__(self, name, run)
 
         defaults = fetchJSONConfigConfig('ConfigurationDefaults.json')
+
+        if overload:
+            for k, v in overload.iteritems():
+                if v is not None:
+                    defaults[k] = v
 
         self.setJSON(defaults)
 

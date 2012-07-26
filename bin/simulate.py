@@ -51,21 +51,12 @@ if __name__ == "__main__":
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
 
     Configuration.PopulateArgs(parser)
-    #parser.add_argument('--name', '-n', help='DB in CouchDB for output',
-    #                    type=str, required=True)
-    #parser.add_argument('--events', help='how many events to simulate',
-    #                    type=int, default=10)
-    #parser.add_argument('--run', help='run number (random if 0)',
-    #                    type=int, default=0)
-    #parser.add_argument('--seed', help='random seed, 0 means set to clock',
-    #                    type=int, default=0)
-    #parser.add_argument('--polarity', choices=['+','-','0'], default='+', help='field polarity')
+    parser.add_argument('--name', '-n', help='DB in CouchDB for output',
+                        type=str, required=True)
+    parser.add_argument('--run', '-r', help='run number',
+                                                type=int, required=True)
 
-    group = parser.add_argument_group('GeneratorAction', 'Specify the particles to simulate')
-    #group.add_argument('--energy', type=check_valid_energy_arg, help="Either a number for a fixed energy (MeV), or 'electron' or 'muon' for energies following their respective neutrino energy distributions", required=True)
-    #group.add_argument('--pid', type=int, help='Geant4 particle number.  If neutrino, use Genie for the particle interaction.', required=True)
-
-    group2 = group.add_mutually_exclusive_group(required=True)
+    group2 = parser.add_mutually_exclusive_group(required=True)
     group2.add_argument('--vertex', metavar='N', type=float, nargs=3, help='Vertex location (mm)')
     group2.add_argument('--uniform', '-u', action='store_true', help='Vertex uniformly distributed')
 
@@ -77,12 +68,16 @@ if __name__ == "__main__":
 
     random.seed()
 
-    config = Configuration.DEFAULT(args.name, args.run_number)
-    Configuration.GLOBAL_CONFIG = config.getConfigurationDict()
+    config_class = Configuration.DEFAULT(args.name, args.run, overload=vars(args))
+    Configuration.GLOBAL_CONFIG = config_class.getConfigurationDict()
+    config = config_class.getConfigurationDict() # make shorter variable name for us
+
+    log.info('Using the following configuration:')
+    log.info(config)
 
     rand_engine = G4.Ranlux64Engine()
     HepRandom.setTheEngine(rand_engine)
-    seed = args.seed
+    seed = config['seed']
     if seed == 0:
         seed = random.randint(1, 65536)
         log.warning('Using random seed %d', seed)
@@ -90,7 +85,7 @@ if __name__ == "__main__":
         log.info('Using seed %d', seed)
     HepRandom.setTheSeed(seed)
 
-    detector = VlenfDetectorConstruction(field_polarity=args.polarity)
+    detector = VlenfDetectorConstruction(field_polarity=config['polarity'])
     gRunManager.SetUserInitialization(detector)
 
     exN03PL = G4.G4physicslists.QGSP_BERT()
@@ -103,12 +98,12 @@ if __name__ == "__main__":
     #
 
 
-    if is_neutrino_code(args.pid):
-        pga = GeneratorAction.GenieGeneratorAction(args.events, args.pid, args.energy)
+    if is_neutrino_code(config['pid']):
+        pga = GeneratorAction.GenieGeneratorAction(config['events'], config['pid'], config['energy'])
     else:
         pga = GeneratorAction.SingleParticleGeneratorAction()
-        pga.setTotalEnergy(args.energy)
-        pga.setPID(args.pid)
+        pga.setTotalEnergy(config['energy'])
+        pga.setPID(config['pid'])
 
     if args.vertex:
         pga.setVertex(args.vertex)
@@ -131,7 +126,7 @@ if __name__ == "__main__":
     sd = detector.getSensitiveDetector()
     myEA.setSD(sd)
 
-    gRunManager.BeamOn(args.events)
+    gRunManager.BeamOn(config['events'])
 
 
     myEA.Shutdown()

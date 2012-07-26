@@ -5,5 +5,10 @@
     }, 
     "name": "test", 
     "polarity": "+", 
-    "run_number": 0
+    "run_number": 0,
+"energy" : 5.0,
+"pid" : 14,
+"seed":0,
+"events":100
+	
 }

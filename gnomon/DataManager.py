@@ -11,6 +11,7 @@ class Manager:
         self.log = self.log.getChild(self.__class__.__name__)
 
         self.config = Configuration.GLOBAL_CONFIG
+        self.log.critical(self.config)
         assert self.config
 
     def Save(self, doc):
@@ -45,6 +46,9 @@ class CouchManager(Manager):
     def setupDB(self, couch, dbname):
         # Avoid race condition of two creating db
         db = None
+
+        self.log.debug('Setting up DB: %s' % dbname)
+        
         if dbname not in couch:
             self.log.info("DB doesn't exist so creating DB: %s", dbname)
             try:
