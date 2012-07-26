@@ -15,6 +15,7 @@ import random
 import tempfile
 import math
 
+
 def lookup_cc_partner(nu_pid):
     """Lookup the charge current partner
 
@@ -26,7 +27,8 @@ def lookup_cc_partner(nu_pid):
     assert neutrino_type in [12, 14, 16]
 
     cc_partner = neutrino_type - 1  # get e, mu, tau
-    cc_partner = math.copysign(cc_partner, nu_pid) # make sure matter/antimatter
+    cc_partner = math.copysign(
+        cc_partner, nu_pid)  # make sure matter/antimatter
     cc_partner = int(cc_partner)  # convert to int
 
     return cc_partner
@@ -41,10 +43,10 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
         self.log = self.log.getChild(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
 
-        self.vertex = (0, 0, 0)  #  mm
+        self.vertex = (0, 0, 0)  # mm
         self.log.debug('Default vertex: %s', str(self.vertex))
 
-        self.pid = 13 # PDG code
+        self.pid = 13  # PDG code
 
     def check3Vector(self, value):
         if not isinstance(value, list):
@@ -59,9 +61,9 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
         if self.vertex == 'uniform':
             x = random.uniform(-2500, 2500)
             y = random.uniform(-2500, 2500)
-            z = random.uniform(-30*222, 30*222)
+            z = random.uniform(-30 * 222, 30 * 222)
             self.log.debug('Using vertex %f %f %f', x, y, z)
-            v.SetPosition(x,y,z)
+            v.SetPosition(x, y, z)
         else:
             v.SetPosition(self.vertex[0] * G4.mm,
                           self.vertex[1] * G4.mm,
@@ -87,7 +89,8 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
 
     def setTotalEnergy(self, energy):
         if not isinstance(energy, (int, float)):
-            raise NotImplementedError("This function can only take numbers as the energy")
+            raise NotImplementedError(
+                "This function can only take numbers as the energy")
 
         self.log.info('Energy set to (MeV): %s', str(energy))
         self.energy = float(energy)
@@ -98,7 +101,6 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         info['pid'] = self.pid
         info['generator_action'] = 'SingleParticleGeneratorAction'
         return info
-
 
     def setPID(self, pid):
         if not isinstance(pid, int):
@@ -117,6 +119,7 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         v.SetPrimary(pp)
 
         event.AddPrimaryVertex(v)
+
 
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
@@ -142,7 +145,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
     def generate_file(self):
         id, filename = tempfile.mkstemp(suffix='.root')
 
-        fake_run = random.randint(1, sys.maxint) # avoids race conditions
+        fake_run = random.randint(1, sys.maxint)  # avoids race conditions
         seed = random.randint(1, sys.maxint)
 
         max_energy = 5.0
@@ -165,15 +168,15 @@ class GenieGeneratorAction(VlenfGeneratorAction):
         else:
             raise ValueError('bad energy distribution')
 
-        command += ' > /dev/null' # shut it up
+        command += ' > /dev/null'  # shut it up
 
         self.log.critical('Running the command: %s', command)
 
         os.system(command)
-        os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" % (fake_run, filename))
+        os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" %
+                  (fake_run, filename))
         os.system('rm gntp.%d.ghep.root' % fake_run)
         self.filename = filename
-
 
     def get_next_events(self):
         f = ROOT.TFile(self.filename)
@@ -190,7 +193,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
             lepton_event = {}
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:
-                lepton_event['code'] = self.pid # Either NC or ES
+                lepton_event['code'] = self.pid  # Either NC or ES
             else:
                 lepton_event['code'] = lookup_cc_partner(self.pid)
 
@@ -217,7 +220,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
             self.log.debug('Event type:')
             for my_type in ['qel', 'res', 'dis', 'coh', 'dfr',
-                         'imd', 'nuel', 'em']:
+                            'imd', 'nuel', 'em']:
                 self.log.debug('\t%s:%d', my_type, t.__getattr__(my_type))
                 event_type[my_type] = t.__getattr__(my_type)
 
@@ -236,11 +239,12 @@ class GenieGeneratorAction(VlenfGeneratorAction):
     def GeneratePrimaries(self, event):
         particles, event_type = next(self.event_list)
 
-        self.mc_info = {'particles' : particles, 'event_type' : event_type}
+        self.mc_info = {'particles': particles, 'event_type': event_type}
 
         for particle in particles:
             pp = G4.G4PrimaryParticle()
-            self.log.debug('Adding particle with PDG code %d' % particle['code'])
+            self.log.debug(
+                'Adding particle with PDG code %d' % particle['code'])
             pp.SetPDGcode(particle['code'])
 
             particle['px'], particle['py'], particle['pz'] = \

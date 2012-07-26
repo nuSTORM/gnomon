@@ -3,8 +3,9 @@ import sys
 import argparse
 import exceptions
 
-import logging  #  python's
-import Logging  #  gnomon's
+import logging  # python's
+import Logging  # gnomon's
+
 
 class TestLogging(TestCase):
     def setUp(self):
@@ -28,7 +29,7 @@ class TestLogging(TestCase):
         self.assertNotEqual(sys.stderr, sys.__stderr__)
 
     def test_StreamToLogger(self):
-        pass  #  can't think of test, wait for bugs
+        pass  # can't think of test, wait for bugs
 
     def test_addLogLevelOptionToArgs(self):
         for level_name in Logging.getLogLevels():

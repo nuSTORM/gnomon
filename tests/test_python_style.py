@@ -2,7 +2,7 @@
 @brief Check that we obey python portion of the style guide
 
 This walks the directory structure of MAUS and checks for each file of ending
-*.py,. It's possible to set up exceptions to the pylint test by 
+*.py,. It's possible to set up exceptions to the pylint test by
 """
 
 import unittest
@@ -11,7 +11,8 @@ import os
 import glob
 import json
 
-class TestPythonStyle(unittest.TestCase): # pylint: disable=R0904
+
+class TestPythonStyle(unittest.TestCase):  # pylint: disable=R0904
     """
     @brief Run pylint and return exit status
     """
@@ -27,18 +28,18 @@ class TestPythonStyle(unittest.TestCase): # pylint: disable=R0904
         """
         if file_name_in in TestPythonStyle.ignore_files:
             return 0
-        my_args = ['pylint', file_name_in, '--rcfile='+self.pylintrc]
-        errors = subprocess.call(args=my_args, stdout=fout, \
+        my_args = ['pylint', file_name_in, '--rcfile=' + self.pylintrc]
+        errors = subprocess.call(args=my_args, stdout=fout,
                                  stderr=subprocess.STDOUT)
         return errors
 
-    def in_place_filter(self, file_name): # pylint: disable=R0201
+    def in_place_filter(self, file_name):  # pylint: disable=R0201
         """
         @brief filter pylint output file
 
         @params file_name name of the pylint output file
 
-        @returns tuple of 
+        @returns tuple of
           (number of lines in the unfiltered file,
            number of lines in the filtered file)
 
@@ -53,14 +54,14 @@ class TestPythonStyle(unittest.TestCase): # pylint: disable=R0904
                 # filter for *:#:* where # is an integer. Probably easier in
                 # regexp, but regexp is gross...
                 # we have string like line = *.py:<str_1>
-                str_1 = line[line.index(':')+1:]
+                str_1 = line[line.index(':') + 1:]
                 # we have string like str_1 = <str_2>:*
                 str_2 = str_1[0:str_1.index(':')]
                 # check str_2 = int
-                end_number = int(str_2) #pylint: disable=W0612
+                end_number = int(str_2)  # pylint: disable=W0612
                 lines_out.append(line)
             except ValueError:
-                pass # line filtered - index() or int() raises ValueError
+                pass  # line filtered - index() or int() raises ValueError
 
         # sort here so we can do diffs on the output...
         lines_out.sort()
@@ -84,12 +85,13 @@ class TestPythonStyle(unittest.TestCase): # pylint: disable=R0904
             ls_files = [f for f in ls_files if f[-3:] == '.py']
             for file_name in ls_files:
                 #maus_dir is root_dir relative to maus
-                maus_dir = root_dir[len(self.maus_root_dir)+1:]
+                maus_dir = root_dir[len(self.maus_root_dir) + 1:]
                 ignore = False
                 if file_name in self.exclude_files:
                     ignore = True
                 for a_glob_target in self.exclude_dirs:
-                    test_dirs = glob.glob(self.maus_root_dir+'/'+a_glob_target)
+                    test_dirs = glob.glob(
+                        self.maus_root_dir + '/' + a_glob_target)
                     if root_dir in test_dirs:
                         ignore = True
                 if not ignore:
@@ -102,7 +104,7 @@ class TestPythonStyle(unittest.TestCase): # pylint: disable=R0904
     def run_all_pylints(self):
         """
         Run pylint against all specified files
-        
+
         @returns the file name of the file used to store pylint output
         """
         file_out = os.path.join(self.maus_root_dir, 'pylint.out')
@@ -125,17 +127,17 @@ class TestPythonStyle(unittest.TestCase): # pylint: disable=R0904
         fout = open(os.path.join(self.maus_root_dir, 'tmp/pylint.json'), 'w')
         print >> fout, json.dumps(err_dict)
         fout.close()
-        fin = open(os.path.join(self.maus_root_dir, 
-                                            'tests/style/ref-pylint.json'))
+        fin = open(os.path.join(self.maus_root_dir,
+                                'tests/style/ref-pylint.json'))
         ref_dict = json.loads(fin.readline())
         passes = True
         err_keys = sorted(err_dict.keys())
-        print str(n_errors)+' style errors in following files '+\
-          '(see tmp/pylint.out for details)\n'+str(err_keys)
+        print str(n_errors) + ' style errors in following files ' +\
+            '(see tmp/pylint.out for details)\n' + str(err_keys)
         for key in err_keys:
             if key not in ref_dict:
                 print 'FAILS:\nExpected: 0 found:', err_dict[key], \
-                                                             'errors', key
+                    'errors', key
                 passes = False
 
             elif err_dict[key] != ref_dict[key]:
@@ -143,12 +145,13 @@ class TestPythonStyle(unittest.TestCase): # pylint: disable=R0904
                     passes = False
                     print 'FAILS:'
                 print 'Expected', ref_dict[key], \
-                                  ' and found', err_dict[key], 'errors in ', key
+                    ' and found', err_dict[
+                        key], 'errors in ', key
         if not passes:
             raise RuntimeError("Number of python style errors has increased")
         fout.close()
 
-    def test_python_style(self): #pylint: disable=R0201
+    def test_python_style(self):  # pylint: disable=R0201
         """
         @brief walk up from $MAUS_ROOT_DIR and run pylint looking for errors
 
@@ -165,23 +168,20 @@ class TestPythonStyle(unittest.TestCase): # pylint: disable=R0904
 
     # folders in maus_root_dir to look at
     include_dirs = ['batch']
-    # exclude if dir path globs to one of the following 
+    # exclude if dir path globs to one of the following
     exclude_dirs = ['bin/user', 'src/*/*/build']
     # exclude if filename includes one of the following
     exclude_files = [
-        'test_cdb__init__.py', # makes pylint error
+        'test_cdb__init__.py',  # makes pylint error
     ]
 
     maus_root_dir = '.'
     pylintrc = os.path.join(maus_root_dir, 'tests', 'style', 'pylintrc')
 
     ignore_files = [
-      'src/common_py/SpillSchema.py', # data file
-      'src/common_py/ConfigurationDefaults.py'] # data file
+        'src/common_py/SpillSchema.py',  # data file
+        'src/common_py/ConfigurationDefaults.py']  # data file
 
 
 if __name__ == '__main__':
     unittest.main()
-
-
-

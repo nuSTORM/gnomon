@@ -5,7 +5,7 @@ import couchdb
 
 def run():
     server_list = ['http://gnomon:balls@tasd.fnal.gov:5984/']
-    
+
     for server in server_list:
         server = couchdb.Server(server)
 

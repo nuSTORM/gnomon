@@ -75,7 +75,7 @@ class ConfigurationBase():
         """Fix the JSON configuration
 
         Unable to call twice"""
-        
+
         if self.json is not None:
             raise RuntimeError("Can only set configuration once", self.json)
 

@@ -1,6 +1,7 @@
 import math
 import Geant4 as G4
 
+
 class WandsToroidField(G4.G4MagneticField):
     "Toroid Field from Bob Wands simulation parameterization"
 
@@ -23,7 +24,7 @@ class WandsToroidField(G4.G4MagneticField):
         January 30th, 2012.  Not defined for r <= 0"""
         if r <= 0:
             raise ValueError
-        field = B0 + B1*G4.m / r + B2 * math.exp(-1 * H * r / G4.m)
+        field = B0 + B1 * G4.m / r + B2 * math.exp(-1 * H * r / G4.m)
         return field
 
     def GetFieldValue(self, pos, time):
@@ -41,14 +42,14 @@ class WandsToroidField(G4.G4MagneticField):
         r = math.sqrt(pos.x ** 2 + pos.y ** 2)
 
         #  Ryan Bayes, March 15th, 2012, talk to Valencia grp.
-        B0 = 1.36 # T
-        B1 = 0.0406 # T m
-        B2 = 0.8 # T
-        H = 0.16 # 1/m
+        B0 = 1.36  # T
+        B1 = 0.0406  # T m
+        B2 = 0.8  # T
+        H = 0.16  # 1/m
 
         if r != 0.0:
             B = self.sign * self.PhenomModel(r, B0, B1, B2, H)
             bfield.x = -1 * (pos.y / r) * B
-            bfield.y =  1 * (pos.x / r) * B
+            bfield.y = 1 * (pos.x / r) * B
 
         return bfield * G4.tesla

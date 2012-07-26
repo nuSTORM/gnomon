@@ -23,13 +23,14 @@ from gnomon import GeneratorAction
 from gnomon.DetectorConstruction import VlenfDetectorConstruction
 from gnomon import Logging
 
-log = None  #  Logger for this file
+log = None  # Logger for this file
+
 
 def check_valid_energy_arg(input_var):
     """ Check that it's either an int, float, or 'e' or 'mu'"""
     if input_var == 'electron' or input_var == 'e':
         return 'e'
-    elif input_var == 'muon' or input_var =='m':
+    elif input_var == 'muon' or input_var == 'm':
         return 'm'
     else:
         try:
@@ -40,25 +41,28 @@ def check_valid_energy_arg(input_var):
     msg = "%r is neither a number nor the string 'electron' or 'muon'" % input_var
     raise argparse.ArgumentTypeError(msg)
 
+
 def is_neutrino_code(pdg_code):
-    if math.fabs(pdg_code) in [12,14,16]:
+    if math.fabs(pdg_code) in [12, 14, 16]:
         return True
     return False
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the NuSTORM experiment magnetized iron detectors')
 
-    Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
+    Logging.addLogLevelOptionToArgs(parser)  # adds --log_level
 
     Configuration.populate_args(parser)
     parser.add_argument('--name', '-n', help='DB in CouchDB for output',
                         type=str, required=True)
     parser.add_argument('--run', '-r', help='run number',
-                                                type=int, required=True)
+                        type=int, required=True)
 
     group2 = parser.add_mutually_exclusive_group(required=True)
-    group2.add_argument('--vertex', metavar='N', type=float, nargs=3, help='Vertex location (mm)')
-    group2.add_argument('--uniform', '-u', action='store_true', help='Vertex uniformly distributed')
+    group2.add_argument('--vertex', metavar='N', type=float, nargs=3,
+                        help='Vertex location (mm)')
+    group2.add_argument('--uniform', '-u', action='store_true',
+                        help='Vertex uniformly distributed')
 
     args = parser.parse_args()
 
@@ -68,9 +72,11 @@ if __name__ == "__main__":
 
     random.seed()
 
-    config_class = Configuration.DEFAULT(args.name, args.run, overload=vars(args))
+    config_class = Configuration.DEFAULT(
+        args.name, args.run, overload=vars(args))
     Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
-    config = config_class.get_configuration_dict() # make shorter variable name for us
+    config = config_class.get_configuration_dict(
+        )  # make shorter variable name for us
 
     log.info('Using the following configuration:')
     log.info(config)
@@ -97,9 +103,9 @@ if __name__ == "__main__":
     #  Generator actions
     #
 
-
     if is_neutrino_code(config['pid']):
-        pga = GeneratorAction.GenieGeneratorAction(config['events'], config['pid'], config['energy'])
+        pga = GeneratorAction.GenieGeneratorAction(
+            config['events'], config['pid'], config['energy'])
     else:
         pga = GeneratorAction.SingleParticleGeneratorAction()
         pga.setTotalEnergy(config['energy'])
@@ -109,7 +115,6 @@ if __name__ == "__main__":
         pga.setVertex(args.vertex)
     elif args.uniform:
         pga.setVertex('uniform')
-
 
     gRunManager.SetUserAction(pga)
 
@@ -129,4 +134,3 @@ if __name__ == "__main__":
     gRunManager.BeamOn(config['events'])
 
     myEA.shutdown()
-

@@ -7,10 +7,12 @@ Configuration.DEFAULT = Configuration.MockConfiguration
 
 import SD
 
+
 class MockG4ThreeVector():
     x = 0
     y = 0
     z = 0
+
 
 class TestSD(TestCase):
     def setUp(self):
@@ -24,7 +26,6 @@ class TestSD(TestCase):
                              self.width,
                              self.thickness_layer,
                              self.thickness_bar)
-
 
     def test_setEventNumber(self):
         for i in range(10):
@@ -71,10 +72,7 @@ class TestSD(TestCase):
                   [44, 219, 'Y', 676.85137, -301.722366, -5316.1889],
                   [45, 317, 'X', 676.578609, -301.765424, -5290.0],
                   [46, 317, 'X', 675.80235, -301.908999, -5260.0],
-                  [47, 317, 'X', 674.228821, -301.656047, -5230.0],]
-
-
-
+                  [47, 317, 'X', 674.228821, -301.656047, -5230.0], ]
 
         bad_position = MockG4ThreeVector()  # wrong position, updated at end
 
@@ -89,9 +87,8 @@ class TestSD(TestCase):
 
             with self.assertRaises(AssertionError):
                 self.sd.getMCHitBarPosition(layer_number, bar_number, view,
-                                         bad_position)
+                                            bad_position)
 
-            self.sd.getMCHitBarPosition(layer_number, bar_number, view, position)
-            bad_position = position # this will be wrong position for next value
-
-
+            self.sd.getMCHitBarPosition(
+                layer_number, bar_number, view, position)
+            bad_position = position  # this will be wrong position for next value

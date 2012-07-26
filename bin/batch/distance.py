@@ -11,7 +11,7 @@ import batch_queue_config
 server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
 
 number_of_events = 100000
-repeat_point = 1 # how many times to redo same point
+repeat_point = 1  # how many times to redo same point
 
 flags = '--log_level WARNING'
 
@@ -19,7 +19,7 @@ random.seed()
 
 tempdir = tempfile.mkdtemp()
 
-energy = 10000.0 # GeV
+energy = 10000.0  # GeV
 
 for pid in [211, -211]:
     polarity = '0'
@@ -29,20 +29,20 @@ for pid in [211, -211]:
 
         file = open(os.path.join(tempdir, 'distance_%d' % (i)), 'w')
 
-        run = random.randint(1, sys.maxint) # helps qsub know which run it is
+        run = random.randint(1, sys.maxint)  # helps qsub know which run it is
 
         script = """
 source /home/tunnell/env/gnomon/bin/activate
 export COUCHDB_URL=%(server_url)s
 cd $VIRTUAL_ENV/src/gnomon
 time python simulate.py --name distance --vertex 0 0 0 --events %(number_of_events)d %(flags)s --run %(run)d --polarity 0 --energy %(energy)f --pid %(pid)d
-""" % {'number_of_events' : number_of_events, 'run' : run, 'flags':flags, 'server_url':server, 'energy':energy, 'pid': pid}
-                
+""" % {'number_of_events': number_of_events, 'run': run, 'flags': flags, 'server_url': server, 'energy': energy, 'pid': pid}
+
         file.write(script)
         file.close()
-                
+
         print script
-                
+
         job_name = 'distance_%s' % (run)
         print 'filename', file.name
 
@@ -59,4 +59,3 @@ time python simulate.py --name distance --vertex 0 0 0 --events %(number_of_even
 
 
 shutil.rmtree(tempdir)
-

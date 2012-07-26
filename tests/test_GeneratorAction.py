@@ -1,12 +1,12 @@
 from unittest import TestCase
 import GeneratorAction as GA
 
-bad_verticies = [[0,1],
+bad_verticies = [[0, 1],
                  'some_other_string',
-                 [0,'hi']]
-good_verticies = [[1,2,3],
-                  [0.1,0.2,0.3],
-                  [0,1.0,2]]
+                 [0, 'hi']]
+good_verticies = [[1, 2, 3],
+                  [0.1, 0.2, 0.3],
+                  [0, 1.0, 2]]
 
 
 class TestVlenfGeneratorAction(TestCase):
@@ -41,6 +41,7 @@ class TestVlenfGeneratorAction(TestCase):
         self.ga.setVertex('uniform')
         self.assertEqual('uniform', self.ga.vertex)
 
+
 class TestSingleParticleGeneratorAction(TestCase):
     def setUp(self):
         self.ga = GA.SingleParticleGeneratorAction()
@@ -70,6 +71,7 @@ class TestSingleParticleGeneratorAction(TestCase):
     def test_GeneratePrimaries(self):
         pass
 
+
 class TestGenieGeneratorAction(TestCase):
     def setUp(self):
         self.ga = GA.GenieGeneratorAction()
@@ -79,5 +81,3 @@ class TestGenieGeneratorAction(TestCase):
 
     def test_GeneratePrimaries(self):
         pass
-
-

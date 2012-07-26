@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 """Create a ROOT file sorted by [document.number_run, document.number_event]"""
 
@@ -15,7 +15,7 @@ import time    # used to delay attachment post
 import logging  # FIXME TODO this and the scriptname buisiness should be new func
 import sys
 
-log = None  #  Logger for this file 
+log = None  # Logger for this file
 
 if __name__ == "__main__":
     my_description = 'Grab gnomon data from Couch and convert to ROOT file'
@@ -30,16 +30,16 @@ if __name__ == "__main__":
 
     parser.add_argument('--run', help='run number',
                         type=int, required=True)
-    
-    Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level 
+
+    Logging.addLogLevelOptionToArgs(parser)  # adds --log_level
     args = parser.parse_args()
 
     Logging.setupLogging(args.log_level, args.name)
     log = logging.getLogger('root').getChild(sys.argv[0].split('.')[0])
-    log.debug('Commandline args: %s', str(args)) 
+    log.debug('Commandline args: %s', str(args))
 
     Configuration.name = args.name
-    Configuration.run  = args.run
+    Configuration.run = args.run
 
     config = Configuration.CouchConfiguration()
     db = config.getCurrentDB()
@@ -92,13 +92,15 @@ function(doc) {
                     log.debug('Type check: Seeing if dict type is 3-vector')
                     for element in elements_3vector:
                         if element not in my_value.keys():
-                            raise ValueError('Dictionary is not 3-vector since missing %s', element)
+                            raise ValueError('Dictionary is not 3-vector since missing %s',
+                                             element)
                         my_struct_code += 'float %s_%s;' % (key, element)
                 else:
                     raise ValueError('Unsupported type in JSON')
 
             my_struct_code += '};'
-            log.info('Using following structure for converting Python: %s',  my_struct_code)
+            log.info('Using following structure for converting Python: %s',
+                     my_struct_code)
 
             ROOT.gROOT.ProcessLine(my_struct_code)
 
@@ -129,8 +131,7 @@ function(doc) {
 
                 t.Branch(key, ROOT.AddressOf(my_struct, key),
                          '%s/%s' % (key, code))
-        
-                
+
         for key in keys:
             my_value = doc[key]
 
@@ -145,7 +146,6 @@ function(doc) {
 
     t.Write()
     file.Close()
-    
 
     # Do it in this order to avoid race condition
     try:
@@ -160,7 +160,7 @@ function(doc) {
         db.save(doc)
     except couchdb.http.ResourceConflict:
         doc = db[name]
-        
+
     try:
         db.delete_attachment(doc, filename)
     except:
@@ -174,9 +174,6 @@ function(doc) {
         #
         log.error('Failed to upload ROOT file to CouchDB, retrying...')
         random.seed()
-        wait_time = random.randint(60,120) # wait between 60 s and 120 s
+        wait_time = random.randint(60, 120)  # wait between 60 s and 120 s
         time.sleep(wait_time)
         db.put_attachment(doc, open(filename, 'r'))
-        
-        
-    

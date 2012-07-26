@@ -45,7 +45,7 @@ class CouchManager(Manager):
 
         self.server = couchdb.Server(self.server_url)
         self.server.version()
-        
+
         self.my_db = self.setup_db(self.server, self.config['name'])
         self.commit_threshold = self.config['couchdb']['commit_threshold']
         self.docs = []

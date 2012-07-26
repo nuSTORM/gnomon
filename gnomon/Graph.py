@@ -9,13 +9,13 @@ from pygraph.algorithms.searching import breadth_first_search
 from pygraph.algorithms import minmax
 from pygraph.algorithms import accessibility
 
+
 class Graph():
     def __init__(self):
         self.graph = {}
 
     def FindParentNode(self, gr):
         transitive_closure = accessibility.accessibility(gr)
-
 
         most_accesisible_node = None
         for node_in, nodes_out in transitive_closure.iteritems():
@@ -51,21 +51,21 @@ class Graph():
         """
         for z0, x0, Q0 in points:
             for z1, x1, Q1 in points:
-                dz = z1 - z0 # no fabs because we check arrow direction
+                dz = z1 - z0  # no fabs because we check arrow direction
                 if dz > 0.0:  # make sure arrow in right direction
                     if dz - layer_width < distance_threshold:  # only adjacents
                         dx = math.fabs(x1 - x0)
 
-                        angle = math.atan(dx/dz)
+                        angle = math.atan(dx / dz)
 
-                        if dx > 5*bar_width:
+                        if dx > 5 * bar_width:
                             continue
 
                         # Weights are negative to in order to use shortest path
                         # algorithms on the graph.
                         weight = -1 * math.hypot(dz, dx)
 
-                        edge = ((z0,x0, Q0), (z1, x1, Q1))
+                        edge = ((z0, x0, Q0), (z1, x1, Q1))
 
                         gr.add_edge(edge, wt=weight)
 
@@ -73,7 +73,6 @@ class Graph():
         assert len(critical.transitive_edges(gr)) == 0
 
         return gr
-
 
     def GetFarthestNode(self, gr, node):
         """node is start node"""
@@ -89,7 +88,6 @@ class Graph():
                 min_key = key
 
         return min_key
-
 
     def NegateGraph(self, gr):
         for edge in gr.edges():
@@ -133,7 +131,6 @@ class Graph():
         for node in node_list + node_list2:
             if node:
                 gr.del_node(node)
-
 
         node_list = [x for x in node_list if x != None]
         return node_list, max_distance, gr

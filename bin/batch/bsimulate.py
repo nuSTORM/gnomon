@@ -11,7 +11,7 @@ server = 'http://gnomon:balls@tasd.fnal.gov:5984/'
 polarity = '-'
 
 number_of_events = 100
-repeat_point = 10 # how many times to redo same point
+repeat_point = 10  # how many times to redo same point
 
 flags = '--log_level DEBUG'
 
@@ -34,13 +34,13 @@ source /home/tunnell/env/gnomon/bin/activate
 export COUCHDB_URL=%(server_url)s
 cd $VIRTUAL_ENV/src/gnomon
 time python simulate.py --name %(db_name)s --vertex 1000 -1000 0 --pid %(pid)d --energy %(energy)s --events %(number_of_events)d %(flags)s --run %(run)d --polarity %(polarity)s
-""" % {'db_name' : db_name, 'number_of_events' : number_of_events, 'run' : run, 'flags':flags, 'server_url':server, 'polarity' : polarity, 'energy':energy_dist, 'pid':pid}
-                
+""" % {'db_name': db_name, 'number_of_events': number_of_events, 'run': run, 'flags': flags, 'server_url': server, 'polarity': polarity, 'energy': energy_dist, 'pid': pid}
+
         file.write(script)
         file.close()
-                
+
         print script
-                
+
         job_name = '%s_%s' % (db_name, run)
         print 'filename', file.name
 
@@ -56,4 +56,3 @@ time python simulate.py --name %(db_name)s --vertex 1000 -1000 0 --pid %(pid)d -
 
 
 shutil.rmtree(tempdir)
-

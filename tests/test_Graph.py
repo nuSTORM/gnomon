@@ -1,7 +1,8 @@
 from unittest import TestCase
 from Graph import DAG
 
-points = [[5385,-1605],[5335,-1595], [5285,-1595]]
+points = [[5385, -1605], [5335, -1595], [5285, -1595]]
+
 
 class TestDAG(TestCase):
     def setUp(self):
@@ -20,7 +21,6 @@ class TestDAG(TestCase):
         dag = DAG()
         graph = {(5385, -1605): {}, (5285, -1595): {}, (5335, -1595): {}}
 
-
         graph = dag.CreateDirectedEdges(points, graph)
 
     def test_CutLongEdges(self):
@@ -36,14 +36,14 @@ class TestDAG(TestCase):
         graph = {}
 
         edges = {}
-        edges[(0,2)] = 2
-        edges[(0,1)] = 1
-        edges[(1,4)] = 2
-        edges[(1,3)] = 1
-        edges[(2,3)] = 2
-        edges[(2,5)] = 2
-        edges[(5,6)] = 2
-        edges[(4,6)] = 1
+        edges[(0, 2)] = 2
+        edges[(0, 1)] = 1
+        edges[(1, 4)] = 2
+        edges[(1, 3)] = 1
+        edges[(2, 3)] = 2
+        edges[(2, 5)] = 2
+        edges[(5, 6)] = 2
+        edges[(4, 6)] = 1
 
         for value, weight in edges.iteritems():
             v, w = value
@@ -54,4 +54,3 @@ class TestDAG(TestCase):
 
         self.assertEqual([(5, 6), (2, 5), (0, 2)],
                          DAG().LongestPath(graph))
-

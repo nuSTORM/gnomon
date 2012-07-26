@@ -5,6 +5,7 @@ import random
 import Geant4 as G4
 import Configuration
 
+
 class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint bar"
 
@@ -72,7 +73,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['z'] = guess_z
 
         diff = math.fabs(guess_z - position.z)
-        threshold = self.thickness_bar/2 + 0.1 * G4.mm   # 0.1 mm tolerance
+        threshold = self.thickness_bar / 2 + 0.1 * G4.mm   # 0.1 mm tolerance
 
         try:
             assert diff <= threshold
@@ -81,7 +82,8 @@ class ScintSD(G4.G4VSensitiveDetector):
             raise
 
         guess_trans = bar_number
-        guess_trans = self.width * (guess_trans - self.bars/2) + self.width/2
+        guess_trans = self.width * (guess_trans - self.bars / 2) + \
+            self.width / 2
         if view == 'X':
             trans = position.x
             doc['x'] = guess_trans
@@ -91,13 +93,14 @@ class ScintSD(G4.G4VSensitiveDetector):
             doc['y'] = guess_trans
             doc['x'] = 0
 
-        diff = math.fabs(trans-guess_trans)
-        threshold = self.width/2 + 1 * G4.mm  # 0.1 mm tolerance
+        diff = math.fabs(trans - guess_trans)
+        threshold = self.width / 2 + 1 * G4.mm  # 0.1 mm tolerance
 
         try:
             assert diff <= threshold
         except:
-            self.log.error('Bad transverse position: Guess in z: %f, Position in z: %f', guess_trans, trans)
+            self.log.error('Bad transverse position: Guess in z: %f, Position in z: %f',
+                           guess_trans, trans)
             raise
 
         return doc
@@ -133,10 +136,10 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['run'] = self.config['run_number']
         doc['event'] = self.event
 
-        doc['position_bar']  = self.getMCHitBarPosition(doc['layer'],
-                                                        doc['bar'],
-                                                        doc['view'],
-                                                        position,
-                                                        theTouchable.GetTranslation(0).z)
+        doc['position_bar'] = self.getMCHitBarPosition(doc['layer'],
+                                                       doc['bar'],
+                                                       doc['view'],
+                                                       position,
+                                                       theTouchable.GetTranslation(0).z)
 
         self.docs.append(doc)

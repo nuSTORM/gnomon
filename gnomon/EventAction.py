@@ -9,6 +9,7 @@ import Fitter
 from Truth import AppendTruth
 from DataManager import CouchManager
 
+
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
 

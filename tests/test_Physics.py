@@ -3,8 +3,9 @@ import sys
 import argparse
 import exceptions
 
-import logging  #  python's
-import Logging  #  gnomon's
+import logging  # python's
+import Logging  # gnomon's
+
 
 class TestLogging(TestCase):
     def setUp(self):
@@ -44,7 +45,8 @@ import GeneratorAction
 from DetectorConstruction import VlenfDetectorConstruction
 import Logging
 
-log = None  #  Logger for this file
+log = None  # Logger for this file
+
 
 class TestTrackingAction(G4.G4UserTrackingAction):
     def __init__(self, pid_of_interest):
@@ -90,9 +92,9 @@ if __name__ == "__main__":
     exN03PL.SetCutsWithDefault()
 
     pga = GeneratorAction.SingleParticleGeneratorAction()
-    pga.setVertex([0,0,0])
+    pga.setVertex([0, 0, 0])
 
-    pga.setMomentum([0,0,3000])
+    pga.setMomentum([0, 0, 3000])
 
     my_pid = 211
     pga.setPID(my_pid)
@@ -123,4 +125,3 @@ if __name__ == "__main__":
     print len(x)
     print x
     print len(x)
-

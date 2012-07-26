@@ -12,9 +12,10 @@ from Graph import Graph
 
 import MagneticField
 
-bar_width = 10.0 # get from GDML!! BUG FIXME
+bar_width = 10.0  # get from GDML!! BUG FIXME
 layer_width = 40.0
-width_threshold = 5*bar_width
+width_threshold = 5 * bar_width
+
 
 class EmptyTrackFromDigits():
     """ Prepare for track extraction """
@@ -28,7 +29,7 @@ class EmptyTrackFromDigits():
 
         new_docs = []
 
-        tracks = {'x' : {}, 'y': {}}
+        tracks = {'x': {}, 'y': {}}
         tracks['x']['LEFTOVERS'] = []
         tracks['y']['LEFTOVERS'] = []
 
@@ -37,8 +38,10 @@ class EmptyTrackFromDigits():
                 new_docs.append(doc)
                 continue
 
-            if event == None: event = doc['event']
-            if run == None:   run   = doc['run']
+            if event == None:
+                event = doc['event']
+            if run == None:
+                run = doc['run']
             assert run == doc['run'] and event == doc['event']
 
             view, position = doc['view'], doc['position']
@@ -83,7 +86,7 @@ class EnergyDeposited():
             n_hits = 0
             n_hits_main_track = 0
             total_charge = 0
-            planes_with_hits = set() # z coordinate, no repeats
+            planes_with_hits = set()  # z coordinate, no repeats
 
             Q_dict = {}  # key z, value list of q
             Q_dict_main_track = {}
@@ -114,27 +117,28 @@ class EnergyDeposited():
             c['Qsum'] = total_charge
             c['n_hits'] = n_hits
 
-            c['fraction_of_hits_in_main_track'] = float(n_hits_main_track)/n_hits
+            c['fraction_of_hits_in_main_track'] = float(
+                n_hits_main_track) / n_hits
 
             # MINOS variables
             my_keys = Q_dict.keys()  # get z values
             my_keys.sort()           # sort by z
-            trim_keys = my_keys[len(my_keys)/3:]  # grab second 2/3
+            trim_keys = my_keys[len(my_keys) / 3:]  # grab second 2/3
             Q_list = []     # these will be the passed 'q' values
             for key in trim_keys:  # for second 2/3 key
                 for q in Q_dict[key]:  # grab each q
                     Q_list.append(q)   # then add to list
-            minos_mean_pulse_height = float(sum(Q_list))/len(Q_list)
+            minos_mean_pulse_height = float(sum(Q_list)) / len(Q_list)
             Q_list.sort()
             l = len(Q_list)
-            Q_low = Q_list[:l/2]
-            Q_high = Q_list[l/2:]
-            mean_low = float(sum(Q_low))/len(Q_low)
-            mean_high = float(sum(Q_high))/len(Q_high)
+            Q_low = Q_list[:l / 2]
+            Q_high = Q_list[l / 2:]
+            mean_low = float(sum(Q_low)) / len(Q_low)
+            mean_high = float(sum(Q_high)) / len(Q_high)
 
-            trim_keys = my_keys[len(my_keys)/2:]  # grab second half
+            trim_keys = my_keys[len(my_keys) / 2:]  # grab second half
             Q_list_track = []
-            Q_list_all= []
+            Q_list_all = []
             for key in trim_keys:
                 for q in Q_dict[key]:
                     Q_list_all.append(q)
@@ -148,20 +152,21 @@ class EnergyDeposited():
             minos_vars['mean_strip_pulse_height'] = minos_mean_pulse_height
             minos_vars['mean_low'] = mean_low
             minos_vars['mean_high'] = mean_high
-            minos_vars['signal_fluctuation'] = mean_low/mean_high
-            minos_vars['transverse_profile'] = float(sum(Q_list_track))/sum(Q_list_all)
+            minos_vars['signal_fluctuation'] = mean_low / mean_high
+            minos_vars['transverse_profile'] = float(
+                sum(Q_list_track)) / sum(Q_list_all)
             c['minos'] = minos_vars
 
             # end minos
 
             doc['classification'] = c
 
-
             del doc['tracks']
 
             new_docs.append(doc)
 
         return new_docs
+
 
 class ExtractTracks():
     """Extract tracks with graph theoretic concepts"""
@@ -256,11 +261,11 @@ class VlenfPolynomialFitter():
         z = np.array(z)
         trans = np.array(trans)
 
-        def dbexpl(t,p):
-            return(p[0] - p[1] * t + p[2] * t**2)
+        def dbexpl(t, p):
+            return(p[0] - p[1] * t + p[2] * t ** 2)
 
-        def residuals(p,data,t):
-            err = data - dbexpl(t,p)
+        def residuals(p, data, t):
+            err = data - dbexpl(t, p)
             return err
 
         doc = {}
@@ -268,18 +273,18 @@ class VlenfPolynomialFitter():
         try:
             assert ndf > 0
 
-            p0 = [1,0,0] # initial guesses
-            pbest = leastsq(residuals,p0,args=(trans, z),full_output=1)
+            p0 = [1, 0, 0]  # initial guesses
+            pbest = leastsq(residuals, p0, args=(trans, z), full_output=1)
             bestparams = pbest[0]
             cov_x = pbest[1]
             good_of_fit = sum(pbest[2]['fvec'] ** 2)
             good_of_fit = float(good_of_fit / ndf)
-            datafit = dbexpl(z,bestparams)
+            datafit = dbexpl(z, bestparams)
             doc['params'] = list(bestparams)
             doc['gof'] = good_of_fit
         except:
             doc['gof'] = 'FAIL'
-            doc['params'] = [0,0,0]
+            doc['params'] = [0, 0, 0]
 
         return doc
 
@@ -317,7 +322,7 @@ class VlenfPolynomialFitter():
                 assert fity_doc['gof'] != 'FAIL'
                 doc['analyzable'] = True
 
-                rf = {}  #  raw fit
+                rf = {}  # raw fit
 
                 rf['gof'] = {'x': fitx_doc['gof'], 'y': fity_doc['gof']}
 
@@ -325,11 +330,12 @@ class VlenfPolynomialFitter():
                 x0, x1, x2 = rf['x']
 
                 rf['y'] = fity_doc['params']
-                y0, y1,y2 = rf['y']
+                y0, y1, y2 = rf['y']
 
                 rf['u'] = self._rotate(rf['x'], rf['y'])
 
-                rf['R'] = (1 + rf['u'][1]**2)**(1.5)/(2 * rf['u'][2]) # mm
+                rf['R'] = (
+                    1 + rf['u'][1] ** 2) ** (1.5) / (2 * rf['u'][2])  # mm
                 rf['B'] = self.field.PhenomModel(math.hypot(x0, y0))
 
                 rf['p_MeV'] = 300 * rf['B'] * rf['R'] / 1000  # MeV

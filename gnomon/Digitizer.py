@@ -3,6 +3,7 @@ ways.  Oh, and we use USA spelling here, so use a 'zed' and like it."""
 
 import logging
 
+
 class VlenfSimpleDigitizer():
     """The VLENF digitizer where the energy deposited is multiplied by a generic
     energy scale."""
@@ -11,7 +12,7 @@ class VlenfSimpleDigitizer():
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
 
-        self.energy_scale = 80.0 # pe / MeV
+        self.energy_scale = 80.0  # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
 
         self.threshold = None
@@ -52,7 +53,6 @@ class VlenfSimpleDigitizer():
 
             hits_dict[key].append(digit)
 
-
         partial_digit = None
         for key, value in hits_dict.iteritems():
             total_counts_adc = 0
@@ -68,7 +68,7 @@ class VlenfSimpleDigitizer():
 
         return new_docs
 
-    def set_threshold(self, threshold = 2):
+    def set_threshold(self, threshold=2):
         """Threshold for registering a hit
 
         Units are ADC counts"""
