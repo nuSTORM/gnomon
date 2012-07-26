@@ -28,9 +28,10 @@ class TestPythonStyle(unittest.TestCase):  # pylint: disable=R0904
         """
         if file_name_in in TestPythonStyle.ignore_files:
             return 0
-        my_args = ['pylint', file_name_in, '--rcfile=' + self.pylintrc]
+        my_args = ['pylint', file_name_in , '--rcfile=' + self.pylintrc]
         errors = subprocess.call(args=my_args, stdout=fout,
                                  stderr=subprocess.STDOUT)
+
         return errors
 
     def in_place_filter(self, file_name):  # pylint: disable=R0201
@@ -99,6 +100,7 @@ class TestPythonStyle(unittest.TestCase):  # pylint: disable=R0904
                     errors = self.run_pylint(file_name, fout)
                     if errors > 0:
                         error_files.append(file_name)
+        print error_files, 'ef'
         return error_files
 
     def run_all_pylints(self):
@@ -128,7 +130,7 @@ class TestPythonStyle(unittest.TestCase):  # pylint: disable=R0904
         print >> fout, json.dumps(err_dict)
         fout.close()
         fin = open(os.path.join(self.maus_root_dir,
-                                'tests/style/ref-pylint.json'))
+                                'tests/ref-pylint.json'))
         ref_dict = json.loads(fin.readline())
         passes = True
         err_keys = sorted(err_dict.keys())
@@ -163,11 +165,11 @@ class TestPythonStyle(unittest.TestCase):  # pylint: disable=R0904
         os.chdir(self.maus_root_dir)
         file_name = self.run_all_pylints()
         # just go by number of lines - bit of a hack but will do
-        #self.postprocess_error_file(file_name)
+        self.postprocess_error_file(file_name)
         os.chdir(here)
 
     # folders in maus_root_dir to look at
-    include_dirs = ['batch']
+    include_dirs = ['gnomon']
     # exclude if dir path globs to one of the following
     exclude_dirs = ['bin/user', 'src/*/*/build']
     # exclude if filename includes one of the following

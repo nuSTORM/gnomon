@@ -33,7 +33,17 @@ class Manager:
 
 
 class CouchManager(Manager):
+    """Output to CouchDB
+
+    This class handles sending events to CouchDB.
+    """
+
+
     def __init__(self):
+        """Initialize
+
+        Setup connect to Couch
+        """
         Manager.__init__(self)
 
         self.server_url = self.config['couchdb']['url']
@@ -51,6 +61,9 @@ class CouchManager(Manager):
         self.docs = []
 
     def setup_db(self, couch, dbname):
+        """Setup and configure DB
+        """
+
         # Avoid race condition of two creating db
         my_db = None
 
@@ -88,6 +101,10 @@ class CouchManager(Manager):
         return my_db
 
     def commit(self, force=False):
+        """Commit data to couchdb
+
+        Compared to threshold (unless forced) then sends data to couch
+        """
         self.log.debug('Bulk commit requested')
         size = sys.getsizeof(self.docs)
 
@@ -98,10 +115,14 @@ class CouchManager(Manager):
             self.docs = []
 
     def save(self, doc):
+        """Save a doc to cache
+        """
         self.log.debug('save()')
         self.docs.append(doc)
         self.commit()
 
     def shutdown(self):
+        """Shutdown and commit rest
+        """
         self.log.debug('shutdown()')
         self.commit(force=True)
