@@ -21,10 +21,10 @@ class AppendTruth:
             self.log.warning('Disabling: no MC info in GeneratorAction')
             self.enabled = False
 
-    def Shutdown(self):
+    def shutdown(self):
         pass
 
-    def Process(self, docs):
+    def process(self, docs):
         # Do nothing if no MC information is avaiable
         if not self.enabled:
             return docs

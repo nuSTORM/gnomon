@@ -4,7 +4,6 @@ each MC event."""
 import logging
 
 import Geant4 as G4
-import Configuration
 from Digitizer import VlenfSimpleDigitizer
 import Fitter
 from Truth import AppendTruth
@@ -23,9 +22,6 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.processors = []
         self.processors.append(VlenfSimpleDigitizer())
         self.processors.append(Fitter.EmptyTrackFromDigits())
-
-
-
         self.processors.append(Fitter.ExtractTracks())
         self.processors.append(Fitter.VlenfPolynomialFitter())
         self.processors.append(Fitter.EnergyDeposited())
@@ -51,8 +47,8 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.sd.clearDocs()
 
         for processor in self.processors:
-            docs = processor.Process(docs)
+            docs = processor.process(docs)
 
-    def Shutdown(self):
+    def shutdown(self):
         for processor in self.processors:
-            processor.Shutdown()
+            processor.shutdown()

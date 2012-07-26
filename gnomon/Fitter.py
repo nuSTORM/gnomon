@@ -21,10 +21,10 @@ width_threshold = 5*bar_width
 class EmptyTrackFromDigits():
     """ Prepare for track extraction """
 
-    def Shutdown(self):
+    def shutdown(self):
         pass
 
-    def Process(self, docs):
+    def process(self, docs):
         run = None
         event = None
 
@@ -71,10 +71,10 @@ class EmptyTrackFromDigits():
 class EnergyDeposited():
     """ blah """
 
-    def Shutdown(self):
+    def shutdown(self):
         pass
 
-    def Process(self, docs):
+    def process(self, docs):
         new_docs = []
 
         for doc in docs:
@@ -172,10 +172,10 @@ class ExtractTracks():
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
 
-    def Shutdown(self):
+    def shutdown(self):
         pass
 
-    def Process(self, docs):
+    def process(self, docs):
         run = None
         event = None
 
@@ -242,7 +242,7 @@ class VlenfPolynomialFitter():
 
         self.tracks = []
 
-    def Shutdown(self):
+    def shutdown(self):
         pass
 
     def Fit(self, zx):
@@ -292,7 +292,7 @@ class VlenfPolynomialFitter():
             value[i] /= math.hypot(x[0], y[0])
         return value
 
-    def Process(self, docs):
+    def process(self, docs):
         new_docs = []
         for doc in docs:
             if 'type' not in doc or doc['type'] != 'track' or doc['analyzable'] == False:

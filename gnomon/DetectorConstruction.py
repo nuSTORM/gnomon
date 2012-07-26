@@ -16,12 +16,13 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.sensitive_detector = None
         self.filename = "data/iron_scint_bars.gdml"
         self.field_manager = None
+        self.my_field = None
         self.field_polarity = field_polarity
 
     def __del__(self):
         pass
 
-    def getSensitiveDetector(self):
+    def get_sensitive_detector(self):
         """Return the SD"""
         return self.sensitive_detector
 
@@ -47,24 +48,24 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
                                           thickness_layer, thickness_bar)
 
         # Get logical volume for X view, then attach SD
-        lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
-        assert lv.GetName() == "ScintillatorBarX"
-        lv.SetSensitiveDetector(self.sensitive_detector)
+        my_lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(1)
+        assert my_lv.GetName() == "ScintillatorBarX"
+        my_lv.SetSensitiveDetector(self.sensitive_detector)
 
         # Get logical volume for Y view, then attach SD
-        lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(2)
-        assert lv.GetName() == "ScintillatorBarY"
-        lv.SetSensitiveDetector(self.sensitive_detector)
+        my_lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(2)
+        assert my_lv.GetName() == "ScintillatorBarY"
+        my_lv.SetSensitiveDetector(self.sensitive_detector)
 
-        lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
-        assert lv.GetName() == "SteelPlane"
+        my_lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(0)
+        assert my_lv.GetName() == "SteelPlane"
 
         # field
         self.field_manager = G4.G4FieldManager()
-        self.myField = MagneticField.WandsToroidField(self.field_polarity)
-        self.field_manager.SetDetectorField(self.myField)
-        self.field_manager.CreateChordFinder(self.myField)
-        lv.SetFieldManager(self.field_manager, False)
+        self.my_field = MagneticField.WandsToroidField(self.field_polarity)
+        self.field_manager.SetDetectorField(self.my_field)
+        self.field_manager.CreateChordFinder(self.my_field)
+        my_lv.SetFieldManager(self.field_manager, False)
 
         from Geant4 import G4Material
         print 'material', G4Material.GetMaterialTable()

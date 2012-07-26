@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
 
-    Configuration.PopulateArgs(parser)
+    Configuration.populate_args(parser)
     parser.add_argument('--name', '-n', help='DB in CouchDB for output',
                         type=str, required=True)
     parser.add_argument('--run', '-r', help='run number',
@@ -69,8 +69,8 @@ if __name__ == "__main__":
     random.seed()
 
     config_class = Configuration.DEFAULT(args.name, args.run, overload=vars(args))
-    Configuration.GLOBAL_CONFIG = config_class.getConfigurationDict()
-    config = config_class.getConfigurationDict() # make shorter variable name for us
+    Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
+    config = config_class.get_configuration_dict() # make shorter variable name for us
 
     log.info('Using the following configuration:')
     log.info(config)
@@ -123,11 +123,10 @@ if __name__ == "__main__":
     #  to perform a bulk commit of 'mchit's to the event store.  It's meant
     #  to be an optimization since writing tons of small 'mchit's individually
     #  to the database is slow.
-    sd = detector.getSensitiveDetector()
+    sd = detector.get_sensitive_detector()
     myEA.setSD(sd)
 
     gRunManager.BeamOn(config['events'])
 
-
-    myEA.Shutdown()
+    myEA.shutdown()
 
