@@ -14,6 +14,10 @@
             }, 
             "type": "object"
         }, 
+        "energy": {
+            "description": "Particle energy.  If number, energy in MeV.  If e or m then electron-neutrino and muon-neutrino distributions", 
+            "type": "number"
+        }, 
         "events": {
             "description": "Number of events to simulate", 
             "type": "integer"
@@ -21,6 +25,10 @@
         "name": {
             "description": "The file or DB name for the output", 
             "type": "string"
+        }, 
+        "pid": {
+            "description": "PID of particle to generate.  If neutrino, Genie will be used", 
+            "type": "integer"
         }, 
         "polarity": {
             "description": "Which type of muon to focus in", 
@@ -38,14 +46,6 @@
         "seed": {
             "description": "Random number seed for Geant4 and Python.  If zero, system clock", 
             "type": "integer"
-        },
-	"energy": {
-		"type" : "number",
-		"description" : "Particle energy.  If number, energy in MeV.  If e or m then electron-neutrino and muon-neutrino distributions"
-	},
-	"pid": {
-                "description" : "PID of particle to generate.  If neutrino, Genie will be used",
-		"type" : "integer"
         }
     }, 
     "type": "object"

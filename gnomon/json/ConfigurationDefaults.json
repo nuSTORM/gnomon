@@ -1,9 +1,9 @@
 {
-    "run_number" : 0,
-    "name" : "test",
-    "couchdb" : { "url":"http://gnomon:balls@tasd.fnal.gov:5984/",
-                  "commit_threshold" : 1024 },
-    "polarity" : "+",
-    
-    
-    }
+    "couchdb": {
+        "commit_threshold": 1024, 
+        "url": "http://gnomon:balls@tasd.fnal.gov:5984/"
+    }, 
+    "name": "test", 
+    "polarity": "+", 
+    "run_number": 0
+}
