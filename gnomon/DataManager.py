@@ -1,6 +1,5 @@
 import os
-import tempfile
-import shutil
+import couchdb
 import logging
 import Configuration
 import sys
@@ -10,10 +9,12 @@ class Manager:
     def __init__(self):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
-        self.config = Configuration.DEFAULT()
+
+        self.config = Configuration.GLOBAL_CONFIG
+        assert self.config
 
     def Save(self, doc):
-        pass
+        raise NotImplementedError
 
     def Shutdown(self):
         pass
@@ -26,10 +27,55 @@ class Manager:
 class CouchManager(Manager):
     def __init__(self):
         Manager.__init__(self)
-        self.db = self.config.getCurrentDB()
-        self.commit_threshold = self.config.getCommitThreshold()
+
+        self.server_url = self.config['couchdb']['url']
+
+        if os.getenv('COUCHDB_URL'):
+            value = os.getenv('COUCHDB_URL')
+            self.log.info('Environmental variable COUCHDB_URL: %s' % value)
+            self.server_url = value
+
+        self.server = couchdb.Server(self.server_url)
+        self.server.version()
+        
+        self.db = self.setupDB(self.server, self.config['name'])
+        self.commit_threshold = self.config['couchdb']['commit_threshold']
         self.docs = []
 
+    def setupDB(self, couch, dbname):
+        # Avoid race condition of two creating db
+        db = None
+        if dbname not in couch:
+            self.log.info("DB doesn't exist so creating DB: %s", dbname)
+            try:
+                db = couch.create(dbname)
+            except:
+                self.log.error("Race condition caught")
+                
+            try:
+                auth_doc = {}
+                auth_doc['_id'] = '_design/auth'
+                auth_doc['language'] = 'javascript'
+                
+                auth_doc['validate_doc_update'] = """
+                function(newDoc, oldDoc, userCtx) {
+                if (userCtx.roles.indexOf('_admin') !== -1) {
+                return;
+                } else {
+                throw({forbidden: 'Only admins may edit the database'});
+                }
+                }
+                """
+                  
+                db.save(auth_doc)
+            except:
+                self.log.error('Could not set permissions of %s' % dbname)
+
+        else:
+            db = couch[dbname]
+
+        return db
+                
     def Commit(self, force=False):
         self.log.debug('Bulk commit requested')
         size = sys.getsizeof(self.docs)

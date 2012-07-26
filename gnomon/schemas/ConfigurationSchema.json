@@ -1,0 +1,55 @@
+{
+    "properties": {
+        "couchdb": {
+            "description": "Settings for CouchDB", 
+            "properties": {
+                "commit_threshold": {
+                    "description": "The number of kB required in the cache before committing to CouchDB", 
+                    "type": "number"
+                }, 
+                "url": {
+                    "description": "The URL to a CouchDB instance.  Example, http://test.com:5984/", 
+                    "type": "string"
+                }
+            }, 
+            "type": "object"
+        }, 
+        "events": {
+            "description": "Number of events to simulate", 
+            "type": "number"
+        }, 
+        "log": {
+            "description": "Log level", 
+            "enum": [
+                "DEBUG", 
+                "INFO", 
+                "WARNING", 
+                "ERROR", 
+                "CRITICAL"
+            ], 
+            "type": "string"
+        }, 
+        "name": {
+            "description": "The file or DB name for the output", 
+            "type": "string"
+        }, 
+        "polarity": {
+            "description": "Which type of muon to focus in", 
+            "enum": [
+                "0", 
+                "-", 
+                "+"
+            ], 
+            "type": "string"
+        }, 
+        "run_number": {
+            "description": "The run number.  If zero, random.", 
+            "type": "number"
+        }, 
+        "seed": {
+            "description": "Random number seed for Geant4 and Python.  If zero, system clock", 
+            "type": "number"
+        }
+    }, 
+    "type": "object"
+}

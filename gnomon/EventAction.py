@@ -8,19 +8,17 @@ import Configuration
 from Digitizer import VlenfSimpleDigitizer
 import Fitter
 from Truth import AppendTruth
-from DataManager import CouchManager, FileManager
+from DataManager import CouchManager
 
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
 
-    def __init__(self, pga=None, TA=None):
+    def __init__(self, pga=None):
         """execute the constructor of the parent class G4UserEventAction"""
         G4.G4UserEventAction.__init__(self)
 
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
-
-        self.config = Configuration.DEFAULT()
 
         self.processors = []
         self.processors.append(VlenfSimpleDigitizer())
@@ -31,7 +29,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.processors.append(Fitter.ExtractTracks())
         self.processors.append(Fitter.VlenfPolynomialFitter())
         self.processors.append(Fitter.EnergyDeposited())
-        self.processors.append(AppendTruth(pga, TA))
+        self.processors.append(AppendTruth(pga))
         self.processors.append(CouchManager())
 
         # used to fetch mchits, only way given geant

@@ -17,12 +17,11 @@ from Geant4 import gTransportationManager, gApplyUICommand, mm
 sys.stdout = temp  # Then return sys.stdout
 
 # gnomon
-import Configuration
-import EventAction
-import TrackingAction
-import GeneratorAction
-from DetectorConstruction import VlenfDetectorConstruction
-import Logging
+from gnomon import Configuration
+from gnomon import EventAction
+from gnomon import GeneratorAction
+from gnomon.DetectorConstruction import VlenfDetectorConstruction
+from gnomon import Logging
 
 log = None  #  Logger for this file
 
@@ -49,17 +48,18 @@ def is_neutrino_code(pdg_code):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the NuSTORM experiment magnetized iron detectors')
 
-    Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
+    #Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
 
-    parser.add_argument('--name', '-n', help='DB in CouchDB for output',
-                        type=str, required=True)
-    parser.add_argument('--events', help='how many events to simulate',
-                        type=int, default=10)
-    parser.add_argument('--run', help='run number (random if 0)',
-                        type=int, default=0)
-    parser.add_argument('--seed', help='random seed, 0 means set to clock',
-                        type=int, default=0)
-    parser.add_argument('--polarity', choices=['+','-','0'], default='+', help='field polarity')
+    Configuration.PopulateArgs(parser)
+    #parser.add_argument('--name', '-n', help='DB in CouchDB for output',
+    #                    type=str, required=True)
+    #parser.add_argument('--events', help='how many events to simulate',
+    #                    type=int, default=10)
+    #parser.add_argument('--run', help='run number (random if 0)',
+    #                    type=int, default=0)
+    #parser.add_argument('--seed', help='random seed, 0 means set to clock',
+    #                    type=int, default=0)
+    #parser.add_argument('--polarity', choices=['+','-','0'], default='+', help='field polarity')
 
     group = parser.add_argument_group('GeneratorAction', 'Specify the particles to simulate')
     group.add_argument('--energy', type=check_valid_energy_arg, help="Either a number for a fixed energy (MeV), or 'electron' or 'muon' for energies following their respective neutrino energy distributions", required=True)
@@ -77,14 +77,8 @@ if __name__ == "__main__":
 
     random.seed()
 
-    if args.run == 0:
-        Configuration.run = random.randint(1, sys.maxint)
-        log.warning('Using random run number %d since none specified', Configuration.run)
-    else:
-        Configuration.run = args.run
-    Configuration.name = args.name
-
-    config = Configuration.DEFAULT()
+    config = Configuration.DEFAULT(args.name, args.run)
+    Configuration.GLOBAL_CONFIG = config.getConfigurationDict()
 
     rand_engine = G4.Ranlux64Engine()
     HepRandom.setTheEngine(rand_engine)
@@ -124,10 +118,7 @@ if __name__ == "__main__":
 
     gRunManager.SetUserAction(pga)
 
-    myTA = TrackingAction.TrackingAction()
-    gRunManager.SetUserAction(myTA)
-
-    myEA = EventAction.VlenfEventAction(pga, myTA)
+    myEA = EventAction.VlenfEventAction(pga)
     gRunManager.SetUserAction(myEA)
 
     gRunManager.Initialize()

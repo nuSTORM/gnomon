@@ -33,7 +33,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.log.debug('thickness_layer: %f', thickness_layer)
         self.log.debug('thickness_bar: %f', thickness_bar)
 
-        self.config = Configuration.DEFAULT()
+        self.config = Configuration.GLOBAL_CONFIG
         self.docs = []
         self.event = 0
 
@@ -134,7 +134,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['layer'] = theTouchable.GetCopyNumber(2)
         doc['view'] = view
 
-        doc['run'] = self.config.getRunNumber()
+        doc['run'] = self.config['run_number']
         doc['event'] = self.event
 
         doc['position_bar']  = self.getMCHitBarPosition(doc['layer'],

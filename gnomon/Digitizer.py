@@ -2,7 +2,6 @@
 ways.  Oh, and we use USA spelling here, so use a 'zed' and like it."""
 
 import logging
-import sys
 
 class VlenfSimpleDigitizer():
     """The VLENF digitizer where the energy deposited is multiplied by a generic
