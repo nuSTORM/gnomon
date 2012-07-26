@@ -5,7 +5,7 @@
             "properties": {
                 "commit_threshold": {
                     "description": "The number of kB required in the cache before committing to CouchDB", 
-                    "type": "number"
+                    "type": "integer"
                 }, 
                 "url": {
                     "description": "The URL to a CouchDB instance.  Example, http://test.com:5984/", 
@@ -16,18 +16,7 @@
         }, 
         "events": {
             "description": "Number of events to simulate", 
-            "type": "number"
-        }, 
-        "log": {
-            "description": "Log level", 
-            "enum": [
-                "DEBUG", 
-                "INFO", 
-                "WARNING", 
-                "ERROR", 
-                "CRITICAL"
-            ], 
-            "type": "string"
+            "type": "integer"
         }, 
         "name": {
             "description": "The file or DB name for the output", 
@@ -44,11 +33,19 @@
         }, 
         "run_number": {
             "description": "The run number.  If zero, random.", 
-            "type": "number"
+            "type": "integer"
         }, 
         "seed": {
             "description": "Random number seed for Geant4 and Python.  If zero, system clock", 
-            "type": "number"
+            "type": "integer"
+        },
+	"energy": {
+		"type" : "number",
+		"description" : "Particle energy.  If number, energy in MeV.  If e or m then electron-neutrino and muon-neutrino distributions"
+	},
+	"pid": {
+                "description" : "PID of particle to generate.  If neutrino, Genie will be used",
+		"type" : "integer"
         }
     }, 
     "type": "object"

@@ -4,6 +4,19 @@ import time
 import os
 import uuid
 
+def getLogLevels():
+        return ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+
+def addLogLevelOptionToArgs(parser):
+    """Add log level arguments to command line parser
+
+    This is not in the schema because the log level needs to be known when
+    setting up the Configuration classes"""
+    parser.add_argument('--log_level',
+                        choices=getLogLevels(),
+                        default='INFO')
+            
+
 class StreamToLogger(object):
     """
     Fake file-like stream object that redirects writes to a logger instance.

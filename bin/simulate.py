@@ -48,7 +48,7 @@ def is_neutrino_code(pdg_code):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Simulate the NuSTORM experiment magnetized iron detectors')
 
-    #Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
+    Logging.addLogLevelOptionToArgs(parser)  #  adds --log_level
 
     Configuration.PopulateArgs(parser)
     #parser.add_argument('--name', '-n', help='DB in CouchDB for output',
@@ -62,8 +62,8 @@ if __name__ == "__main__":
     #parser.add_argument('--polarity', choices=['+','-','0'], default='+', help='field polarity')
 
     group = parser.add_argument_group('GeneratorAction', 'Specify the particles to simulate')
-    group.add_argument('--energy', type=check_valid_energy_arg, help="Either a number for a fixed energy (MeV), or 'electron' or 'muon' for energies following their respective neutrino energy distributions", required=True)
-    group.add_argument('--pid', type=int, help='Geant4 particle number.  If neutrino, use Genie for the particle interaction.', required=True)
+    #group.add_argument('--energy', type=check_valid_energy_arg, help="Either a number for a fixed energy (MeV), or 'electron' or 'muon' for energies following their respective neutrino energy distributions", required=True)
+    #group.add_argument('--pid', type=int, help='Geant4 particle number.  If neutrino, use Genie for the particle interaction.', required=True)
 
     group2 = group.add_mutually_exclusive_group(required=True)
     group2.add_argument('--vertex', metavar='N', type=float, nargs=3, help='Vertex location (mm)')
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     random.seed()
 
-    config = Configuration.DEFAULT(args.name, args.run)
+    config = Configuration.DEFAULT(args.name, args.run_number)
     Configuration.GLOBAL_CONFIG = config.getConfigurationDict()
 
     rand_engine = G4.Ranlux64Engine()

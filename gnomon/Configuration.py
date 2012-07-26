@@ -13,16 +13,26 @@ import json
 
 import validictory
 
-import ConfigurationDefaults
+def fetchJSONConfigConfig(filename):
+    """Fetch configuration file for the configuration class
 
+    Loads the JSON and converts to a dictionary that is returned"""
 
-def getSchema():
-    filename = 'schemas/ConfigurationSchema.json'
-    f = open(filename, 'r')
+    #  This trick gets the directory of *this* file Configuration.py thus
+    # allowing to find the schema files relative to this file.
+    dir_name = os.path.dirname(inspect.getfile(inspect.currentframe()))
+
+    # Append json
+    filename = os.path.join('json', filename)
+
+    f = open(os.path.join(dir_name, filename), 'r')
     my_dict = json.loads(f.read())
     return my_dict
 
 def PopulateArgs(parser):
+    """Add commandline arguments to parser from schema
+    """
+    schema = fetchJSONConfigConfig('ConfigurationSchema.json')
     for key, value in schema['properties'].iteritems():
         print key,value
         if 'type' in value:
@@ -32,7 +42,10 @@ def PopulateArgs(parser):
                 else:
                     parser.add_argument('--%s' % key, help=value['description'], type=str)
             if value['type'] == 'number':
+                parser.add_argument('--%s' % key, help=value['description'], type=float)
+            if value['type'] == 'integer':
                 parser.add_argument('--%s' % key, help=value['description'], type=int)
+                
 
 class ConfigurationBase():
     """Base class for all configuration classes"""
@@ -54,7 +67,7 @@ class ConfigurationBase():
         if self.json is not None:
             raise RuntimeError("Can only set configuration once", self.json)
 
-        #validate(config_json, schema)
+        schema = getSchema()
         validictory.validate(config_json, schema)
 
         config_json['name'] = self.name
@@ -77,9 +90,9 @@ class LocalConfiguration(ConfigurationBase):
 
         ConfigurationBase.__init__(self, name, run)
 
-        print os.path.dirname(inspect.getfile(inspect.currentframe()))
+        defaults = fetchJSONConfigConfig('ConfigurationDefaults.json')
 
-        self.setJSON(ConfigurationDefaults.defaults)
+        self.setJSON(defaults)
 
 DEFAULT = LocalConfiguration
 GLOBAL_CONFIG = None
