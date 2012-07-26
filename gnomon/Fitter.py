@@ -3,11 +3,9 @@
 import logging
 import sys
 
-from scipy import *
-from matplotlib import *
-from pylab import *
 from scipy.optimize import leastsq
-
+import numpy as np
+import math
 from pygraph.classes.digraph import digraph
 from pygraph.algorithms import sorting
 from Graph import Graph

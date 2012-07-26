@@ -1,10 +1,6 @@
 import math
 import logging
-import sys
-import gzip
-
-import random  #  used for random,
-import time    #  wait if connection dies
+import random
 
 import Geant4 as G4
 import Configuration
