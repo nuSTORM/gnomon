@@ -19,7 +19,7 @@ class Graph():
 
         most_accesisible_node = None
         for node_in, nodes_out in transitive_closure.iteritems():
-            if most_accesisible_node == None:
+            if most_accesisible_node is None:
                 most_accesisible_node = node_in
 
             max_value = len(transitive_closure[most_accesisible_node])
@@ -84,7 +84,7 @@ class Graph():
         # Find the farthest node, which is end of track
         min_key = None
         for key, value in distance.iteritems():
-            if min_key == None or value < distance[min_key]:
+            if min_key is None or value < distance[min_key]:
                 min_key = key
 
         return min_key
@@ -132,5 +132,5 @@ class Graph():
             if node:
                 gr.del_node(node)
 
-        node_list = [x for x in node_list if x != None]
+        node_list = [x for x in node_list if x is not None]
         return node_list, max_distance, gr

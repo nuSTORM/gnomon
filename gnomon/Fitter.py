@@ -38,9 +38,9 @@ class EmptyTrackFromDigits():
                 new_docs.append(doc)
                 continue
 
-            if event == None:
+            if event is None:
                 event = doc['event']
-            if run == None:
+            if run is None:
                 run = doc['run']
             assert run == doc['run'] and event == doc['event']
 
@@ -298,7 +298,9 @@ class VlenfPolynomialFitter():
     def process(self, docs):
         new_docs = []
         for doc in docs:
-            if 'type' not in doc or doc['type'] != 'track' or doc['analyzable'] == False:
+            if 'type' not in doc or\
+                    doc['type'] != 'track' or\
+                    doc['analyzable'] == False:
                 new_docs.append(doc)
                 continue
 

@@ -58,7 +58,7 @@ def populate_args(parser):
 class ConfigurationBase():
     """Base class for all configuration classes"""
 
-    def __init__(self, name, run=0, overload=None):  # pylint: disable-msg=W0613
+    def __init__(self, name, run, overload=None):  # pylint: disable-msg=W0613
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
 
