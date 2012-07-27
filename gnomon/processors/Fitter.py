@@ -7,13 +7,9 @@ import numpy as np
 import math
 from gnomon.Graph import Graph
 from gnomon.processors import Base
-
+from gnomon.Configuration import RUNTIME_CONFIG as rc
 
 import gnomon.MagneticField as MagneticField
-
-bar_width = 10.0  # get from GDML!! BUG FIXME
-layer_width = 40.0
-width_threshold = 5 * bar_width
 
 
 class EmptyTrackFromDigits(Base.Processor):
@@ -179,14 +175,13 @@ class ExtractTracks(Base.Processor):
 
             tracks = doc['tracks']
 
-            previous = []
             for view in ['x', 'y']:
                 self.log.info('Working on view %s' % view)
                 points = tracks[view]['LEFTOVERS']
 
                 dag = Graph()
                 gr = dag.CreateVertices(points)
-                gr = dag.CreateDirectedEdges(points, gr, layer_width)
+                gr = dag.CreateDirectedEdges(points, gr, rc['thickness_layer'])
                 if gr.edges() == []:
                     continue
 
@@ -227,8 +222,6 @@ class VlenfPolynomialFitter(Base.Processor):
         Base.Processor.__init__(self)
         self.field = MagneticField.WandsToroidField('+')
 
-        self.tracks = []
-
     def Fit(self, zx):
         """Returns results of fit
 
@@ -257,10 +250,8 @@ class VlenfPolynomialFitter(Base.Processor):
             p0 = [1, 0, 0]  # initial guesses
             pbest = leastsq(residuals, p0, args=(trans, z), full_output=1)
             bestparams = pbest[0]
-            cov_x = pbest[1]
             good_of_fit = sum(pbest[2]['fvec'] ** 2)
             good_of_fit = float(good_of_fit / ndf)
-            datafit = dbexpl(z, bestparams)
             doc['params'] = list(bestparams)
             doc['gof'] = good_of_fit
         except:
@@ -301,8 +292,8 @@ class VlenfPolynomialFitter(Base.Processor):
                 for fit_doc in [fitx_doc, fity_doc]:
                     assert len(fit_doc['params']) == 3
 
-                assert fitx_doc['gof'] != 'FAIL'
-                assert fity_doc['gof'] != 'FAIL'
+                assert fitx_doc['gof'] != 'FAIL', "Fit failed"
+                assert fity_doc['gof'] != 'FAIL', "Fit failed"
                 doc['analyzable'] = True
 
                 rf = {}  # raw fit

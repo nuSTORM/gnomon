@@ -4,6 +4,7 @@
 import Geant4 as G4
 from SD import ScintSD
 import MagneticField
+from gnomon.Configuration import RUNTIME_CONFIG as rc
 
 
 class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
@@ -37,15 +38,14 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.world = self.gdml_parser.GetWorldVolume()
 
         # Grab constants from the GDML <define>
-        layers = int(self.gdml_parser.GetConstant("layers"))
-        bars = int(self.gdml_parser.GetConstant("bars"))
-        width = self.gdml_parser.GetConstant("width")
-        thickness_layer = self.gdml_parser.GetConstant("thickness_layer")
-        thickness_bar = self.gdml_parser.GetConstant("thickness_bar")
+        rc['layers'] = int(self.gdml_parser.GetConstant("layers"))
+        rc['bars'] = int(self.gdml_parser.GetConstant("bars"))
+        
+        for name in ["width", "thickness_layer", "thickness_bar"]:
+            rc[name] = self.gdml_parser.GetConstant(name)
 
         # Create sensitive detector
-        self.sensitive_detector = ScintSD(layers, bars, width,
-                                          thickness_layer, thickness_bar)
+        self.sensitive_detector = ScintSD()
 
         # Get logical volume for X view, then attach SD
         my_lv = G4.G4LogicalVolumeStore.GetInstance().GetVolumeID(1)

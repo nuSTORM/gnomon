@@ -4,12 +4,13 @@ import random
 
 import Geant4 as G4
 import Configuration
+from gnomon.Configuration import RUNTIME_CONFIG as rc
 
 
 class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint bar"
 
-    def __init__(self, layers, bars, width, thickness_layer, thickness_bar):
+    def __init__(self):
         G4.G4VSensitiveDetector.__init__(self, "Scintillator")
 
         random.seed()
@@ -17,18 +18,15 @@ class ScintSD(G4.G4VSensitiveDetector):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
 
-        # todo: just pass gdml object
-        self.layers = layers
-        self.bars = bars
-        self.width = width
-        self.thickness_layer = thickness_layer
-        self.thickness_bar = thickness_bar
+        self.layers = rc['layers']
+        self.bars = rc['bars']
+        self.width = rc['width']
+        self.thickness_bar = rc['thickness_bar']
 
-        self.log.debug('layers: %f', layers)
-        self.log.debug('bars: %f', bars)
-        self.log.debug('width: %f', width)
-        self.log.debug('thickness_layer: %f', thickness_layer)
-        self.log.debug('thickness_bar: %f', thickness_bar)
+        self.log.debug('layers: %f', self.layers)
+        self.log.debug('bars: %f', self.bars)
+        self.log.debug('width: %f', self.width)
+        self.log.debug('thickness_bar: %f', self.thickness_bar)
 
         self.config = Configuration.GLOBAL_CONFIG
         self.docs = []

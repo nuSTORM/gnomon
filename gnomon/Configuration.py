@@ -116,3 +116,4 @@ class LocalConfiguration(ConfigurationBase):
 
 DEFAULT = LocalConfiguration
 GLOBAL_CONFIG = None
+RUNTIME_CONFIG = {}
