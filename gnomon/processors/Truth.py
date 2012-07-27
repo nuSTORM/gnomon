@@ -1,13 +1,12 @@
 """Add truth values to data stream"""
 
 
-import logging
+from gnomon.processors import Base
 
 
-class AppendTruth:
+class AppendTruth(Base.Processor):
     def __init__(self, pga):
-        self.log = logging.getLogger('root')
-        self.log = self.log.getChild(self.__class__.__name__)
+        Base.Processor.__init__(self)
 
         self.log.debug('Truth store initialized')
 
@@ -19,9 +18,6 @@ class AppendTruth:
         except AttributeError:
             self.log.warning('Disabling: no MC info in GeneratorAction')
             self.enabled = False
-
-    def shutdown(self):
-        pass
 
     def process(self, docs):
         # Do nothing if no MC information is avaiable

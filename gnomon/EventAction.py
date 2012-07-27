@@ -5,9 +5,9 @@ import logging
 
 import Geant4 as G4
 from processors.Digitizer import VlenfSimpleDigitizer
-import Fitter
-from Truth import AppendTruth
-from DataManager import CouchManager
+import processors.Fitter as Fitter
+from processors.Truth import AppendTruth
+from processors.DataManager import CouchManager
 
 
 class VlenfEventAction(G4.G4UserEventAction):

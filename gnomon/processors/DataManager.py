@@ -3,21 +3,20 @@
 
 
 import os
-import couchdb
-import logging
-import Configuration
 import sys
+import couchdb
+import gnomon.Configuration as Configuration
+from gnomon.processors import Base
 
 
-class Manager:  #  pylint: disable-msg=R0922
+class Manager(Base.Processor):  # pylint: disable-msg=R0922
     """Output base class
     """
     def __init__(self):
-        self.log = logging.getLogger('root')
-        self.log = self.log.getChild(self.__class__.__name__)
-
+        Base.Processor.__init__(self)
         self.config = Configuration.GLOBAL_CONFIG
-        self.log.critical(self.config)
+        self.log.debug('Config:')
+        self.log.debug(self.config)
         assert self.config
 
     def save(self, doc):  # pylint: disable-msg=C0111

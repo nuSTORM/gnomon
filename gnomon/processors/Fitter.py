@@ -5,20 +5,19 @@ import logging
 from scipy.optimize import leastsq
 import numpy as np
 import math
-from Graph import Graph
+from gnomon.Graph import Graph
+from gnomon.processors import Base
 
-import MagneticField
+
+import gnomon.MagneticField as MagneticField
 
 bar_width = 10.0  # get from GDML!! BUG FIXME
 layer_width = 40.0
 width_threshold = 5 * bar_width
 
 
-class EmptyTrackFromDigits():
+class EmptyTrackFromDigits(Base.Processor):
     """ Prepare for track extraction """
-
-    def shutdown(self):
-        pass
 
     def process(self, docs):
         run = None
@@ -66,11 +65,8 @@ class EmptyTrackFromDigits():
         return new_docs
 
 
-class EnergyDeposited():
+class EnergyDeposited(Base.Processor):
     """ blah """
-
-    def shutdown(self):
-        pass
 
     def process(self, docs):
         new_docs = []
@@ -165,15 +161,8 @@ class EnergyDeposited():
         return new_docs
 
 
-class ExtractTracks():
+class ExtractTracks(Base.Processor):
     """Extract tracks with graph theoretic concepts"""
-
-    def __init__(self):
-        self.log = logging.getLogger('root')
-        self.log = self.log.getChild(self.__class__.__name__)
-
-    def shutdown(self):
-        pass
 
     def process(self, docs):
         run = None
@@ -232,18 +221,13 @@ class ExtractTracks():
         return new_docs
 
 
-class VlenfPolynomialFitter():
+class VlenfPolynomialFitter(Base.Processor):
 
     def __init__(self):
-        self.log = logging.getLogger('root')
-        self.log = self.log.getChild(self.__class__.__name__)
-
+        Base.Processor.__init__(self)
         self.field = MagneticField.WandsToroidField('+')
 
         self.tracks = []
-
-    def shutdown(self):
-        pass
 
     def Fit(self, zx):
         """Returns results of fit
