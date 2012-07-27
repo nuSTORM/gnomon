@@ -38,7 +38,6 @@ class CouchManager(Manager):
     This class handles sending events to CouchDB.
     """
 
-
     def __init__(self):
         """Initialize
 

@@ -26,29 +26,14 @@ from gnomon import Logging
 log = None  # Logger for this file
 
 
-def check_valid_energy_arg(input_var):
-    """ Check that it's either an int, float, or 'e' or 'mu'"""
-    if input_var == 'electron' or input_var == 'e':
-        return 'e'
-    elif input_var == 'muon' or input_var == 'm':
-        return 'm'
-    else:
-        try:
-            return float(input_var)
-        except:
-            pass
-
-    msg = "%r is neither a number nor the string 'electron' or 'muon'" % input_var
-    raise argparse.ArgumentTypeError(msg)
-
-
 def is_neutrino_code(pdg_code):
     if math.fabs(pdg_code) in [12, 14, 16]:
         return True
     return False
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Simulate the NuSTORM experiment magnetized iron detectors')
+    desc = 'Simulate the NuSTORM experiment magnetized iron detectors'
+    parser = argparse.ArgumentParser(description=desc)
 
     Logging.addLogLevelOptionToArgs(parser)  # adds --log_level
 
@@ -75,8 +60,9 @@ if __name__ == "__main__":
     config_class = Configuration.DEFAULT(
         args.name, args.run, overload=vars(args))
     Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
-    config = config_class.get_configuration_dict(
-        )  # make shorter variable name for us
+
+    # make shorter variable name for us
+    config = config_class.get_configuration_dict()
 
     log.info('Using the following configuration:')
     log.info(config)

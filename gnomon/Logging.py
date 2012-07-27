@@ -6,7 +6,7 @@ import uuid
 
 
 def getLogLevels():
-        return ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+    return ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
 def addLogLevelOptionToArgs(parser):
@@ -36,8 +36,8 @@ class StreamToLogger(object):
 def setupLogging(console_level, name):
     output_filename = 'log/gnomon_%s_%s.log' % (name, str(uuid.uuid4()))
 
-    logging.basicConfig(
-            filename=output_filename, mode='w', level=logging.DEBUG)
+    logging.basicConfig(filename=output_filename, mode='w',
+                        level=logging.DEBUG)
 
     console_handler = logging.StreamHandler(sys.__stdout__)
     console_handler.setLevel(console_level)

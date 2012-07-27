@@ -5,8 +5,8 @@ import logging
 
 
 class VlenfSimpleDigitizer():
-    """The VLENF digitizer where the energy deposited is multiplied by a generic
-    energy scale."""
+    """The VLENF digitizer where the energy deposited is multiplied by a
+    generic energy scale."""
 
     def __init__(self):
         self.log = logging.getLogger('root')

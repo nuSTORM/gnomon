@@ -1,8 +1,8 @@
 """Generator actions
 
 These classes are used to tell Geant4 what particles it is meant to simulate.
-One always has to inherit from a UserPrimaryGeneratorAction base class in Geant4
-and then define the function GeneratePrimaries.
+One always has to inherit from a UserPrimaryGeneratorAction base class in
+Geant4 and then define the function GeneratePrimaries.
 """
 
 import Geant4 as G4

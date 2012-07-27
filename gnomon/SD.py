@@ -67,7 +67,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         raise 'Cannot determine view for %s' % lv.GetName()
         return view
 
-    def getMCHitBarPosition(self, layer_number, bar_number, view, position, guess_z):
+    def getMCHitBarPosition(self, layer_number, bar_number, view,
+                            position, guess_z):
         doc = {}
 
         doc['z'] = guess_z
@@ -78,7 +79,9 @@ class ScintSD(G4.G4VSensitiveDetector):
         try:
             assert diff <= threshold
         except:
-            self.log.error('Bad longitudinal position: Guess in z: %f, Position in z: %f, View: %s', guess_z, position.z, view)
+            self.log.error('Bad longitudinal position:')
+            self.log.error('Guess in z: %f', guess_z)
+            self.log.error('Position in z: %f, View: %s', position.z, view)
             raise
 
         guess_trans = bar_number
@@ -99,7 +102,8 @@ class ScintSD(G4.G4VSensitiveDetector):
         try:
             assert diff <= threshold
         except:
-            self.log.error('Bad transverse position: Guess in z: %f, Position in z: %f',
+            self.log.error('Bad transverse position:')
+            self.log.error('Guess in z: %f, Position in z: %f',
                            guess_trans, trans)
             raise
 
@@ -136,10 +140,11 @@ class ScintSD(G4.G4VSensitiveDetector):
         doc['run'] = self.config['run_number']
         doc['event'] = self.event
 
+        my_z = theTouchable.GetTranslation(0).z
         doc['position_bar'] = self.getMCHitBarPosition(doc['layer'],
                                                        doc['bar'],
                                                        doc['view'],
                                                        position,
-                                                       theTouchable.GetTranslation(0).z)
+                                                       my_z)
 
         self.docs.append(doc)

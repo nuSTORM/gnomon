@@ -143,7 +143,7 @@ class EnergyDeposited():
                 for q in Q_dict[key]:
                     Q_list_all.append(q)
 
-                if key in Q_dict_main_track:  # reduced set, so may not be there
+                if key in Q_dict_main_track:  # reduced set, may not be there
                     for q in Q_dict_main_track[key]:
                         Q_list_track.append(q)
 
@@ -300,7 +300,7 @@ class VlenfPolynomialFitter():
         for doc in docs:
             if 'type' not in doc or\
                     doc['type'] != 'track' or\
-                    doc['analyzable'] == False:
+                    doc['analyzable'] is False:
                 new_docs.append(doc)
                 continue
 
