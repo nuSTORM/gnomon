@@ -4,7 +4,7 @@ each MC event."""
 import logging
 
 import Geant4 as G4
-from Digitizer import VlenfSimpleDigitizer
+from processors.Digitizer import VlenfSimpleDigitizer
 import Fitter
 from Truth import AppendTruth
 from DataManager import CouchManager

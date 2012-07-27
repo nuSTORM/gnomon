@@ -9,7 +9,7 @@ import Configuration
 import sys
 
 
-class Manager:
+class Manager:  #  pylint: disable-msg=R0922
     """Output base class
     """
     def __init__(self):

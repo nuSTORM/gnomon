@@ -1,25 +1,24 @@
 """The Digitization routines are for simulating electronics response in various
 ways.  Oh, and we use USA spelling here, so use a 'zed' and like it."""
 
-import logging
+
+from gnomon.processors import Base
 
 
-class VlenfSimpleDigitizer():
+class VlenfSimpleDigitizer(Base.Processor):
     """The VLENF digitizer where the energy deposited is multiplied by a
     generic energy scale."""
 
     def __init__(self):
-        self.log = logging.getLogger('root')
-        self.log = self.log.getChild(self.__class__.__name__)
+        """Initialize with defaults
+        """
+        Base.Processor.__init__(self)
 
         self.energy_scale = 80.0  # pe / MeV
         self.log.debug('Energy scale: %f', self.energy_scale)
 
         self.threshold = None
         self.set_threshold()
-
-    def shutdown(self):
-        pass
 
     def process(self, docs):
         new_docs = []

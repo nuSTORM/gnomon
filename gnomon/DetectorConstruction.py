@@ -26,7 +26,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         """Return the SD"""
         return self.sensitive_detector
 
-    def Construct(self):
+    def Construct(self):  #  pylint: disable-msg=C0103
         """Construct the VLENF from a GDML file"""
 
         gnm = G4.G4NistManager.Instance()

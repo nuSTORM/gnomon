@@ -5,7 +5,6 @@ bar_width = 10.0
 
 from pygraph.classes.digraph import digraph
 from pygraph.algorithms import critical
-from pygraph.algorithms.searching import breadth_first_search
 from pygraph.algorithms import minmax
 from pygraph.algorithms import accessibility
 
@@ -56,8 +55,6 @@ class Graph():
                     if dz - layer_width < distance_threshold:  # only adjacents
                         dx = math.fabs(x1 - x0)
 
-                        angle = math.atan(dx / dz)
-
                         if dx > 5 * bar_width:
                             continue
 
@@ -77,9 +74,7 @@ class Graph():
     def GetFarthestNode(self, gr, node):
         """node is start node"""
         # Remember: weights are negative
-        st, distance = minmax.shortest_path_bellman_ford(gr, node)
-
-        nodes = distance.keys()
+        distance = minmax.shortest_path_bellman_ford(gr, node)[1]
 
         # Find the farthest node, which is end of track
         min_key = None

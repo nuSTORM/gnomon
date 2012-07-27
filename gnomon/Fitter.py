@@ -1,13 +1,10 @@
 """Fitter routines"""
 
 import logging
-import sys
 
 from scipy.optimize import leastsq
 import numpy as np
 import math
-from pygraph.classes.digraph import digraph
-from pygraph.algorithms import sorting
 from Graph import Graph
 
 import MagneticField
