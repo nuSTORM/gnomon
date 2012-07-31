@@ -23,9 +23,10 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.processors = []
         self.processors.append(VlenfSimpleDigitizer())
         self.processors.append(Fitter.EmptyTrackFromDigits())
+        self.processors.append(Fitter.ContinousLongitudinalLength())
         self.processors.append(Fitter.ExtractTracks())
         self.processors.append(Fitter.VlenfPolynomialFitter())
-        self.processors.append(Fitter.EnergyDeposited())
+        self.processors.append(Fitter.ClassifyVariables())
         self.processors.append(AppendTruth(pga))
         self.processors.append(CouchManager())
 
@@ -49,6 +50,9 @@ class VlenfEventAction(G4.G4UserEventAction):
 
         for processor in self.processors:
             docs = processor.process(docs)
+            if not docs:
+                self.log.critical('%s did not return documents in process()!',
+                                  processor.__class__.__name__)
 
     def shutdown(self):
         for processor in self.processors:

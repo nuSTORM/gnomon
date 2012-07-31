@@ -61,10 +61,13 @@ class EmptyTrackFromDigits(Base.Processor):
         return new_docs
 
 
-class EnergyDeposited(Base.Processor):
-    """ blah """
+class ClassifyVariables(Base.Processor):
+    """Compute various variables
+
+    For example, (nhit, Qsum) including MINOS variables"""
 
     def process(self, docs):
+        #  These docs will be returned  
         new_docs = []
 
         for doc in docs:
@@ -156,6 +159,54 @@ class EnergyDeposited(Base.Processor):
 
         return new_docs
 
+class ContinousLongitudinalLength(Base.Processor):
+    """Extract the continous longitudinal length
+    """
+    def process(self, docs):
+        #  These docs will be returned
+        new_docs = []
+        
+        for doc in docs:
+            if not doc['analyzable'] or doc['type'] != 'track':
+                new_docs.append(doc)
+                continue
+
+            scint_planes_with_hits = set()  # z coordinate, no repeats
+            
+            for view in ['x', 'y']:
+                if len(doc['tracks'][view].keys()) > 1:
+                    self.log.error('Expected unclassified tracks')
+                    self.log.error('Please run before extracting tracks')
+
+                points = doc['tracks'][view]['LEFTOVERS']
+                for z, x, Q in points:
+                    scint_planes_with_hits.add(z)
+
+            #  Convert to list so can sort...
+            scint_planes_with_hits = list(scint_planes_with_hits)
+                    
+            scint_planes_with_hits.sort()
+                
+            #  Iterate over the hits computing continous lengths, compare
+            # against maximum.
+            max_length = None
+            this_length = 0
+            for i, z in enumerate(scint_planes_with_hits):
+                if i + 1 >= len(scint_planes_with_hits):
+                    break
+
+                dz = scint_planes_with_hits[i+1] - z
+                if dz <= rc['thickness_layer']:
+                    this_length += dz
+                    if this_length > max_length or max_length is None:
+                        max_length = this_length
+                else:
+                    print i, z, dz
+                    this_length = 0
+
+            doc['classification']['longitudinal_length'] = max_length
+            new_docs.append(doc)
+        return new_docs
 
 class ExtractTracks(Base.Processor):
     """Extract tracks with graph theoretic concepts"""
