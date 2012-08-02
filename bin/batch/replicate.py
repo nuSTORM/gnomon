@@ -3,13 +3,16 @@ import urlparse
 import os
 
 
-master_url = 'http://gnomon:balls@tasd.fnal.gov:5984/'
+servers = ['http://gnomon:balls@tasd.fnal.gov:5984/',
+           'http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/']
+
+master_url = servers[1]
 master_couch = couchdb.Server(master_url)
 
-slave_url = 'http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/'
+slave_url = servers[0]
 slave_couch = couchdb.Server(slave_url)
 
-be_continous = False
+be_continous = 'true'
 
 for dbname in master_couch:
     if dbname[0] != '_':

@@ -14,8 +14,17 @@
             }, 
             "type": "object"
         }, 
+        "distribution": {
+            "description": "What energy distribution to use", 
+            "enum": [
+                "muon", 
+                "electron", 
+                "point"
+            ], 
+            "type": "string"
+        }, 
         "energy": {
-            "description": "Particle energy.  If number, energy in MeV.  If e or m then electron-neutrino and muon-neutrino distributions", 
+            "description": "Particle energy in MeV.  If the PID is a neutrino, this is the muon energy", 
             "type": "number"
         }, 
         "events": {
@@ -46,6 +55,15 @@
         "seed": {
             "description": "Random number seed for Geant4 and Python.  If zero, system clock", 
             "type": "integer"
+        }, 
+        "vertex": {
+            "description": "The vertex of the simulated particle [mm].  Set to -999, -999, -999 for uniform.", 
+            "items": {
+                "type": "number"
+            }, 
+            "maxItems": 3, 
+            "minItems": 3, 
+            "type": "array"
         }
     }, 
     "type": "object"

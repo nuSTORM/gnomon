@@ -43,12 +43,6 @@ if __name__ == "__main__":
     parser.add_argument('--run', '-r', help='run number',
                         type=int, required=True)
 
-    group2 = parser.add_mutually_exclusive_group(required=True)
-    group2.add_argument('--vertex', metavar='N', type=float, nargs=3,
-                        help='Vertex location (mm)')
-    group2.add_argument('--uniform', '-u', action='store_true',
-                        help='Vertex uniformly distributed')
-
     args = parser.parse_args()
 
     Logging.setupLogging(args.log_level, args.name)
@@ -80,22 +74,35 @@ if __name__ == "__main__":
     detector = VlenfDetectorConstruction(field_polarity=config['polarity'])
     gRunManager.SetUserInitialization(detector)
 
-    exN03PL = G4.G4physicslists.QGSP_BERT()
-    gRunManager.SetUserInitialization(exN03PL)
-    exN03PL.SetDefaultCutValue(1.0 * mm)
-    exN03PL.SetCutsWithDefault()
+    physics_list = G4.G4physicslists.QGSP_BERT()
+    gRunManager.SetUserInitialization(physics_list)
+    physics_list.SetDefaultCutValue(1.0 * mm)
+    physics_list.SetCutsWithDefault()
 
     #
     #  Generator actions
     #
 
+
     if is_neutrino_code(config['pid']):
+        if config['distribution'] == 'point':
+            raise NotImplementedError
+
+        assert config['distribution'] == 'electron' or\
+            config['distribution'] == 'muon'
+
+        log.warning('Energy argument ignored... assuming 3.8 GeV muons')
+
         pga = GeneratorAction.GenieGeneratorAction(
-            config['events'], config['pid'], config['energy'])
+            config['events'], config['pid'], config['distribution'][0])
+
     else:
+        if config['distribution'] != 'point':
+            raise NotImplementedError
         pga = GeneratorAction.SingleParticleGeneratorAction()
         pga.setTotalEnergy(config['energy'])
         pga.setPID(config['pid'])
+
 
     if args.vertex:
         pga.setVertex(args.vertex)

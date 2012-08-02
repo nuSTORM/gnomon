@@ -12,6 +12,7 @@ import random
 import sys
 import json
 import validictory
+from array import array
 
 
 def fetch_config_config(filename):
@@ -49,10 +50,18 @@ def populate_args(parser):
                                         choices=value['enum'])
                 else:
                     parser.add_argument(arg, help=desc, type=str)
-            if value['type'] == 'number':
+            elif value['type'] == 'number':
                 parser.add_argument(arg, help=desc, type=float)
-            if value['type'] == 'integer':
+            elif value['type'] == 'integer':
                 parser.add_argument(arg, help=desc, type=int)
+            elif str(value['type']) == 'array':
+                assert value['minItems'] == value['maxItems']
+
+                if value['items']['type'] != 'number':
+                    raise NotImplementedError("Only float arrays work")
+
+                parser.add_argument(arg, help=desc, type=float,
+                                  nargs=value['maxItems'], metavar='N')
 
 
 class ConfigurationBase():

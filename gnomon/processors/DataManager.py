@@ -29,6 +29,7 @@ class Manager(Base.Processor):  # pylint: disable-msg=R0922
         """Loop over docs and save each"""
         for doc in docs:
             self.save(doc)
+        return docs
 
 
 class CouchManager(Manager):

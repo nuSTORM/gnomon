@@ -1,14 +1,14 @@
 {
     "couchdb": {
         "commit_threshold": 1024, 
-        "url": "http://gnomon:balls@tasd.fnal.gov:5984/"
+        "url": "http://nustorm.physics.ox.ac.uk:5984/"
     }, 
+    "distribution": "electron", 
+    "energy": 5.0, 
+    "events": 100, 
     "name": "test", 
+    "pid": 14, 
     "polarity": "+", 
-    "run_number": 0,
-"energy" : 5.0,
-"pid" : 14,
-"seed":0,
-"events":100
-	
+    "run_number": 0, 
+    "seed": 0
 }

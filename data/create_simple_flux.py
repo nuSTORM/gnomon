@@ -11,7 +11,7 @@ def frange(startValue, endValue, steps):
 
 polarization = 0.0
 pi = 3.1415
-parent_energy = 5.0 # GeV 
+parent_energy = 3.8 # GeV 
 
 E_min = 0.10  # GeV
 E_max = parent_energy # GeV
