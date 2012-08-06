@@ -7,7 +7,7 @@ import numpy as np
 import math
 from gnomon.Graph import Graph
 from gnomon.processors import Base
-from gnomon.Configuration import RUNTIME_CONFIG as rc
+from gnomon.Configuration import RUNTIME_CONFIG as rc 
 
 import gnomon.MagneticField as MagneticField
 
@@ -205,6 +205,7 @@ class ContinousLongitudinalLength(Base.Processor):
                     this_length = 0
 
             doc['classification']['longitudinal_length'] = max_length
+            doc['classification']['longitudinal_length2'] = scint_planes_with_hits[0] - scint_planes_with_hits[-1]
             new_docs.append(doc)
         return new_docs
 

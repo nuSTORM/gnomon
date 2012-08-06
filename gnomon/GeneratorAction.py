@@ -14,7 +14,7 @@ import os
 import random
 import tempfile
 import math
-
+import gnomon.Configuration as Configuration
 
 def lookup_cc_partner(nu_pid):
     """Lookup the charge current partner
@@ -47,6 +47,8 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
         self.log.debug('Default vertex: %s', str(self.vertex))
 
         self.pid = 13  # PDG code
+
+        self.config = Configuration.GLOBAL_CONFIG
 
     def check3Vector(self, value):
         if not isinstance(value, list):
@@ -124,13 +126,13 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
 
-    def __init__(self, nevents, pid, energy_distribution):
+    def __init__(self, pid, energy_distribution):
         VlenfGeneratorAction.__init__(self)
         self.energy_distribution = energy_distribution
         self.pid = pid
-        self.nevents = nevents
 
-        self.event_list = self.get_next_events()
+         #  The event list is a generator so requires calling 'next' on it
+        self.event_list = None  # set by generate_file
 
         self.generate_file()
 
@@ -145,19 +147,18 @@ class GenieGeneratorAction(VlenfGeneratorAction):
     def generate_file(self):
         id, filename = tempfile.mkstemp(suffix='.root')
 
-        fake_run = random.randint(1, sys.maxint)  # avoids race conditions
         seed = random.randint(1, sys.maxint)
 
-        max_energy = 5.0
+        max_energy = self.config['generator']['max_energy_GeV']
 
         env_vars = 'GSPLOAD=data/xsec.xml GSEED=%d' % seed
 
         command = '%s gevgen' % env_vars
 
         command += ' -p %d' % self.pid
-        command += ' -r %d' % fake_run
+        command += ' -r %d' % self.config['run_number']
         command += ' -t 1000260560'
-        command += ' -n %d' % self.nevents
+        command += ' -n %d' % self.config['generator']['size_of_genie_buffer']
 
         if self.energy_distribution == 'm':
             command += ' -e 0.1,%f -f data/flux_file_mu.dat' % max_energy
@@ -170,13 +171,15 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
         command += ' > /dev/null'  # shut it up
 
-        self.log.critical('Running the command: %s', command)
+        self.log.info('Running the command: %s', command)
 
         os.system(command)
         os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" %
-                  (fake_run, filename))
-        os.system('rm gntp.%d.ghep.root' % fake_run)
+                  (self.config['run_number'], filename))
+        os.system('rm gntp.%d.ghep.root' % self.config['run_number'])
         self.filename = filename
+
+        self.event_list = self.get_next_events()
 
     def get_next_events(self):
         f = ROOT.TFile(self.filename)
@@ -237,7 +240,12 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             yield next_events, event_type
 
     def GeneratePrimaries(self, event):
-        particles, event_type = next(self.event_list)
+        try:
+            particles, event_type = next(self.event_list)
+        except StopIteration:
+            self.log.info("Generating more Genie events")
+            self.generate_file()
+            particles, event_type = next(self.event_list)
 
         self.mc_info = {'particles': particles, 'event_type': event_type}
 

@@ -93,14 +93,14 @@ if __name__ == "__main__":
 
         log.warning('Energy argument ignored... assuming 3.8 GeV muons')
 
-        pga = GeneratorAction.GenieGeneratorAction(
-            config['events'], config['pid'], config['distribution'][0])
+        pga = GeneratorAction.GenieGeneratorAction(config['pid'],
+                                                   config['distribution'][0])
 
     else:
         if config['distribution'] != 'point':
             raise NotImplementedError
         pga = GeneratorAction.SingleParticleGeneratorAction()
-        pga.setTotalEnergy(config['energy'])
+        pga.setTotalEnergy(config['energy_MeV'])
         pga.setPID(config['pid'])
 
 

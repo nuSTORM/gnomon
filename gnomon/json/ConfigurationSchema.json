@@ -23,13 +23,27 @@
             ], 
             "type": "string"
         }, 
-        "energy": {
+        "energy_MeV": {
             "description": "Particle energy in MeV.  If the PID is a neutrino, this is the muon energy", 
             "type": "number"
         }, 
         "events": {
             "description": "Number of events to simulate", 
             "type": "integer"
+        }, 
+        "generator": {
+            "description": "Generator settings", 
+            "properties": {
+                "max_energy_GeV": {
+                    "description": "Maximum energy for Genie", 
+                    "type": "number"
+                }, 
+                "size_of_genie_buffer": {
+                    "description": "How many Genie events to simulate when filling the buffer", 
+                    "type": "integer"
+                }
+            }, 
+            "type": "object"
         }, 
         "name": {
             "description": "The file or DB name for the output", 

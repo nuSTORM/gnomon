@@ -51,7 +51,7 @@ class VlenfEventAction(G4.G4UserEventAction):
         for processor in self.processors:
             docs = processor.process(docs)
             if not docs:
-                self.log.critical('%s did not return documents in process()!',
+                self.log.warning('%s did not return documents in process()!',
                                   processor.__class__.__name__)
 
     def shutdown(self):

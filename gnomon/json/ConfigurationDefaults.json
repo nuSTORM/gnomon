@@ -4,8 +4,12 @@
         "url": "http://nustorm.physics.ox.ac.uk:5984/"
     }, 
     "distribution": "electron", 
-    "energy": 5.0, 
+    "energy_MeV": 3800, 
     "events": 100, 
+    "generator": {
+        "max_energy_GeV": 5.0, 
+        "size_of_genie_buffer": 100
+    }, 
     "name": "test", 
     "pid": 14, 
     "polarity": "+", 
