@@ -2,31 +2,25 @@
 
 
 from gnomon.processors import Base
+from gnomon.Configuration import RUNTIME_CONFIG as rc
 
 
 class AppendTruth(Base.Processor):
-    def __init__(self, pga):
+    def __init__(self):
         Base.Processor.__init__(self)
 
         self.log.debug('Truth store initialized')
 
-        self.pga = pga
-
-        self.enabled = True
-        try:
-            self.pga.getMCInfo()
-        except AttributeError:
-            self.log.warning('Disabling: no MC info in GeneratorAction')
-            self.enabled = False
-
     def process(self, docs):
-        # Do nothing if no MC information is avaiable
-        if not self.enabled:
-            return docs
-
-        # Otherwise get info from Generator Action
         new_docs = []
         for doc in docs:
-            doc['mc'] = self.pga.getMCInfo()
+            doc['mc'] = {}
+
+            for name in ['generator', 'tracking']:
+                if name in rc:
+                    doc['mc'][name] = rc[name]
+                    rc[name] = {} # must reset!
+
             new_docs.append(doc)
         return new_docs
+

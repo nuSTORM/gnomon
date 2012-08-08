@@ -7,6 +7,8 @@ import sys
 import couchdb
 import gnomon.Configuration as Configuration
 from gnomon.processors import Base
+import gzip
+import json
 
 
 class Manager(Base.Processor):  # pylint: disable-msg=R0922
@@ -125,3 +127,67 @@ class CouchManager(Manager):
         """
         self.log.debug('shutdown()')
         self.commit(force=True)
+
+
+class JSONFileManager(Manager):
+    """JSONFileManager writes JSON files to python files
+
+    This class outputs to a python file object that
+    is passed as the only argument 'arg_file' to the
+    constructor.  This allows the class to output
+    to any Python file object:
+    - an uncompressed ASCII file where each line
+    represents an event.  One can use the
+    command 'python -mjson.tool' to view the
+    events in a more human-readable fashion. For
+    example 'cat filename | python -mjson.tool';
+    arg_file=open('filename', 'w')
+    - a gzip-compressed file that can be
+    decompressed either with InputPyJSON within
+    MAUS or by the Linux tools gunzip/gzip;
+    arg_file=GzipFile('filename', 'wb')
+    see http://docs.python.org/library/gzip.html
+    - a socket;
+    http://docs.python.org/library/socket.html
+    - etc...
+    .
+
+    """
+
+    def __init__(self, arg_file = None):
+        """JSONFileManager constructor
+
+        \param arg_file arg_file is a file object or filename
+        """
+
+        if self.arg_file == None:
+            self.file = open('gnout', 'w')
+        elif isinstance(arg_file, str):
+            self.file = open(arg_file, 'w')
+        elif isinstance(arg_file, file):
+            self.file = arg_file
+        else:
+            raise NotImplementedError
+
+    def save(self, document):
+        """Save single event
+
+        This is called once per time an event needs
+        to be written.
+
+        \param document document to be saved
+        """
+        self.file.write(document.rstrip() + '\n')
+
+
+    def shutdown(self):
+        """Closes down JSONFileManager
+        
+        Closes the file that the class has open 
+        """
+        try:  
+            self.file.close()
+        except:
+            pass
+            
+

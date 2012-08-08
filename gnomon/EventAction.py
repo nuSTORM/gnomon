@@ -4,16 +4,13 @@ each MC event."""
 import logging
 
 import Geant4 as G4
-from processors.Digitizer import VlenfSimpleDigitizer
-import processors.Fitter as Fitter
-from processors.Truth import AppendTruth
-from processors.DataManager import CouchManager
+import processors
 
 
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
 
-    def __init__(self, pga=None):
+    def __init__(self, processor_names): # pga=None):
         """execute the constructor of the parent class G4UserEventAction"""
         G4.G4UserEventAction.__init__(self)
 
@@ -21,15 +18,15 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.log = self.log.getChild(self.__class__.__name__)
 
         self.processors = []
-        self.processors.append(VlenfSimpleDigitizer())
-        self.processors.append(Fitter.EmptyTrackFromDigits())
-        self.processors.append(Fitter.ContinousLongitudinalLength())
-        self.processors.append(Fitter.ExtractTracks())
-        self.processors.append(Fitter.VlenfPolynomialFitter())
-        self.processors.append(Fitter.ClassifyVariables())
-        self.processors.append(AppendTruth(pga))
-        self.processors.append(CouchManager())
 
+        for name in processor_names:
+            try:
+                my_class = processors.lookupProcessor(name)
+                self.processors.append(my_class())
+            except:
+                self.log.error('Failed loading processor %s' % name)
+                raise
+                
         # used to fetch mchits, only way given geant
         self.sd = None
 
@@ -52,7 +49,7 @@ class VlenfEventAction(G4.G4UserEventAction):
             docs = processor.process(docs)
             if not docs:
                 self.log.warning('%s did not return documents in process()!',
-                                  processor.__class__.__name__)
+                                 processor.__class__.__name__)
 
     def shutdown(self):
         for processor in self.processors:

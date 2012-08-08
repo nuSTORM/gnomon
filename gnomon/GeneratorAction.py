@@ -15,6 +15,8 @@ import random
 import tempfile
 import math
 import gnomon.Configuration as Configuration
+from gnomon.Configuration import RUNTIME_CONFIG as rc
+
 
 def lookup_cc_partner(nu_pid):
     """Lookup the charge current partner
@@ -52,7 +54,7 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
     def check3Vector(self, value):
         if not isinstance(value, list):
-            raise ValueError('Wrong type for 3-vector')
+            raise ValueError('Wrong type for 3-vector since not list', value)
         if len(value) != 3:
             raise ValueError('Wrong dimensions for 3-vector')
         for element in value:
@@ -102,7 +104,7 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         info['particle_energy'] = self.energy
         info['pid'] = self.pid
         info['generator_action'] = 'SingleParticleGeneratorAction'
-        return info
+        rc['generator'] = info
 
     def setPID(self, pid):
         if not isinstance(pid, int):
@@ -122,6 +124,8 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
 
         event.AddPrimaryVertex(v)
 
+        self.setMCInfo()
+
 
 class GenieGeneratorAction(VlenfGeneratorAction):
     """Generate events from a Genie ntuple"""
@@ -136,13 +140,8 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
         self.generate_file()
 
-        self.mc_info = None  # Info on what is simulated
-
     def __del__(self):
         os.remove(self.filename)
-
-    def getMCInfo(self):
-        return self.mc_info
 
     def generate_file(self):
         id, filename = tempfile.mkstemp(suffix='.root')
@@ -247,7 +246,7 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             self.generate_file()
             particles, event_type = next(self.event_list)
 
-        self.mc_info = {'particles': particles, 'event_type': event_type}
+        rc['generator'] = {'particles': particles, 'event_type': event_type}
 
         for particle in particles:
             pp = G4.G4PrimaryParticle()

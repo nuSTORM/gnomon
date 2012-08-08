@@ -1,0 +1,1 @@
+To add a new processor, create a class then add it to __init__.py so it can be used within gnomon

@@ -5,7 +5,29 @@ import Geant4 as G4
 from SD import ScintSD
 import MagneticField
 from gnomon.Configuration import RUNTIME_CONFIG as rc
+from Geant4 import G4Material
 
+
+class IronBoxDetectorConstruction(G4.G4VUserDetectorConstruction):
+    "Vlenf Detector Construction"
+
+    def __init__(self):
+        G4.G4VUserDetectorConstruction.__init__(self)
+        self.world = None
+        self.gdml_parser = G4.G4GDMLParser()
+        self.sensitive_detector = None
+        self.filename = "data/iron.gdml"
+
+    def Construct(self):  # pylint: disable-msg=C0103                                                                                                                                                                                                      
+        """Construct the VLENF from a GDML file"""
+        # Parse the GDML                                                                                                                                                                                                                                   
+        self.gdml_parser.Read(self.filename)
+        self.world = self.gdml_parser.GetWorldVolume()
+
+        print 'material', G4Material.GetMaterialTable()
+
+        # Return pointer to world volume                                                                                                                                                                                                                                                                                                                                    
+        return self.world
 
 class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
     "Vlenf Detector Construction"
@@ -27,12 +49,8 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         """Return the SD"""
         return self.sensitive_detector
 
-    def Construct(self):  #  pylint: disable-msg=C0103
+    def Construct(self):  # pylint: disable-msg=C0103
         """Construct the VLENF from a GDML file"""
-
-        gnm = G4.G4NistManager.Instance()
-        gnm.FindOrBuildMaterial('G4_Fe')
-
         # Parse the GDML
         self.gdml_parser.Read(self.filename)
         self.world = self.gdml_parser.GetWorldVolume()
@@ -40,7 +58,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         # Grab constants from the GDML <define>
         rc['layers'] = int(self.gdml_parser.GetConstant("layers"))
         rc['bars'] = int(self.gdml_parser.GetConstant("bars"))
-        
+
         for name in ["width", "thickness_layer", "thickness_bar"]:
             rc[name] = self.gdml_parser.GetConstant(name)
 

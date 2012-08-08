@@ -61,7 +61,7 @@ def populate_args(parser):
                     raise NotImplementedError("Only float arrays work")
 
                 parser.add_argument(arg, help=desc, type=float,
-                                  nargs=value['maxItems'], metavar='N')
+                                    nargs=value['maxItems'], metavar='N')
 
 
 class ConfigurationBase():

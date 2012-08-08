@@ -20,6 +20,7 @@ sys.stdout = temp  # Then return sys.stdout
 from gnomon import Configuration
 from gnomon import EventAction
 from gnomon import GeneratorAction
+from gnomon import TrackingAction
 from gnomon.DetectorConstruction import VlenfDetectorConstruction
 from gnomon import Logging
 
@@ -104,15 +105,25 @@ if __name__ == "__main__":
         pga.setPID(config['pid'])
 
 
-    if args.vertex:
-        pga.setVertex(args.vertex)
-    elif args.uniform:
-        pga.setVertex('uniform')
+    pga.setVertex(config['vertex'])
 
     gRunManager.SetUserAction(pga)
 
-    myEA = EventAction.VlenfEventAction(pga)
+    processors = []
+    processors.append("VlenfSimpleDigitizer")
+    processors.append("EmptyTrackFromDigits")
+    processors.append("ContinousLongitudinalLength")
+    processors.append("ExtractTracks")
+    processors.append("VlenfPolynomialFitter")
+    processors.append("ClassifyVariables")
+    processors.append("AppendTruth")
+    processors.append("CouchManager")
+    
+    myEA = EventAction.VlenfEventAction(processors)
     gRunManager.SetUserAction(myEA)
+
+    myTA = TrackingAction.LengthTrackingAction()
+    gRunManager.SetUserAction(myTA)
 
     gRunManager.Initialize()
 
