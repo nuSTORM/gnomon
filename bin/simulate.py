@@ -100,7 +100,7 @@ if __name__ == "__main__":
     else:
         if config['distribution'] != 'point':
             raise NotImplementedError
-        pga = GeneratorAction.SingleParticleGeneratorAction()
+        pga = GeneratorAction.MonochromaticParticleGeneratorAction()
         pga.setTotalEnergy(config['energy_MeV'])
         pga.setPID(config['pid'])
 

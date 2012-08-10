@@ -16,6 +16,8 @@ import tempfile
 import math
 import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
+from scipy.stats.distributions import rv_generic
+
 
 
 def lookup_cc_partner(nu_pid):
@@ -83,33 +85,22 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
             self.log.info('Vertex set to (mm): %s', str(vertex))
             self.vertex = vertex
 
+    def GeneratePrimaries(self):
+        raise NotImplementedError
 
-class SingleParticleGeneratorAction(VlenfGeneratorAction):
-    """Generate single particle at specific point"""
+
+class DistributionParticleGeneratorAction(VlenfGeneratorAction):
     def __init__(self):
         VlenfGeneratorAction.__init__(self)
 
+        self.dist = None
         self.beam_direction = G4.G4ThreeVector(0, 0, 1)
 
-    def setTotalEnergy(self, energy):
-        if not isinstance(energy, (int, float)):
-            raise NotImplementedError(
-                "This function can only take numbers as the energy")
+    def setEnergyDistribution(self, dist):
+        if not isinstance(dist, rv_generic):
+            raise ValueError("Must pass scipy stats distribution")
+        self.dist = dist
 
-        self.log.info('Energy set to (MeV): %s', str(energy))
-        self.energy = float(energy)
-
-    def getMCInfo(self):
-        info = {}
-        info['particle_energy'] = self.energy
-        info['pid'] = self.pid
-        info['generator_action'] = 'SingleParticleGeneratorAction'
-        rc['generator'] = info
-
-    def setPID(self, pid):
-        if not isinstance(pid, int):
-            raise ValueError('PID must be integer')
-        self.pid = pid
 
     def GeneratePrimaries(self, event):
         pp = G4.G4PrimaryParticle()
@@ -125,6 +116,71 @@ class SingleParticleGeneratorAction(VlenfGeneratorAction):
         event.AddPrimaryVertex(v)
 
         self.setMCInfo()
+            
+class MonochromaticParticleGeneratorAction(VlenfGeneratorAction):
+    """single energy only"""
+    def __init__(self):
+        VlenfGeneratorAction.__init__(self)
+
+        self.beam_direction = G4.G4ThreeVector(0, 0, 1)
+
+    def setMCInfo(self):
+        info = {}
+        info['particle_energy'] = self.energy
+        info['pid'] = self.pid
+        info['generator_action'] = 'SingleParticleGeneratorAction'
+        rc['generator'] = info
+
+    def setPID(self, pid):
+        if not isinstance(pid, int):
+            raise ValueError('PID must be integer')
+        self.pid = pid
+
+    def setTotalEnergy(self, energy):
+        """Set particle energy                                                                                                                                                                                                                         
+        """
+
+        if not isinstance(energy, (int, float)):
+            raise NotImplementedError(
+                "This function can only take numbers as the energy")
+
+        self.log.info('Energy set to (MeV): %s', str(energy))
+        self.energy = float(energy)
+
+    def GeneratePrimaries(self, event):
+        pp = G4.G4PrimaryParticle()
+        pp.SetPDGcode(self.pid)
+
+        pp.SetMomentumDirection(self.beam_direction)
+        pp.SetTotalEnergy(self.energy)
+
+        v = G4.G4PrimaryVertex()
+        self.SetPosition(v)
+        v.SetPrimary(pp)
+
+        event.AddPrimaryVertex(v)
+
+        self.setMCInfo()
+
+
+class GroupGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
+    """Form a group of Generators and randomly choose them"""
+
+    def __init__(self, generators):
+        G4.G4VUserPrimaryGeneratorAction.__init__(self)
+
+        if not isinstance(generators, list):
+            raise ValueError("Must pass a list of generators!")
+
+        for generator in generators:
+            if not isinstance(generator, VlenfGeneratorAction):
+                raise ValueError("Each element must be a VlenfGeneratorAction")
+
+        self.generators = generators
+        
+    def GeneratePrimaries(self, event):
+        this_generator = random.choice(self.generators)
+        this_generator.GeneratePrimaries(event)
 
 
 class GenieGeneratorAction(VlenfGeneratorAction):

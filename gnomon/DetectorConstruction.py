@@ -8,25 +8,25 @@ from gnomon.Configuration import RUNTIME_CONFIG as rc
 from Geant4 import G4Material
 
 
-class IronBoxDetectorConstruction(G4.G4VUserDetectorConstruction):
+class BoxDetectorConstruction(G4.G4VUserDetectorConstruction):
     "Vlenf Detector Construction"
 
-    def __init__(self):
+    def __init__(self, name):
         G4.G4VUserDetectorConstruction.__init__(self)
         self.world = None
         self.gdml_parser = G4.G4GDMLParser()
         self.sensitive_detector = None
-        self.filename = "data/iron.gdml"
+        self.filename = 'data/%s' % name
 
-    def Construct(self):  # pylint: disable-msg=C0103                                                                                                                                                                                                      
+    def Construct(self):  # pylint: disable-msg=C0103
         """Construct the VLENF from a GDML file"""
-        # Parse the GDML                                                                                                                                                                                                                                   
+        # Parse the GDML
         self.gdml_parser.Read(self.filename)
         self.world = self.gdml_parser.GetWorldVolume()
 
         print 'material', G4Material.GetMaterialTable()
 
-        # Return pointer to world volume                                                                                                                                                                                                                                                                                                                                    
+        # Return pointer to world volume
         return self.world
 
 class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):

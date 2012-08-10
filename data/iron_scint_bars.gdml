@@ -35,6 +35,7 @@
     <element Z="1" name="HydrogenElement">
       <atom unit="g/mole" value="1.01"/>
     </element>
+
     <material name="ScintillatorMaterial" state="solid">
       <MEE unit="eV" value="64.6844741120544"/>
       <D unit="g/cm3" value="1.032"/>
@@ -42,13 +43,14 @@
       <fraction n="0.0854556223030713" ref="HydrogenElement"/>
     </material>
 
+
     <!-- Now define what's "outside" our detector -->
     <material Z="1" name="Galactic" state="gas">
       <T unit="K" value="2.73"/>
       <P unit="pascal" value="3e-18"/>
       <MEE unit="eV" value="19.2"/>
-      <D unit="g/cm3" value="1e-25"/>
-      <atom unit="g/mole" value="1.01"/>
+      <D unit="g/cm3" value="1e-25"/> 
+      <atom unit="g/mole" value="1.01"/>	
     </material>
   </materials>
 

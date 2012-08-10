@@ -6,6 +6,28 @@ import Geant4 as G4
 import Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 
+class EmitNothingSD(G4.G4VSensitiveDetector):
+    """Emits hits without energy deposit
+
+    Useful for testing purposes"""
+    
+    def __init__(self):
+        G4.G4VSensitiveDetector.__init__(self, "Scintillator")
+        self.event = 0
+
+    def getDocs(self):
+        return [{'event' : self.event}]
+
+    def clearDocs(self):
+        pass
+
+    def setEventNumber(self, number):
+        if isinstance(number, int):
+            self.event = number
+        else:
+            raise TypeError('Not an int event number')
+        
+
 
 class ScintSD(G4.G4VSensitiveDetector):
     "SD for scint bar"
