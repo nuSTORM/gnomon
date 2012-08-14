@@ -37,9 +37,29 @@ def lookup_cc_partner(nu_pid):
 
     return cc_partner
 
+def convert_3vector_to_dict(value):
+    if not isinstance(value, list):
+        raise ValueError('Wrong type for 3-vector since not list', value)
+    if len(value) != 3:
+        raise ValueError('Wrong dimensions for 3-vector')
+    
+    new_dict = {}
+    new_dict['x'] = value[0]
+    new_dict['y'] = value[1]
+    new_dict['z'] = value[2]
+    
+    return new_dict
 
+def convert_dict_to_g4vector(value, new_vector= G4ThreeVector()):
+    new_vector.x = value['x']
+    new_vector.y = value['y']
+    new_vector.z = value['z']
+    
+    return new_vector
+
+        
 class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
-    """Base class for VLENF generator actions"""
+    """Geant4 interface class"""
     def __init__(self):
         G4.G4VUserPrimaryGeneratorAction.__init__(self)
 
@@ -47,140 +67,108 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
         self.log = self.log.getChild(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
 
-        self.vertex = (0, 0, 0)  # mm
-        self.log.debug('Default vertex: %s', str(self.vertex))
-
-        self.pid = 13  # PDG code
+        # List of particle generators
+        self.particle_generator = None
 
         self.config = Configuration.GLOBAL_CONFIG
 
-    def check3Vector(self, value):
-        if not isinstance(value, list):
-            raise ValueError('Wrong type for 3-vector since not list', value)
-        if len(value) != 3:
-            raise ValueError('Wrong dimensions for 3-vector')
-        for element in value:
-            if not isinstance(element, (float, int)):
-                raise ValueError('3-vector element is not number')
 
-    def SetPosition(self, v):
-        if self.vertex == 'uniform':
-            x = random.uniform(-2500, 2500)
-            y = random.uniform(-2500, 2500)
-            z = random.uniform(-30 * 222, 30 * 222)
-            self.log.debug('Using vertex %f %f %f', x, y, z)
-            v.SetPosition(x, y, z)
-        else:
-            v.SetPosition(self.vertex[0] * G4.mm,
-                          self.vertex[1] * G4.mm,
-                          self.vertex[2] * G4.mm)
-
-    def setVertex(self, vertex):
-        if vertex == 'uniform':
-            self.log.info('Using uniform vertex')
-            self.vertex = 'uniform'
-        else:
-            self.check3Vector(vertex)
-
-            self.log.info('Vertex set to (mm): %s', str(vertex))
-            self.vertex = vertex
-
-    def GeneratePrimaries(self):
-        raise NotImplementedError
-
-
-class DistributionParticleGeneratorAction(VlenfGeneratorAction):
-    def __init__(self):
-        VlenfGeneratorAction.__init__(self)
-
-        self.dist = None
-        self.beam_direction = G4.G4ThreeVector(0, 0, 1)
-
-    def setEnergyDistribution(self, dist):
-        if not isinstance(dist, rv_generic):
-            raise ValueError("Must pass scipy stats distribution")
-        self.dist = dist
-
-
-    def GeneratePrimaries(self, event):
-        pp = G4.G4PrimaryParticle()
-        pp.SetPDGcode(self.pid)
-
-        pp.SetMomentumDirection(self.beam_direction)
-        pp.SetTotalEnergy(self.energy)
-
-        v = G4.G4PrimaryVertex()
-        self.SetPosition(v)
-        v.SetPrimary(pp)
-
-        event.AddPrimaryVertex(v)
-
-        self.setMCInfo()
-            
-class MonochromaticParticleGeneratorAction(VlenfGeneratorAction):
-    """single energy only"""
-    def __init__(self):
-        VlenfGeneratorAction.__init__(self)
-
-        self.beam_direction = G4.G4ThreeVector(0, 0, 1)
-
-    def setMCInfo(self):
-        info = {}
-        info['particle_energy'] = self.energy
-        info['pid'] = self.pid
-        info['generator_action'] = 'SingleParticleGeneratorAction'
+    def setMCInfo(self, info):
         rc['generator'] = info
 
-    def setPID(self, pid):
-        if not isinstance(pid, int):
-            raise ValueError('PID must be integer')
-        self.pid = pid
-
-    def setTotalEnergy(self, energy):
-        """Set particle energy                                                                                                                                                                                                                         
-        """
-
-        if not isinstance(energy, (int, float)):
-            raise NotImplementedError(
-                "This function can only take numbers as the energy")
-
-        self.log.info('Energy set to (MeV): %s', str(energy))
-        self.energy = float(energy)
-
     def GeneratePrimaries(self, event):
-        pp = G4.G4PrimaryParticle()
-        pp.SetPDGcode(self.pid)
+        particle = self.particle_generator.generate()
 
-        pp.SetMomentumDirection(self.beam_direction)
-        pp.SetTotalEnergy(self.energy)
+        pp = G4.G4PrimaryParticle()
+        pp.SetPDGcode(particle[pid])
+
+        pp.SetMomentum(convert_dict_to_g4vector(particle[momentum]))
 
         v = G4.G4PrimaryVertex()
-        self.SetPosition(v)
+        convert_dict_to_g4vector(particle['position'], v)
         v.SetPrimary(pp)
 
         event.AddPrimaryVertex(v)
 
-        self.setMCInfo()
+        self.setMCInfo(particle)
 
 
-class GroupGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
-    """Form a group of Generators and randomly choose them"""
+class Distribution():
+    def __init__(self, some_obj):
+        self.static_value = None
+        self.scipy_dist = None
 
-    def __init__(self, generators):
-        G4.G4VUserPrimaryGeneratorAction.__init__(self)
+        if isinstance(some_obj, [float, int]):
+            self.static_value = some_obj
+        elif isinstance(some_obj, rv_generic):
+            self.scipy_dist = some_obj
+        else:
+            raise ValueError("Do not understand", some_obj)
 
-        if not isinstance(generators, list):
-            raise ValueError("Must pass a list of generators!")
 
-        for generator in generators:
-            if not isinstance(generator, VlenfGeneratorAction):
-                raise ValueError("Each element must be a VlenfGeneratorAction")
+    def get(self):
+        if self.static_value is not None:
+            return self.static_value
+        elif self.scipy_dist is not None:
+            return rv_generic.rv()
+        else:
+            raise RuntimeError("Should never get here")
 
-        self.generators = generators
+
+class ParticleGenerator():
+    """Baseclass for gnomon particle generators"""
+
+    def __init__(self):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+        self.log.debug('Initialized %s', self.__class__.__name__)
+
+        self.particle = {}
+        self.particle['position'] = None
+        self.particle['momentum'] = None
+        self.particle['pid'] = None
+
+
+    def set_particle(self, position, momentum, pid):
+        self.set_position(position)
+        self.set_momentum(momentum)
+        self.set_pid(pid)
+
+    def set_position(self, position):
+        self.particle['position'] = convert_3vector_to_dict(position)
+
+        for key in self.particle['position'].keys():
+            new_value = Distribution(self.particle['position'][key])
+            self.particle['position'][key] = value
+
+    def set_momentum(self, momentum):
+        self.particle['momentum'] = convert_3vector_to_dict(momentum)
+
+        for key in self.particle['momentum'].keys():
+            new_value = Distribution(self.particle['momentum'][key])
+            self.particle['momentum'][key] = value
+
+    def set_pid(self, pid):
+        assert isinstance(pid, int)
+        self.particle['pid'] = Distribution(pid, dim=1)
+
+    def generate(self, event):
+        new_particle = {}
+
+        for key, value in self.particle.iteritems():
+            if isinstance(value, dict):  # restricts 2 depth, recurse instead?
+                new_particle[key] = {}
+
+                for key2, value2 in value.iteritems():
+                    new_particle[key][key2] = value2.get()
+                
+            new_particle[key] = value.get()
+
+        self.log.info("Generated particle:", new_particle)
         
-    def GeneratePrimaries(self, event):
-        this_generator = random.choice(self.generators)
-        this_generator.GeneratePrimaries(event)
+        return new_particle
+
+
 
 
 class GenieGeneratorAction(VlenfGeneratorAction):
