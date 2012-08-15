@@ -83,15 +83,19 @@ if __name__ == "__main__":
 
     pga_list = []
     for kinetic_energy in kinetic_energies:
-        pga = GeneratorAction.MonochromaticParticleGeneratorAction()
-        pga.setTotalEnergy(kinetic_energy + muon_mass)
-        pga.setPID(13) # muon
-        pga.setVertex([0,0,0]) 
+        pga = GeneratorAction.ParticleGenerator()
+        pga.set_momentum([0,0,kinetic_energy + muon_mass])
+        pga.set_pid(13) # muon
+
+        
+        pga.set_position([0,0,0]) 
         pga_list.append(pga)
 
-    gpga = GeneratorAction.GroupGeneratorAction(pga_list) 
 
-    gRunManager.SetUserAction(gpga)
+    pga = GeneratorAction.VlenfGeneratorAction(pga)
+    #gpga = GeneratorAction.GroupGeneratorAction(pga_list) 
+
+    gRunManager.SetUserAction(pga)
 
     processors = []
     processors.append("AppendTruth")

@@ -100,12 +100,12 @@ if __name__ == "__main__":
     else:
         if config['distribution'] != 'point':
             raise NotImplementedError
-        pga = GeneratorAction.MonochromaticParticleGeneratorAction()
-        pga.setTotalEnergy(config['energy_MeV'])
-        pga.setPID(config['pid'])
+        pga = GeneratorAction.ParticleGenerator()
+        pga.set_momentum([0, 0, config['energy_MeV']])
+        pga.set_pid(config['pid'])
 
 
-    pga.setVertex(config['vertex'])
+    pga.set_position(config['vertex'])
 
     gRunManager.SetUserAction(pga)
 

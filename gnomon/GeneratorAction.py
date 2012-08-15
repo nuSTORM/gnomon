@@ -18,8 +18,6 @@ import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 from scipy.stats.distributions import rv_generic
 
-
-
 def lookup_cc_partner(nu_pid):
     """Lookup the charge current partner
 
@@ -50,7 +48,7 @@ def convert_3vector_to_dict(value):
     
     return new_dict
 
-def convert_dict_to_g4vector(value, new_vector= G4ThreeVector()):
+def convert_dict_to_g4vector(value, new_vector=G4.G4ThreeVector()):
     new_vector.x = value['x']
     new_vector.y = value['y']
     new_vector.z = value['z']
@@ -60,15 +58,14 @@ def convert_dict_to_g4vector(value, new_vector= G4ThreeVector()):
         
 class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     """Geant4 interface class"""
-    def __init__(self):
+    def __init__(self, generator):
         G4.G4VUserPrimaryGeneratorAction.__init__(self)
 
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
 
-        # List of particle generators
-        self.particle_generator = None
+        self.particle_generator = generator
 
         self.config = Configuration.GLOBAL_CONFIG
 
@@ -80,9 +77,11 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
         particle = self.particle_generator.generate()
 
         pp = G4.G4PrimaryParticle()
-        pp.SetPDGcode(particle[pid])
+        pp.SetPDGcode(particle['pid'])
 
-        pp.SetMomentum(convert_dict_to_g4vector(particle[momentum]))
+        pp.SetMomentum(particle['momentum']['x'],
+                       particle['momentum']['y'],
+                       particle['momentum']['z'])
 
         v = G4.G4PrimaryVertex()
         convert_dict_to_g4vector(particle['position'], v)
@@ -98,7 +97,7 @@ class Distribution():
         self.static_value = None
         self.scipy_dist = None
 
-        if isinstance(some_obj, [float, int]):
+        if isinstance(some_obj, (float, int)):
             self.static_value = some_obj
         elif isinstance(some_obj, rv_generic):
             self.scipy_dist = some_obj
@@ -110,7 +109,7 @@ class Distribution():
         if self.static_value is not None:
             return self.static_value
         elif self.scipy_dist is not None:
-            return rv_generic.rv()
+            return rv_generic.rvs()
         else:
             raise RuntimeError("Should never get here")
 
@@ -135,24 +134,23 @@ class ParticleGenerator():
         self.set_pid(pid)
 
     def set_position(self, position):
-        self.particle['position'] = convert_3vector_to_dict(position)
-
-        for key in self.particle['position'].keys():
-            new_value = Distribution(self.particle['position'][key])
-            self.particle['position'][key] = value
+        self._set_vector_value('position', position)
 
     def set_momentum(self, momentum):
-        self.particle['momentum'] = convert_3vector_to_dict(momentum)
+        self._set_vector_value('momentum', momentum)
 
-        for key in self.particle['momentum'].keys():
-            new_value = Distribution(self.particle['momentum'][key])
-            self.particle['momentum'][key] = value
+    def _set_vector_value(self, var_name, value):
+        self.particle[var_name] = convert_3vector_to_dict(value)
+
+        for coord in self.particle[var_name].keys():
+            new_value = Distribution(self.particle[var_name][coord])
+            self.particle[var_name][coord] = new_value
 
     def set_pid(self, pid):
         assert isinstance(pid, int)
-        self.particle['pid'] = Distribution(pid, dim=1)
+        self.particle['pid'] = Distribution(pid)
 
-    def generate(self, event):
+    def generate(self):
         new_particle = {}
 
         for key, value in self.particle.iteritems():
@@ -161,8 +159,8 @@ class ParticleGenerator():
 
                 for key2, value2 in value.iteritems():
                     new_particle[key][key2] = value2.get()
-                
-            new_particle[key] = value.get()
+            else:    
+                new_particle[key] = value.get()
 
         self.log.info("Generated particle:", new_particle)
         
