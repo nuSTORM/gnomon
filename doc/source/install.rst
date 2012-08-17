@@ -28,8 +28,8 @@ Step-by-Step Installation
 ---------------------------------------
 
 Although Gnomon can run on any Linux distribution or Mac OS X, we recommend the
-use of Ubuntu 11.10 or Mac OS X for Gnomon testing and development.  For these
-instructions, we will assume you are starting with a fresh Ubuntu 11.10 or fresh
+use of Ubuntu Server 12.04 LTS or Mac OS X for Gnomon testing and development.  For these
+instructions, we will assume you are starting with a fresh Ubuntu 12.04 or fresh
 Mac OS X 10.7.3 installation.  Notes about using Scientific Linux can be found
 in the :doc:`faq`.
 
@@ -40,7 +40,7 @@ your home directory without administrator intervention.
 Step 1: Prerequisites
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This step is where the installation instructions diverge depending on which
+The installation instructions diverge depending on which
 operating system you are using.  Please find your package manager and
 distribution below.  If you do not see your distribution, then please notify
 the developers if you are successful in installing gnomon on your unsupported
@@ -52,12 +52,11 @@ distribution and any changes to the instructions you had to make.
 Many packages are required to setup your build environment to compile
 GEANT4 and ROOT.  Fortunately, they can be installed with one very
 long ``apt-get`` line.  Although this line may wrap in your browser,
-it should be executed as one line::
+it should be executed as one line:
 
-  sudo apt-get install build-essential xorg-dev python-dev \
-       python-virtualenv python-numpy python-pygame libglu1-mesa-dev \
-       glutg3-dev cmake uuid-dev liblapack-dev mercurial \
-       libboost-all-dev libatlas-base-dev
+  .. literalinclude:: snip/snip0.bash
+    :language: bash
+    :linenos:
 
 To be able to generate the documentation, we also need these tools::
 
@@ -110,44 +109,48 @@ The excellent `virtualenv <http://www.virtualenv.org/>`_ tool
 allows you to create an isolated Python environment, independent from
 your system environment. We will keep all of the python modules for
 Gnomon (with a few exceptions) and libraries compiled from source
-inside of a virtualenv in your ``$HOME`` directory::
+inside of a virtualenv in your ``$HOME`` directory:
 
-  virtualenv -p `which python` $HOME/env/gnomon
-  cd $HOME/env/gnomon
+.. literalinclude:: snip/snip1.bash
+  :language: bash
+  :linenos:
 
-You'll want to find the Python shared library associated with the installation referneced above with ``which python`` and make a symbolic link in $HOME/env/gnomon/lib.  This can be done on a Mac by doing, for example, ``ln -s /opt/local/lib/libpython2.7.dylib $VIRTUAL_ENV/lib`` if the shared library lives in ``/opt/``.  Or in the Scientific Linux case above: ``ln -s ~/gnomon/local/lib/libpython2.7.so.1.0 $VIRTUAL_ENV/lib``
+Where the last line setup the environment.
 
-Next, append the following lines to the end of ``$HOME/env/gnomon/bin/activate`` to allow codes to see locally installed libraries::
 
-  # For Macs: Change LD_LIBRARY_PATH -> DYLD_LIBRARY_PATH
-  export LD_LIBRARY_PATH=$VIRTUAL_ENV/lib:$LD_LIBRARY_PATH
-  export PYTHONPATH=$VIRTUAL_ENV/lib:$PYTHONPATH
-  
-  # For Macs, uncomment this line:
-  #export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
+You'll want to find the Python shared library associated with the installation referneced above with ``which python`` and make a symbolic link in ``$HOME/env/gnomon/lib`` by running:
 
-Finally, we can enable the virtual environment::
+.. literalinclude:: snip/snip2.bash
+  :language: bash
+  :linenos:
 
-  source $HOME/env/gnomon/bin/activate
+Next, append the following lines to the end of ``$HOME/env/gnomon/bin/activate`` to allow codes to see locally installed libraries:
+
+.. literalinclude:: snip/snip3.bash
+  :language: bash
+  :linenos:
 
 This will put the appropriate version of python in the path and also
 set the ``$VIRTUAL_ENV`` environment variable we will use in the
 remainder of the directions.
 
-And create a directory where all the source codes will go::
+And create a directory where all the source codes will go:
 
-  mkdir $VIRTUAL_ENV/src/
+.. literalinclude:: snip/snip4.bash
+  :language: bash
+  :linenos:
 
-where the instructions below will tell you where the files can be located.  At the time of writing, one should just be able to run the following commands to fetch some of the various files::
+where the instructions below will tell you where the files can be located.  At the time of writing, one should just be able to run the following commands to fetch some of the various files:
 
-   wget ftp://root.cern.ch/root/root_v5.32.00.source.tar.gz
-   wget http://mirror.ox.ac.uk/sites/rsync.apache.org/xerces/c/3/sources/xerces-c-3.1.1.tar.gz
-   wget http://geant4.cern.ch/support/source/geant4.9.5.tar.gz
+.. literalinclude:: snip/snip5.bash
+  :language: bash
+  :linenos:
 
-Lastly::
+Lastly:
 
-  easy_install couchdb
-  easy_install nose # for running tests
+.. literalinclude:: snip/snip6.bash
+  :language: bash
+  :linenos:
 
 
 Step 3: ROOT
@@ -160,21 +163,20 @@ want to use ROOT to analyze the output of Gnomon.
 Begin by downloading the ROOT 5.32 tarball from `the ROOT download
 page <http://root.cern.ch/drupal/content/production-version-532>`_.
 As of this writing, the latest version is 5.32.00.  Then, from the
-download directory, execute the following commands::
+download directory, execute the following commands:
 
-  tar xvf root_v5.32.00.source.tar.gz
-  mv root $VIRTUAL_ENV/src/root-5.32.00
-  cd $VIRTUAL_ENV/src/root-5.32.00
-  ./configure ${EXTRAS}
-  make
+.. literalinclude:: snip/snip7.bash
+  :language: bash
+  :linenos:
 
 .. tip:: When running the command ``make`` above, one can multithread the build by doing ``make -jN`` for an N-core machine.  For example, in a four core laptop, one could do ``make -j4``.  This is true for all the ``make`` commands on this page.
 
-We also need to append a ``source`` line to ``$VIRTUAL_ENV/bin/activate``::
+We also need to append a ``source`` line to ``$VIRTUAL_ENV/bin/activate`` and setup ROOT:
 
-  source $VIRTUAL_ENV/src/root-5.32.00/bin/thisroot.sh
+.. literalinclude:: snip/snip8.bash
+  :language: bash
+  :linenos:
 
-to ensure that ROOT is setup when the environment is setup.
 
 Step 4: xerces c++
 ^^^^^^^^^^^^^^^^^^
@@ -184,14 +186,11 @@ used in our GDML geometry representation.  Proceed to the `xerces
 C++ download page <http://xerces.apache.org/xerces-c/download.cgi>`_
 and get version 3.1.1.
 
-Proceed to your download directory then run the following commands::
+Proceed to your download directory then run the following commands:
 
-  tar xvf xerces-c-3.1.1.tar.gz
-  mv xerces-c-3.1.1 $VIRTUAL_ENV/src/
-  cd $VIRTUAL_ENV/src/xerces-c-3.1.1
-  ./configure --prefix=$VIRTUAL_ENV
-  make install
-
+.. literalinclude:: snip/snip9.bash
+  :language: bash
+  :linenos:
 
 .. warning:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  This is only relevant if the output of `./configure` does not agree with the output of `uname -m`.
 
@@ -204,20 +203,15 @@ instructions describe how to compile GEANT4 using the new CMake-based
 build system.  As of GEANT4.9.5, CLHEP is shipped within GEANT4 along
 with various data files which means it is no longer necessary to download
 these on one's own.
-  
+
 Now go to the `GEANT4 Download Page <http://geant4.cern.ch/support/download.shtml>`_ and download the source code.
 
-Next go to your download directory and run the following commands::
+Next go to your download directory, run the following commands, and append to the ``activate`` script::
 
-  tar xvf geant4.9.5.tar.gz
-  mv geant4.9.5 $VIRTUAL_ENV/src/
-  cd $VIRTUAL_ENV/src/
-  mkdir geant4.9.5-build
-  cd geant4.9.5-build
-  cmake -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -DGEANT4_INSTALL_DATA=True -DGEANT4_USE_OPENGL_X11:BOOL=ON -DGEANT4_USE_GDML:BOOL=ON ../geant4.9.5
-  make install
+.. literalinclude:: snip/snip10.bash
+  :language: bash
+  :linenos:
 
-You then need to add $VIRTUAL_ENV/src/geant4.9.5-build/geant4make.sh to your $VIRTUAL_ENV/bin/activate file.
 
 Step 6: g4py
 ^^^^^^^^^^^^
@@ -226,27 +220,47 @@ To access GEANT4 from Python, Gnomon uses the g4py wrappers.  We have
 had to fix a few bugs and add wrapper a few additional classes for
 Gnomon, so for now you will need to use our fork of g4py::
 
-  cd $VIRTUAL_ENV/src
-  hg clone https://bitbucket.org/gnomon/g4py
-  cd g4py
 
-  export G4FLAGS="--with-g4-incdir=$VIRTUAL_ENV/include/Geant4 --with-g4-libdir=$VIRTUAL_ENV/lib"
-  export XERCESFLAGS="--with-xercesc-incdir=$VIRTUAL_ENV/include --with-xercesc-libdir=$VIRTUAL_ENV/lib"
-  export BOOSTFLAGS="--with-boost-libdir=/usr/lib"
-
-  # Mac OS X users need to uncomment this line below:
-  #export BOOSTFLAGS="--with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib"
-
-  # select system name from linux, linux64, macosx as appropriate
-  ./configure linux64 ${G4FLAGS} ${XERCESFLAGS} ${BOOSTFLAGS} --prefix=$VIRTUAL_ENV ${EXTRAS}
-  make
-  make install
+.. literalinclude:: snip/snip11.bash
+  :language: bash
+  :linenos:
 
 .. caution:: If one is not careful and the python headers g4py finds, python libraries g4py finds, and python executable used to import g4py are not of the same version, then very obscure fatal errors will arise.  This is the purpose of the ``${EXTRAS}`` flag.
 
 Now you can enable the Gnomon environment whenever you want by typing
 ``source $HOME/env/gnomon/bin/activate``, or by placing that line in the
-``.bashrc`` login script.
+``.bashrc`` login script equivalent.
+
+
+Genie
+^^^^^^^^^^^^^^
+
+Please install Genie per the directions on their `website <http://www.genie-mc.org/>`_.  At the time writing, only version 2.7.1 has been tested with gnomon.  However, there is no svn tag for this release so you might want to try the trunk.  The gnomon software will only expect a file in the GST file format so it should be independent of Genie version.
+
+Install Genie::
+
+  cd $VIRTUAL_ENV/src
+  svn co https://genie.hepforge.org/svn/trunk genie
+  cd genie
+
+Append the following to ``bin/active``::
+
+  # genie
+  export GENIE=$VIRTUAL_ENV/src/genie
+  export PYTHIA6=${GENIE}/v6_424  # lib
+  export LHAPDF=${GENIE}/v5_7_0/stage # lib, include
+  export LOG4CPP=${GENIE}/v1_0/stage # lib, include
+  export PATH=$PATH:${LHAPDF}/bin
+  export PYTHONPATH=$PYTHONPATH:${LHAPDF}/lib/python2.6/site-packages/
+  export LHAPATH=`lhapdf-config --pdfsets-path`
+  export LLP=LD_LIBRARY_PATH
+  eval ${LLP}=${!LLP}:${LHAPDF}/lib:${GENIE}/lib:${PYTHIA6}/lib:/opt/local/lib:$LOG4CPP/lib
+
+Then resource::
+
+  ./src/scripts/build/ext/build_lhapdf.sh
+
+
 
 Step 7: gnomon
 ^^^^^^^^^^^^^^
