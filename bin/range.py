@@ -40,13 +40,13 @@ if __name__ == "__main__":
     name = 'range_test_%s' % material
     run = 0
 
-    Logging.setupLogging('DEBUG', name)
-    log = logging.getLogger('root').getChild('simulate')
-
     random.seed()
 
     config_class = Configuration.DEFAULT(name, run)
     Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
+
+    Logging.setupLogging('DEBUG', name)
+    log = logging.getLogger('root').getChild('simulate')
 
     # make shorter variable name for us
     config = config_class.get_configuration_dict()
@@ -83,12 +83,11 @@ if __name__ == "__main__":
 
     pga_list = []
     for kinetic_energy in kinetic_energies:
-        pga = GeneratorAction.ParticleGenerator()
-        pga.set_momentum([0,0,kinetic_energy + muon_mass])
-        pga.set_pid(13) # muon
+        pos = [0,0,0]
+        mom = [0,0,kinetic_energy + muon_mass]
+        pid = 13
 
-        
-        pga.set_position([0,0,0]) 
+        pga = GeneratorAction.ParticleGenerator(pos, mom, pid)
         pga_list.append(pga)
 
 

@@ -27,11 +27,6 @@ from gnomon import Logging
 log = None  # Logger for this file
 
 
-def is_neutrino_code(pdg_code):
-    if math.fabs(pdg_code) in [12, 14, 16]:
-        return True
-    return False
-
 if __name__ == "__main__":
     desc = 'Simulate the NuSTORM experiment magnetized iron detectors'
     parser = argparse.ArgumentParser(description=desc)
@@ -46,15 +41,15 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    config_class = Configuration.DEFAULT(
+        args.name, args.run, overload=vars(args))
+    Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
+
     Logging.setupLogging(args.log_level, args.name)
     log = logging.getLogger('root').getChild('simulate')
     log.debug('Commandline args: %s', str(args))
 
     random.seed()
-
-    config_class = Configuration.DEFAULT(
-        args.name, args.run, overload=vars(args))
-    Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
 
     # make shorter variable name for us
     config = config_class.get_configuration_dict()
@@ -84,8 +79,11 @@ if __name__ == "__main__":
     #  Generator actions
     #
 
+    pos = config['vertex']
+    mom = [0, 0, config['energy_MeV']]
+    pid = config['pid']
 
-    if is_neutrino_code(config['pid']):
+    if GeneratorAction.is_neutrino_code(config['pid']):
         if config['distribution'] == 'point':
             raise NotImplementedError
 
@@ -94,19 +92,14 @@ if __name__ == "__main__":
 
         log.warning('Energy argument ignored... assuming 3.8 GeV muons')
 
-        pga = GeneratorAction.GenieGeneratorAction(config['pid'],
-                                                   config['distribution'][0])
+        pga = GeneratorAction.GenieGenerator(pos, mom, pid)
 
     else:
         if config['distribution'] != 'point':
             raise NotImplementedError
-        pga = GeneratorAction.ParticleGenerator()
-        pga.set_momentum([0, 0, config['energy_MeV']])
-        pga.set_pid(config['pid'])
+        pga = GeneratorAction.ParticleGenerator(pos, mom, pid)
 
-
-    pga.set_position(config['vertex'])
-
+    pga = GeneratorAction.VlenfGeneratorAction(pga)
     gRunManager.SetUserAction(pga)
 
     processors = []

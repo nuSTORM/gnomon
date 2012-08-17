@@ -7,13 +7,27 @@ file that is used afterwards by various other classes."""
 
 import os
 import inspect
-import logging
 import random
 import sys
 import json
 import validictory
 from array import array
 
+# Note: Do not use the python logging library!  This class gets called before
+# the loggers are setup.
+
+def get_source_dir():
+    #  This trick gets the directory of *this* file Configuration.py thus
+    # allowing to find the schema files relative to this file.
+    return os.path.dirname(inspect.getfile(inspect.currentframe()))
+
+def get_data_dir():
+    src_dir = get_source_dir()
+    return os.path.join(src_dir, '../data')
+
+def get_log_dir():
+    src_dir = get_source_dir()
+    return os.path.join(src_dir, '../log')
 
 def fetch_config_config(filename):
     """Fetch configuration file for the configuration class
@@ -22,7 +36,7 @@ def fetch_config_config(filename):
 
     #  This trick gets the directory of *this* file Configuration.py thus
     # allowing to find the schema files relative to this file.
-    dir_name = os.path.dirname(inspect.getfile(inspect.currentframe()))
+    dir_name = get_source_dir()
 
     # Append json
     filename = os.path.join('json', filename)
@@ -68,12 +82,8 @@ class ConfigurationBase():
     """Base class for all configuration classes"""
 
     def __init__(self, name, run, overload=None):  # pylint: disable-msg=W0613
-        self.log = logging.getLogger('root')
-        self.log = self.log.getChild(self.__class__.__name__)
-
         if run == 0:
             run = random.randint(1, sys.maxint)
-            self.log.warning('Random run number %d since none specified', run)
 
         self.name = name
         self.run = run
@@ -93,6 +103,9 @@ class ConfigurationBase():
 
         config_json['name'] = self.name
         config_json['run_number'] = self.run
+        config_json['src_dir'] = get_source_dir()
+        config_json['data_dir'] = get_data_dir()
+        config_json['log_dir'] = get_log_dir()
 
         self.json = config_json
 

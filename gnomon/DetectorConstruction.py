@@ -1,9 +1,11 @@
 """Construct VLENF geometry"""
 
 
+import os
 import Geant4 as G4
 from SD import ScintSD
 import MagneticField
+import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 from Geant4 import G4Material
 
@@ -16,7 +18,10 @@ class BoxDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.world = None
         self.gdml_parser = G4.G4GDMLParser()
         self.sensitive_detector = None
-        self.filename = 'data/%s' % name
+
+        self.config = Configuration.GLOBAL_CONFIG
+
+        self.filename = os.path.join(self.config['data_dir'], name)
 
     def Construct(self):  # pylint: disable-msg=C0103
         """Construct the VLENF from a GDML file"""
@@ -37,7 +42,10 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.world = None
         self.gdml_parser = G4.G4GDMLParser()
         self.sensitive_detector = None
-        self.filename = "data/iron_scint_bars.gdml"
+
+        self.config = Configuration.GLOBAL_CONFIG
+        self.filename = os.path.join(self.config['data_dir'],
+                                     'iron_scint_bars.gdml')
         self.field_manager = None
         self.my_field = None
         self.field_polarity = field_polarity

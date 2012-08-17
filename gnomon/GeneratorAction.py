@@ -55,9 +55,15 @@ def convert_dict_to_g4vector(value, new_vector=G4.G4ThreeVector()):
     
     return new_vector
 
+def is_neutrino_code(pdg_code):
+    if math.fabs(pdg_code) in [12, 14, 16]:
+        return True
+    return False
+
         
 class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     """Geant4 interface class"""
+
     def __init__(self, generator):
         G4.G4VUserPrimaryGeneratorAction.__init__(self)
 
@@ -74,22 +80,23 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
         rc['generator'] = info
 
     def GeneratePrimaries(self, event):
-        particle = self.particle_generator.generate()
+        particles = self.particle_generator.generate()
 
-        pp = G4.G4PrimaryParticle()
-        pp.SetPDGcode(particle['pid'])
+        for particle in particles:
+            pp = G4.G4PrimaryParticle()
+            pp.SetPDGcode(particle['pid'])
 
-        pp.SetMomentum(particle['momentum']['x'],
-                       particle['momentum']['y'],
-                       particle['momentum']['z'])
+            pp.SetMomentum(particle['momentum']['x'],
+                           particle['momentum']['y'],
+                           particle['momentum']['z'])
 
-        v = G4.G4PrimaryVertex()
-        convert_dict_to_g4vector(particle['position'], v)
-        v.SetPrimary(pp)
-
-        event.AddPrimaryVertex(v)
-
-        self.setMCInfo(particle)
+            v = G4.G4PrimaryVertex()
+            convert_dict_to_g4vector(particle['position'], v)
+            v.SetPrimary(pp)
+            
+            event.AddPrimaryVertex(v)
+            
+            self.setMCInfo(particle)
 
 
 class Distribution():
@@ -104,6 +111,10 @@ class Distribution():
         else:
             raise ValueError("Do not understand", some_obj)
 
+    def is_static(self):
+        if self.static_value is not None:
+            return True
+        return False
 
     def get(self):
         if self.static_value is not None:
@@ -113,25 +124,21 @@ class Distribution():
         else:
             raise RuntimeError("Should never get here")
 
+class Generator():
+    """Generator base class"""
 
-class ParticleGenerator():
-    """Baseclass for gnomon particle generators"""
-
-    def __init__(self):
+    def __init__(self, position, momentum, pid):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
 
+        self.config = Configuration.GLOBAL_CONFIG
+
         self.particle = {}
-        self.particle['position'] = None
-        self.particle['momentum'] = None
-        self.particle['pid'] = None
 
-
-    def set_particle(self, position, momentum, pid):
         self.set_position(position)
         self.set_momentum(momentum)
-        self.set_pid(pid)
+        self.set_pid(pid) # Can be neutrino with forced interaction  
 
     def set_position(self, position):
         self._set_vector_value('position', position)
@@ -139,16 +146,23 @@ class ParticleGenerator():
     def set_momentum(self, momentum):
         self._set_vector_value('momentum', momentum)
 
+    def set_pid(self, pid):
+        assert isinstance(pid, int)
+        self.particle['pid'] = Distribution(pid)
+
     def _set_vector_value(self, var_name, value):
+        """Private"""
         self.particle[var_name] = convert_3vector_to_dict(value)
 
         for coord in self.particle[var_name].keys():
             new_value = Distribution(self.particle[var_name][coord])
             self.particle[var_name][coord] = new_value
 
-    def set_pid(self, pid):
-        assert isinstance(pid, int)
-        self.particle['pid'] = Distribution(pid)
+class ParticleGenerator(Generator):
+    """Baseclass for gnomon particle generators"""
+
+    def __init__(self, position, momentum, pid):
+        Generator.__init__(self, position, momentum, pid)
 
     def generate(self):
         new_particle = {}
@@ -164,29 +178,24 @@ class ParticleGenerator():
 
         self.log.info("Generated particle:", new_particle)
         
-        return new_particle
+        return [new_particle]
 
 
 
-
-class GenieGeneratorAction(VlenfGeneratorAction):
+class GenieGenerator(Generator):
     """Generate events from a Genie ntuple"""
 
-    def __init__(self, pid, energy_distribution):
-        VlenfGeneratorAction.__init__(self)
-        self.energy_distribution = energy_distribution
-        self.pid = pid
+    def __init__(self, position, momentum, pid):
+        Generator.__init__(self, position, momentum, pid)
 
          #  The event list is a generator so requires calling 'next' on it
         self.event_list = None  # set by generate_file
 
-        self.generate_file()
-
     def __del__(self):
         os.remove(self.filename)
 
-    def generate_file(self):
-        id, filename = tempfile.mkstemp(suffix='.root')
+    def _create_file(self):
+        my_id, filename = tempfile.mkstemp(suffix='.root')
 
         seed = random.randint(1, sys.maxint)
 
@@ -196,10 +205,12 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
         command = '%s gevgen' % env_vars
 
-        command += ' -p %d' % self.pid
+        command += ' -p %d' % self.particle['pid'].get()
         command += ' -r %d' % self.config['run_number']
         command += ' -t 1000260560'
         command += ' -n %d' % self.config['generator']['size_of_genie_buffer']
+
+        self.energy_distribution = 'm' # todo fixme!!!!
 
         if self.energy_distribution == 'm':
             command += ' -e 0.1,%f -f data/flux_file_mu.dat' % max_energy
@@ -220,9 +231,13 @@ class GenieGeneratorAction(VlenfGeneratorAction):
         os.system('rm gntp.%d.ghep.root' % self.config['run_number'])
         self.filename = filename
 
-        self.event_list = self.get_next_events()
+        self.event_list = self._get_next_events()
 
-    def get_next_events(self):
+    def _get_next_events(self):
+        """Get next events from Genie ROOT file
+
+        Looks over the generator"""
+
         f = ROOT.TFile(self.filename)
         try:
             t = f.Get('gst')
@@ -235,28 +250,35 @@ class GenieGeneratorAction(VlenfGeneratorAction):
             t.GetEntry(i)
             next_events = []
 
+            position = convert_3vector_to_dict([t.vtxx,
+                                                t.vtxy,
+                                                t.vtxz])
+
             lepton_event = {}
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:
-                lepton_event['code'] = self.pid  # Either NC or ES
+                lepton_event['pid'] = self.particle['pid'].get()  # Either NC or ES
             else:
-                lepton_event['code'] = lookup_cc_partner(self.pid)
+                lepton_event['pid'] = lookup_cc_partner(self.particle['pid'].get())
 
-            lepton_event['E'] = t.El
-            lepton_event['px'] = t.pxl
-            lepton_event['py'] = t.pyl
-            lepton_event['pz'] = t.pzl
+                
+            # units: GeV -> MeV                                                                                                                                 
+            momentum_vector = [1000*x for x in [t.pxl,t.pyl,t.pzl]]
+
+            lepton_event['momentum'] = convert_3vector_to_dict(momentum_vector)
+
+            lepton_event['position'] = position
 
             next_events.append(lepton_event)
 
             for j in range(t.nf):  # nf, number final hadronic states
                 hadron_event = {}
-                hadron_event['code'] = t.pdgf[j]
+                hadron_event['pid'] = t.pdgf[j]
+                hadron_event['position'] = position
 
-                hadron_event['E'] = t.Ef[j]
+                # units: GeV -> MeV
+                momentum_vector = [1000*x for x in [t.pxf[j],t.pyf[j],t.pzf[j]]]
 
-                hadron_event['px'] = t.pxf[j]
-                hadron_event['py'] = t.pyf[j]
-                hadron_event['pz'] = t.pzf[j]
+                hadron_event['momentum'] = convert_3vector_to_dict(momentum_vector)
 
                 next_events.append(hadron_event)
 
@@ -280,30 +302,24 @@ class GenieGeneratorAction(VlenfGeneratorAction):
 
             yield next_events, event_type
 
-    def GeneratePrimaries(self, event):
+    def generate(self):
+        if self.particle['pid'].is_static() == False:
+            raise ValueError("PID must be static")
+
+        if not is_neutrino_code(self.particle['pid'].get()):
+            raise ValueError("PID must be neutrino PDG code")
+
         try:
+            if self.event_list == None:
+                self.log.info('Empty event list, populating with Genie...')
+                self._create_file()
+
             particles, event_type = next(self.event_list)
         except StopIteration:
             self.log.info("Generating more Genie events")
-            self.generate_file()
+            self._create_file()
             particles, event_type = next(self.event_list)
 
         rc['generator'] = {'particles': particles, 'event_type': event_type}
 
-        for particle in particles:
-            pp = G4.G4PrimaryParticle()
-            self.log.debug(
-                'Adding particle with PDG code %d' % particle['code'])
-            pp.SetPDGcode(particle['code'])
-
-            particle['px'], particle['py'], particle['pz'] = \
-                [1000 * x for x in [particle['px'], particle['py'],
-                                    particle['pz']]]  # GeV -> MeV
-
-            pp.SetMomentum(particle['px'], particle['py'], particle['pz'])
-
-            v = G4.G4PrimaryVertex()
-            self.SetPosition(v)
-            v.SetPrimary(pp)
-
-            event.AddPrimaryVertex(v)
+        return particles

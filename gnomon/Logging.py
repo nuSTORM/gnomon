@@ -3,6 +3,7 @@ import sys
 import time
 import os
 import uuid
+import gnomon.Configuration as Configuration
 
 
 def getLogLevels():
@@ -33,7 +34,12 @@ class StreamToLogger(object):
 
 
 def setupLogging(console_level, name):
-    output_filename = 'log/gnomon_%s_%s.log' % (name, str(uuid.uuid4()))
+    config = Configuration.GLOBAL_CONFIG
+
+    output_filename = 'gnomon_%s_%s.log' % (name, str(uuid.uuid4()))
+
+    output_filename = os.path.join(config['log_dir'],
+                                   output_filename)
 
     logging.basicConfig(filename=output_filename, mode='w',
                         level=logging.DEBUG)
