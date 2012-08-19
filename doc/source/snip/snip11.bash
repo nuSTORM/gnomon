@@ -10,7 +10,7 @@ export BOOSTFLAGS="--with-boost-libdir=/usr/lib"
 #export BOOSTFLAGS="--with-boost-incdir=/opt/local/include --with-boost-libdir=/opt/local/lib"
 
 # select system name from linux, linux64, macosx as appropriate
-./configure linux64 ${G4FLAGS} ${XERCESFLAGS} ${BOOSTFLAGS} --prefix=$VIRTUAL_ENV ${EXTRAS} --with-python-incdir=/usr/include/python2.7 --with-python-libdir=/usr/lib
+./configure linux64 ${G4FLAGS} ${XERCESFLAGS} ${BOOSTFLAGS} --prefix=$VIRTUAL_ENV ${EXTRAS} --with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib
 make
 make install
 

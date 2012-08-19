@@ -1,3 +1,4 @@
+cd $VIRTUAL_ENV
 tar xvf geant4.9.5.tar.gz
 mv geant4.9.5 $VIRTUAL_ENV/src/
 cd $VIRTUAL_ENV/src/

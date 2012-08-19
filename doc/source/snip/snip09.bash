@@ -1,3 +1,4 @@
+cd $VIRTUAL_ENV
 tar xvf xerces-c-3.1.1.tar.gz
 mv xerces-c-3.1.1 $VIRTUAL_ENV/src/
 cd $VIRTUAL_ENV/src/xerces-c-3.1.1

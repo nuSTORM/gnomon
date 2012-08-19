@@ -54,7 +54,7 @@ GEANT4 and ROOT.  Fortunately, they can be installed with one very
 long ``apt-get`` line.  Although this line may wrap in your browser,
 it should be executed as one line:
 
-  .. literalinclude:: snip/snip0.bash
+  .. literalinclude:: snip/snip00.bash
     :language: bash
     :linenos:
 
@@ -111,7 +111,7 @@ your system environment. We will keep all of the python modules for
 Gnomon (with a few exceptions) and libraries compiled from source
 inside of a virtualenv in your ``$HOME`` directory:
 
-.. literalinclude:: snip/snip1.bash
+.. literalinclude:: snip/snip01.bash
   :language: bash
   :linenos:
 
@@ -120,13 +120,13 @@ Where the last line setup the environment.
 
 You'll want to find the Python shared library associated with the installation referneced above with ``which python`` and make a symbolic link in ``$HOME/env/gnomon/lib`` by running:
 
-.. literalinclude:: snip/snip2.bash
+.. literalinclude:: snip/snip02.bash
   :language: bash
   :linenos:
 
 Next, append the following lines to the end of ``$HOME/env/gnomon/bin/activate`` to allow codes to see locally installed libraries:
 
-.. literalinclude:: snip/snip3.bash
+.. literalinclude:: snip/snip03.bash
   :language: bash
   :linenos:
 
@@ -136,21 +136,28 @@ remainder of the directions.
 
 And create a directory where all the source codes will go:
 
-.. literalinclude:: snip/snip4.bash
+.. literalinclude:: snip/snip04.bash
   :language: bash
   :linenos:
 
 where the instructions below will tell you where the files can be located.  At the time of writing, one should just be able to run the following commands to fetch some of the various files:
 
-.. literalinclude:: snip/snip5.bash
+.. literalinclude:: snip/snip05.bash
   :language: bash
   :linenos:
 
 Lastly:
 
-.. literalinclude:: snip/snip6.bash
+.. literalinclude:: snip/snip06.bash
   :language: bash
   :linenos:
+
+
+Step almost 3: Pythia6
+^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. literalinclude:: snip/snip071.bash
 
 
 Step 3: ROOT
@@ -165,17 +172,13 @@ page <http://root.cern.ch/drupal/content/production-version-532>`_.
 As of this writing, the latest version is 5.32.00.  Then, from the
 download directory, execute the following commands:
 
-.. literalinclude:: snip/snip7.bash
-  :language: bash
-  :linenos:
+.. literalinclude:: snip/snip072.bash
 
 .. tip:: When running the command ``make`` above, one can multithread the build by doing ``make -jN`` for an N-core machine.  For example, in a four core laptop, one could do ``make -j4``.  This is true for all the ``make`` commands on this page.
 
 We also need to append a ``source`` line to ``$VIRTUAL_ENV/bin/activate`` and setup ROOT:
 
-.. literalinclude:: snip/snip8.bash
-  :language: bash
-  :linenos:
+.. literalinclude:: snip/snip08.bash
 
 
 Step 4: xerces c++
@@ -188,9 +191,7 @@ and get version 3.1.1.
 
 Proceed to your download directory then run the following commands:
 
-.. literalinclude:: snip/snip9.bash
-  :language: bash
-  :linenos:
+.. literalinclude:: snip/snip09.bash
 
 .. warning:: **Mac users:** xerces gets confused about the architecture.  It may be necessary to append ``CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64"`` to the configure command.  This is only relevant if the output of `./configure` does not agree with the output of `uname -m`.
 
@@ -206,11 +207,9 @@ these on one's own.
 
 Now go to the `GEANT4 Download Page <http://geant4.cern.ch/support/download.shtml>`_ and download the source code.
 
-Next go to your download directory, run the following commands, and append to the ``activate`` script::
+Next go to your download directory, run the following commands, and append to the ``activate`` script:
 
 .. literalinclude:: snip/snip10.bash
-  :language: bash
-  :linenos:
 
 
 Step 6: g4py
@@ -218,12 +217,10 @@ Step 6: g4py
 
 To access GEANT4 from Python, Gnomon uses the g4py wrappers.  We have
 had to fix a few bugs and add wrapper a few additional classes for
-Gnomon, so for now you will need to use our fork of g4py::
+Gnomon, so for now you will need to use our fork of g4py:
 
 
 .. literalinclude:: snip/snip11.bash
-  :language: bash
-  :linenos:
 
 .. caution:: If one is not careful and the python headers g4py finds, python libraries g4py finds, and python executable used to import g4py are not of the same version, then very obscure fatal errors will arise.  This is the purpose of the ``${EXTRAS}`` flag.
 
@@ -237,28 +234,9 @@ Genie
 
 Please install Genie per the directions on their `website <http://www.genie-mc.org/>`_.  At the time writing, only version 2.7.1 has been tested with gnomon.  However, there is no svn tag for this release so you might want to try the trunk.  The gnomon software will only expect a file in the GST file format so it should be independent of Genie version.
 
-Install Genie::
+Install Genie:
 
-  cd $VIRTUAL_ENV/src
-  svn co https://genie.hepforge.org/svn/trunk genie
-  cd genie
-
-Append the following to ``bin/active``::
-
-  # genie
-  export GENIE=$VIRTUAL_ENV/src/genie
-  export PYTHIA6=${GENIE}/v6_424  # lib
-  export LHAPDF=${GENIE}/v5_7_0/stage # lib, include
-  export LOG4CPP=${GENIE}/v1_0/stage # lib, include
-  export PATH=$PATH:${LHAPDF}/bin
-  export PYTHONPATH=$PYTHONPATH:${LHAPDF}/lib/python2.6/site-packages/
-  export LHAPATH=`lhapdf-config --pdfsets-path`
-  export LLP=LD_LIBRARY_PATH
-  eval ${LLP}=${!LLP}:${LHAPDF}/lib:${GENIE}/lib:${PYTHIA6}/lib:/opt/local/lib:$LOG4CPP/lib
-
-Then resource::
-
-  ./src/scripts/build/ext/build_lhapdf.sh
+.. literalinclude:: snip/snip12.bash
 
 
 
@@ -267,12 +245,10 @@ Step 7: gnomon
 
 Now you are ready to get gnomon.  One can currently work only from the developer's version.  To get the code, run::
 
-  cd $VIRTUAL_ENV/src
-  hg clone https://bitbucket.org/gnomon/gnomon
-  cd gnomon
+.. literalinclude:: snip/snip13.bash
 
 There is no installation for the actual gnomon code since it's written in an interpreted language (i.e. python).  In order to tell Python where to look for gnomon, you must append ``$VIRTUAL_ENV/bin/activate`` with the following::
 
-  export PYTHONPATH=$VIRTUAL_ENV/src/gnomon/gnomon:$PYTHONPATH
+.. literalinclude:: snip/snip14.bash
 
 Then you are ready to move to the tutorial (or examples in the gnomon-analysis branch).
