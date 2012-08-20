@@ -2,6 +2,7 @@
 
 
 import os
+import logging
 import Geant4 as G4
 from SD import ScintSD
 import MagneticField
@@ -14,6 +15,10 @@ class BoxDetectorConstruction(G4.G4VUserDetectorConstruction):
     "Vlenf Detector Construction"
 
     def __init__(self, name):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+        self.log.debug('Initialized %s', self.__class__.__name__)
+
         G4.G4VUserDetectorConstruction.__init__(self)
         self.world = None
         self.gdml_parser = G4.G4GDMLParser()
@@ -29,7 +34,8 @@ class BoxDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.gdml_parser.Read(self.filename)
         self.world = self.gdml_parser.GetWorldVolume()
 
-        print 'material', G4Material.GetMaterialTable()
+        self.log.info("Materials:")
+        self.log.info(G4Material.GetMaterialTable())
 
         # Return pointer to world volume
         return self.world
@@ -38,6 +44,10 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
     "Vlenf Detector Construction"
 
     def __init__(self, field_polarity):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+        self.log.debug('Initialized %s', self.__class__.__name__)
+        
         G4.G4VUserDetectorConstruction.__init__(self)
         self.world = None
         self.gdml_parser = G4.G4GDMLParser()
@@ -93,8 +103,8 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.field_manager.CreateChordFinder(self.my_field)
         my_lv.SetFieldManager(self.field_manager, False)
 
-        from Geant4 import G4Material
-        print 'material', G4Material.GetMaterialTable()
+        self.log.info("Materials:")
+        self.log.info(G4Material.GetMaterialTable())
 
         # Return pointer to world volume
         return self.world

@@ -26,7 +26,7 @@ theta = 0
 distance = 1 # km, GLoBES normalization
 
 flux_file_e = open('flux_file_e.dat', 'w')
-flux_file_mu = open('flux_file_mu.dat', 'w')
+flux_file_mu = open('flux_file_m.dat', 'w')
 
 for E in frange (E_min, E_max, E_steps):
     cos_theta = 1

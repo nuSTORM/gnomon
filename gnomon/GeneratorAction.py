@@ -16,7 +16,7 @@ import tempfile
 import math
 import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
-from scipy.stats.distributions import rv_generic
+from scipy.stats.distributions import rv_frozen
 
 def lookup_cc_partner(nu_pid):
     """Lookup the charge current partner
@@ -106,7 +106,7 @@ class Distribution():
 
         if isinstance(some_obj, (float, int)):
             self.static_value = some_obj
-        elif isinstance(some_obj, rv_generic):
+        elif issubclass(type(some_obj), rv_frozen):
             self.scipy_dist = some_obj
         else:
             raise ValueError("Do not understand", some_obj)
@@ -120,7 +120,7 @@ class Distribution():
         if self.static_value is not None:
             return self.static_value
         elif self.scipy_dist is not None:
-            return rv_generic.rvs()
+            return self.scipy_dist.rvs()
         else:
             raise RuntimeError("Should never get here")
 
@@ -201,7 +201,9 @@ class GenieGenerator(Generator):
 
         max_energy = self.config['generator']['max_energy_GeV']
 
-        env_vars = 'GSPLOAD=data/xsec.xml GSEED=%d' % seed
+        xsec_filename = os.path.join(self.config['data_dir'], 'xsec.xml')
+        
+        env_vars = 'GSPLOAD=%s GSEED=%d' % (xsec_filename, seed)
 
         command = '%s gevgen' % env_vars
 
@@ -212,10 +214,16 @@ class GenieGenerator(Generator):
 
         self.energy_distribution = 'm' # todo fixme!!!!
 
-        if self.energy_distribution == 'm':
-            command += ' -e 0.1,%f -f data/flux_file_mu.dat' % max_energy
-        elif self.energy_distribution == 'e':
-            command += ' -e 0.1,%f -f data/flux_file_e.dat' % max_energy
+        if self.energy_distribution == 'm' or self.energy_distribution == 'e':
+            command += ' -e 0.1,%f' % max_energy
+
+            #  Just use the file associated with the neutrino distribution of
+            #  muon decay without any accelerator effects.  This is a good
+            #  approximation in the far detector limit ONLY.
+            flux_filename = 'flux_file_%s.dat' % self.energy_distribution
+            flux_filename = os.path.join(self.config['data_dir'], 'flux_file_e.dat')
+
+            command += ' -f %s' % flux_filename
         elif type(self.energy_distribution) == float:
             command += ' -e %f' % self.energy_distribution
         else:
@@ -250,9 +258,9 @@ class GenieGenerator(Generator):
             t.GetEntry(i)
             next_events = []
 
-            position = convert_3vector_to_dict([t.vtxx,
-                                                t.vtxy,
-                                                t.vtxz])
+            position = convert_3vector_to_dict([t.vtxx + self.particle['position']['x'].get(),
+                                                t.vtxy + self.particle['position']['y'].get(),
+                                                t.vtxz + self.particle['position']['z'].get()])
 
             lepton_event = {}
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:

@@ -201,11 +201,9 @@ class ContinousLongitudinalLength(Base.Processor):
                     if this_length > max_length or max_length is None:
                         max_length = this_length
                 else:
-                    print i, z, dz
                     this_length = 0
 
             doc['classification']['longitudinal_length'] = max_length
-            doc['classification']['longitudinal_length2'] = scint_planes_with_hits[0] - scint_planes_with_hits[-1]
             new_docs.append(doc)
         return new_docs
 
@@ -344,8 +342,8 @@ class VlenfPolynomialFitter(Base.Processor):
                 for fit_doc in [fitx_doc, fity_doc]:
                     assert len(fit_doc['params']) == 3
 
-                assert fitx_doc['gof'] != 'FAIL', "Fit failed"
-                assert fity_doc['gof'] != 'FAIL', "Fit failed"
+                assert fitx_doc['gof'] != 'FAIL', "Fit failed; not enough hits?"
+                assert fity_doc['gof'] != 'FAIL', "Fit failed; not enough hits?"
                 doc['analyzable'] = True
 
                 rf = {}  # raw fit

@@ -25,6 +25,8 @@ from gnomon.DetectorConstruction import BoxDetectorConstruction
 from gnomon import Logging
 from gnomon.SD import EmitNothingSD
 
+from scipy.stats import uniform
+
 log = None  # Logger for this file
 
 
@@ -72,27 +74,15 @@ if __name__ == "__main__":
     physics_list.SetDefaultCutValue(1.0 * mm)
     physics_list.SetCutsWithDefault()
 
+    pos = []
+    pos.append(uniform(loc=-1000, scale=2000))
+    pos.append(uniform(loc=-1000, scale=2000))
+    pos.append(uniform(loc=-1000, scale=2000))
+    mom = [0,0, uniform(loc=0, scale=10000)] # MeV
+    pid = 13
 
-
-    #  These kinetic energies come from the range tables found at:
-    #
-    # http://pdg.lbl.gov/2008/AtomicNuclearProperties/
-    # 
-    kinetic_energies = [1.0, 1.2, 1.4, 1.7, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 17.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 70.0, 80.0, 90.0, 100.0, 120.0, 140.0, 170.0, 200.0, 250.0, 273.6, 300.0, 350.0, 400.0, 450.0, 500.0, 550.0, 600.0, 700.0, 800.0, 900.0, 1000.0, 1200.0, 1400.0, 1700.0, 2000.0, 2500.0, 3000.0, 3500.0, 4000.0, 4500.0, 5000.0] # MeV
-    muon_mass = 105.65836668 # MeV, TODO FIXME, don't hard code!
-
-    pga_list = []
-    for kinetic_energy in kinetic_energies:
-        pos = [0,0,0]
-        mom = [0,0,kinetic_energy + muon_mass]
-        pid = 13
-
-        pga = GeneratorAction.ParticleGenerator(pos, mom, pid)
-        pga_list.append(pga)
-
-
+    pga = GeneratorAction.ParticleGenerator(pos, mom, pid)
     pga = GeneratorAction.VlenfGeneratorAction(pga)
-    #gpga = GeneratorAction.GroupGeneratorAction(pga_list) 
 
     gRunManager.SetUserAction(pga)
 
