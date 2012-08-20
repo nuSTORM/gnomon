@@ -4,4 +4,4 @@ sudo apt-get -y install build-essential xorg-dev \
   python-pygame libglu1-mesa-dev cmake uuid-dev \
   liblapack-dev mercurial libboost-all-dev \
   libatlas-base-dev subversion gfortran libxml2-dev\
-  liblog4cpp5-dev
+  liblog4cpp5-dev python-numpy python-scipy
