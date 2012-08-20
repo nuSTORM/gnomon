@@ -25,7 +25,7 @@ from gnomon.DetectorConstruction import BoxDetectorConstruction
 from gnomon import Logging
 from gnomon.SD import EmitNothingSD
 
-from scipy.stats import uniform
+from scipy.stats import uniform, randint
 
 log = None  # Logger for this file
 
@@ -75,10 +75,10 @@ if __name__ == "__main__":
     physics_list.SetCutsWithDefault()
 
     pos = []
-    pos.append(uniform(loc=-1000, scale=2000))
-    pos.append(uniform(loc=-1000, scale=2000))
-    pos.append(uniform(loc=-1000, scale=2000))
-    mom = [0,0, uniform(loc=0, scale=10000)] # MeV
+    pos.append(0)
+    pos.append(0)
+    pos.append(uniform(loc=-6000, scale=1000))
+    mom = [0,0, randint(1, 2*7, scale=500)] # Scale: GeV -> MeV
     pid = 13
 
     pga = GeneratorAction.ParticleGenerator(pos, mom, pid)

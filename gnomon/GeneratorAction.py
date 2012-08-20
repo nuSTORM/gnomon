@@ -90,8 +90,12 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
                            particle['momentum']['y'],
                            particle['momentum']['z'])
 
+            
             v = G4.G4PrimaryVertex()
-            convert_dict_to_g4vector(particle['position'], v)
+            v.SetPosition(particle['position']['x'],
+                          particle['position']['y'],
+                          particle['position']['z'])
+
             v.SetPrimary(pp)
             
             event.AddPrimaryVertex(v)
@@ -176,7 +180,8 @@ class ParticleGenerator(Generator):
             else:    
                 new_particle[key] = value.get()
 
-        self.log.info("Generated particle:", new_particle)
+        self.log.info("Generated particle:")
+        self.log.info(new_particle)
         
         return [new_particle]
 

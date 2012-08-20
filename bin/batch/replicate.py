@@ -12,7 +12,7 @@ master_couch = couchdb.Server(master_url)
 slave_url = servers[0]
 slave_couch = couchdb.Server(slave_url)
 
-be_continous = 'true'
+be_continous = True
 
 for dbname in master_couch:
     if dbname[0] != '_':

@@ -24,8 +24,8 @@
        scintillator bars.  There's also the artificial shape of the world volume
        but that's just for Geant4's sake -->
   <solids>
-    <box lunit="m" name="SteelBox" x="20" y="20" z="200"/>
-    <box lunit="m" name="WorldSolid" x="30" y="30" z="300"/>
+    <box lunit="m" name="SteelBox" x="1000" y="1000" z="1000"/>
+    <box lunit="m" name="WorldSolid" x="2000" y="2000" z="2000"/>
   </solids>
 
   <structure>
