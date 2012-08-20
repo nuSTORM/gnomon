@@ -17,6 +17,6 @@ source $VIRTUAL_ENV/bin/activate
 
 source $VIRTUAL_ENV/bin/activate
 
-./configure --with-lhapdf-lib=$LHAPDF/lib --with-lhapdf-inc=$LHAPDF/include
+./configure --with-lhapdf-lib=$LHAPDF/lib --with-lhapdf-inc=$LHAPDF/include --prefix=$VIRTUAL_ENV
 
-make
+make install
