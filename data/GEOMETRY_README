@@ -1,0 +1,16 @@
+For Genie to work, we have to convert the GDML geometry to ROOT.  However, for
+some bizarre reason we are unable to do this using pyroot, compiled ROOT, or
+ROOT macros since there's some known segfault.  This is not fixed yet in the
+ROOT trunk.  The fix is to run:
+
+root
+
+Then at the prompt:
+
+x = TGeoManager()
+x.Import("iron_scint_bars.gdml")
+x.Export("iron_scint_bars.root")
+
+In a shell.  Do not add semi-colons!  Do not correct the C++ in any way because
+if you use correct C++ it will break.  You must redo this every time you change
+ the gdml file.

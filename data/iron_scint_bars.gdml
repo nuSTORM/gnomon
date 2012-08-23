@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
 
+<!-- WARNING: SEE GEOMETRY_README IF USING GENIE AND CHANGING THIS FILE -->
 
   <define>
     <!-- bar info.  units are 'mm' -->
@@ -10,12 +11,16 @@
     <constant name="thickness_steel" value="20"/>  <!-- z -->
 
     <constant name="thickness_layer" value="2*thickness_bar + thickness_steel"/>  <!-- z -->
-    
+
+    <constant name="density_iron" value="7.87"/>
+    <constant name="density_scint" value="1.06"/> 
+
     <!-- This is not automatically caught below.  Please make sure it agrees!-->
     <constant name="layers" value="444"/> 
 
     <!-- This is not automatically caught below.  Please make sure it agrees!-->
     <constant name="bars" value="500"/>
+
   </define>
 
 
@@ -23,7 +28,7 @@
     <!-- Define the Iron's material properties -->
     <material Z="26" name="IronMaterial" state="solid">
       <MEE unit="eV" value="286"/>
-      <D unit="g/cm3" value="7.87"/>
+      <D unit="g/cm3" value="density_iron"/>
       <atom unit="g/mole" value="55.85"/>
     </material>
 
@@ -38,7 +43,7 @@
 
     <material name="ScintillatorMaterial" state="solid">
       <MEE unit="eV" value="64.6844741120544"/>
-      <D unit="g/cm3" value="1.032"/>
+      <D unit="g/cm3" value="density_scint"/>
       <fraction n="0.914544377696929" ref="CarbonElement"/>
       <fraction n="0.0854556223030713" ref="HydrogenElement"/>
     </material>
