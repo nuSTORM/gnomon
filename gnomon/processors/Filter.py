@@ -7,6 +7,7 @@ import math
 from gnomon.processors import Base
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 
+
 class AppearanceCuts(Base.Processor):
 
     def process(self, docs):
@@ -19,10 +20,7 @@ class AppearanceCuts(Base.Processor):
 
             clsf = doc['classification']
 
-            
-
             ###  Variables to cut on  ###
-
             #  Number of hit SCINTILLATOR planes
             n_planes = clsf['n_planes']
 
@@ -53,7 +51,8 @@ class AppearanceCuts(Base.Processor):
                 #  NC events that pass the length cut are bizarre
                 if doc['mc']['event_type']['nc'] and pass_cuts['length']:
                     is_interesting = True
-            except:  pass
+            except:
+                pass
 
             try:
                 #  CC nu_e events that pass the length cut are bizarre
@@ -61,7 +60,8 @@ class AppearanceCuts(Base.Processor):
                         doc['mc']['event_type']['incoming_neutrino'] == 12 and\
                         pass_cuts['length']:
                     is_interesting = True
-            except:  pass
+            except:
+                pass
 
             try:
                 #  CC nu_mu_bar that bend wrong
@@ -69,7 +69,8 @@ class AppearanceCuts(Base.Processor):
                         doc['mc']['event_type']['incoming_neutrino'] == -14 and\
                         pass_cuts['curve']:
                     is_interesting = True
-            except:  pass
+            except:
+                pass
 
             ### Save ###
 
@@ -83,6 +84,7 @@ class AppearanceCuts(Base.Processor):
             new_docs.append(doc)
 
         return new_docs
+
 
 class SaveInteresting(Base.Processor):
 
@@ -103,4 +105,3 @@ class SaveInteresting(Base.Processor):
             new_docs.append(doc)
 
         return new_docs
-                

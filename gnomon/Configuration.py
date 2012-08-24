@@ -16,18 +16,22 @@ from array import array
 # Note: Do not use the python logging library!  This class gets called before
 # the loggers are setup.
 
+
 def get_source_dir():
     #  This trick gets the directory of *this* file Configuration.py thus
     # allowing to find the schema files relative to this file.
     return os.path.dirname(inspect.getfile(inspect.currentframe()))
 
+
 def get_data_dir():
     src_dir = get_source_dir()
     return os.path.join(src_dir, '../data')
 
+
 def get_log_dir():
     src_dir = get_source_dir()
     return os.path.join(src_dir, '../log')
+
 
 def fetch_config_config(filename):
     """Fetch configuration file for the configuration class

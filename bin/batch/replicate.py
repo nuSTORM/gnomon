@@ -16,7 +16,7 @@ be_continuous = True
 
 for dbname in master_couch:
     if dbname[0] != '_':
-        slave_link = dbname # urlparse.urljoin(slave_url, dbname)
+        slave_link = dbname  # urlparse.urljoin(slave_url, dbname)
         master_link = urlparse.urljoin(master_url, dbname)
 
         print dbname

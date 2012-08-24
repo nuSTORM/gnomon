@@ -85,10 +85,10 @@ if __name__ == "__main__":
     pos = []
     width = rc['width'] * rc['bars']
 
-    pos.append(uniform(loc=-width/2, scale=width))
-    pos.append(uniform(loc=-width/2, scale=width))
+    pos.append(uniform(loc=-width / 2, scale=width))
+    pos.append(uniform(loc=-width / 2, scale=width))
     pos.append(GeneratorAction.composite_z(rc))
-    
+
     #config['vertex']
     mom = [0, 0, config['energy_MeV']]
     pid = config['pid']
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     processors.append("AppearanceCuts")
     processors.append("SaveInteresting")
     processors.append("CouchManager")
-    
+
     myEA = EventAction.VlenfEventAction(processors)
     gRunManager.SetUserAction(myEA)
 

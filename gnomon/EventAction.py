@@ -10,7 +10,7 @@ import processors
 class VlenfEventAction(G4.G4UserEventAction):
     """The VLENF Event Action"""
 
-    def __init__(self, processor_names): # pga=None):
+    def __init__(self, processor_names):  # pga=None):
         """execute the constructor of the parent class G4UserEventAction"""
         G4.G4UserEventAction.__init__(self)
 
@@ -26,7 +26,7 @@ class VlenfEventAction(G4.G4UserEventAction):
             except:
                 self.log.error('Failed loading processor %s' % name)
                 raise
-                
+
         # used to fetch mchits, only way given geant
         self.sd = None
 

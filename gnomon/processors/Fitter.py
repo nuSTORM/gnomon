@@ -7,7 +7,7 @@ import numpy as np
 import math
 from gnomon.Graph import Graph
 from gnomon.processors import Base
-from gnomon.Configuration import RUNTIME_CONFIG as rc 
+from gnomon.Configuration import RUNTIME_CONFIG as rc
 
 import gnomon.MagneticField as MagneticField
 
@@ -67,7 +67,7 @@ class ClassifyVariables(Base.Processor):
     For example, (nhit, Qsum) including MINOS variables"""
 
     def process(self, docs):
-        #  These docs will be returned  
+        #  These docs will be returned
         new_docs = []
 
         for doc in docs:
@@ -159,6 +159,7 @@ class ClassifyVariables(Base.Processor):
 
         return new_docs
 
+
 class ContinousLongitudinalLength(Base.Processor):
     """Extract the continous longitudinal length
     """
@@ -168,7 +169,7 @@ class ContinousLongitudinalLength(Base.Processor):
 
         #  These docs will be returned
         new_docs = []
-        
+
         # Loop over documents (most likely tracks)
         for doc in docs:
             # If not analyzable or track, skip
@@ -178,7 +179,7 @@ class ContinousLongitudinalLength(Base.Processor):
                 continue
 
             scint_planes_with_hits = set()  # z coordinate, no repeats
-            
+
             for view in ['x', 'y']:
                 #  Ensure that tracks haven't already been extracted (ex. muon)
                 if len(doc['tracks'][view].keys()) > 1:
@@ -194,7 +195,7 @@ class ContinousLongitudinalLength(Base.Processor):
             #  Convert to list so can sort...
             scint_planes_with_hits = list(scint_planes_with_hits)
             scint_planes_with_hits.sort()  # still no repeats
-                
+
             #  Iterate over the hits computing continous lengths, compare
             # against maximum.
             max_length = None
@@ -203,7 +204,7 @@ class ContinousLongitudinalLength(Base.Processor):
                 if i + 1 >= len(scint_planes_with_hits):
                     break
 
-                dz = scint_planes_with_hits[i+1] - z
+                dz = scint_planes_with_hits[i + 1] - z
                 if dz <= rc['thickness_layer']:
                     this_length += dz
                     if this_length > max_length or max_length is None:
@@ -214,6 +215,7 @@ class ContinousLongitudinalLength(Base.Processor):
             doc['classification']['longitudinal_length'] = max_length
             new_docs.append(doc)
         return new_docs
+
 
 class ExtractTracks(Base.Processor):
     """Extract tracks with graph theoretic concepts"""
@@ -350,8 +352,8 @@ class VlenfPolynomialFitter(Base.Processor):
                 for fit_doc in [fitx_doc, fity_doc]:
                     assert len(fit_doc['params']) == 3
 
-                assert fitx_doc['gof'] != 'FAIL', "Fit failed; not enough hits?"
-                assert fity_doc['gof'] != 'FAIL', "Fit failed; not enough hits?"
+                assert fitx_doc['gof'] != 'FAIL', "Fit failed; enough hits?"
+                assert fity_doc['gof'] != 'FAIL', "Fit failed; enough hits?"
                 doc['analyzable'] = True
 
                 rf = {}  # raw fit

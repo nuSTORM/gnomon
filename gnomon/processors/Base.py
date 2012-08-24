@@ -3,6 +3,7 @@
 
 
 import logging
+from gnomon import Configuration
 
 
 class Processor():
@@ -15,6 +16,8 @@ class Processor():
         """Setup logging"""
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
+
+        self.config = Configuration.GLOBAL_CONFIG
 
     def process(self, docs):
         """Not implemented"""

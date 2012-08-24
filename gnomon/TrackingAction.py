@@ -23,5 +23,3 @@ class LengthTrackingAction(G4.G4UserTrackingAction):
             rc['tracking'] = {}
         rc['tracking']['pdg_code'] = int(pdg_code)
         rc['tracking']['track_length'] = float(track.GetTrackLength())
-        
-        

@@ -19,6 +19,7 @@ from gnomon.Configuration import RUNTIME_CONFIG as rc
 from scipy.stats.distributions import rv_frozen
 import scipy
 
+
 def lookup_cc_partner(nu_pid):
     """Lookup the charge current partner
 
@@ -36,6 +37,7 @@ def lookup_cc_partner(nu_pid):
 
     return cc_partner
 
+
 def convert_3vector_to_dict(value):
     if not isinstance(value, list):
         raise ValueError('Wrong type for 3-vector since not list', value)
@@ -49,12 +51,14 @@ def convert_3vector_to_dict(value):
 
     return new_dict
 
+
 def convert_dict_to_g4vector(value, new_vector=G4.G4ThreeVector()):
     new_vector.x = value['x']
     new_vector.y = value['y']
     new_vector.z = value['z']
 
     return new_vector
+
 
 def is_neutrino_code(pdg_code):
     if math.fabs(pdg_code) in [12, 14, 16]:
@@ -76,7 +80,6 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
         self.config = Configuration.GLOBAL_CONFIG
 
-
     def setMCInfo(self, info):
         rc['generator'] = info
 
@@ -91,7 +94,6 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
                            particle['momentum']['y'],
                            particle['momentum']['z'])
 
-
             v = G4.G4PrimaryVertex()
             v.SetPosition(particle['position']['x'],
                           particle['position']['y'],
@@ -101,7 +103,10 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
 
             event.AddPrimaryVertex(v)
 
-        self.setMCInfo(particle)
+        # Write particleS information to the runtime configuration so the Truth
+        #  processor can find it in order to output it
+        self.setMCInfo(particles)
+
 
 class composite_z():
     """Deriving from scipy.stats failed, so just overloaded rvs.
@@ -130,7 +135,7 @@ class composite_z():
 
     def rvs(self):
         import random
-        layer = random.randint(-self.layers/2,self.layers/2) # inclusive
+        layer = random.randint(-self.layers / 2, self.layers / 2)  # inclusive
 
         z = layer * self.thickness_layer
 
@@ -151,7 +156,7 @@ class composite_z():
             self.material = 'Iron'
         else:  # is scint
             z += t_fe
-            z += random.uniform(0,t_sc)
+            z += random.uniform(0, t_sc)
             self.material = 'Scint.'
 
         self.log.debug('Material is %s' % self.material)
@@ -200,6 +205,7 @@ class Distribution():
 
         return self.get_cache()
 
+
 class Generator():
     """Generator base class"""
 
@@ -214,7 +220,7 @@ class Generator():
 
         self.set_position(position)
         self.set_momentum(momentum)
-        self.set_pid(pid) # Can be neutrino with forced interaction
+        self.set_pid(pid)  # Can be neutrino with forced interaction
 
     def set_position(self, position):
         self._set_vector_value('position', position)
@@ -233,6 +239,7 @@ class Generator():
         for coord in self.particle[var_name].keys():
             new_value = Distribution(self.particle[var_name][coord])
             self.particle[var_name][coord] = new_value
+
 
 class ParticleGenerator(Generator):
     """Baseclass for gnomon particle generators"""
@@ -256,7 +263,6 @@ class ParticleGenerator(Generator):
         self.log.info(new_particle)
 
         return [new_particle]
-
 
 
 class GenieGenerator(Generator):
@@ -299,7 +305,7 @@ class GenieGenerator(Generator):
         pdg_codes = {}
         pdg_codes['Iron'] = '1000260560'
         pdg_codes['Scint.'] = '1000010010[0.085]+1000060120[0.915]'
-        
+
         command += ' -t %s' % pdg_codes[material]
 
         command += ' -n %d' % self.config['generator']['size_of_genie_buffer']
@@ -315,7 +321,8 @@ class GenieGenerator(Generator):
             #  muon decay without any accelerator effects.  This is a good
             #  approximation in the far detector limit ONLY.
             flux_filename = 'flux_file_%s.dat' % self.energy_distribution
-            flux_filename = os.path.join(self.config['data_dir'], flux_filename)
+            flux_filename = os.path.join(
+                self.config['data_dir'], flux_filename)
 
             command += ' -f %s' % flux_filename
         elif type(self.energy_distribution) == float:
@@ -353,18 +360,20 @@ class GenieGenerator(Generator):
             next_events = []
 
             position = convert_3vector_to_dict([self.particle['position']['x'].get_cache(),
-                                                self.particle['position']['y'].get_cache(),
+                                                self.particle['position'][
+                                                    'y'].get_cache(),
                                                 self.particle['position']['z'].get_cache()])
 
             lepton_event = {}
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:
-                lepton_event['pid'] = self.particle['pid'].get()  # Either NC or ES
+                lepton_event['pid'] = self.particle[
+                    'pid'].get()  # Either NC or ES
             else:
-                lepton_event['pid'] = lookup_cc_partner(self.particle['pid'].get())
-
+                lepton_event['pid'] = lookup_cc_partner(
+                    self.particle['pid'].get())
 
             # units: GeV -> MeV
-            momentum_vector = [1000*x for x in [t.pxl,t.pyl,t.pzl]]
+            momentum_vector = [1000 * x for x in [t.pxl, t.pyl, t.pzl]]
 
             lepton_event['momentum'] = convert_3vector_to_dict(momentum_vector)
 
@@ -378,9 +387,11 @@ class GenieGenerator(Generator):
                 hadron_event['position'] = position
 
                 # units: GeV -> MeV
-                momentum_vector = [1000*x for x in [t.pxf[j],t.pyf[j],t.pzf[j]]]
+                momentum_vector = [1000 * x for x in [t.
+                                                      pxf[j], t.pyf[j], t.pzf[j]]]
 
-                hadron_event['momentum'] = convert_3vector_to_dict(momentum_vector)
+                hadron_event[
+                    'momentum'] = convert_3vector_to_dict(momentum_vector)
 
                 next_events.append(hadron_event)
 
@@ -416,7 +427,8 @@ class GenieGenerator(Generator):
 
         # More hack: need to know position to know material...
         position = convert_3vector_to_dict([self.particle['position']['x'].get(),
-                                            self.particle['position']['y'].get(),
+                                            self.particle[
+                                                'position']['y'].get(),
                                             self.particle['position']['z'].get()])
 
         # Is this a distribution?  Need material hook HACK

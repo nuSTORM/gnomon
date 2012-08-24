@@ -78,7 +78,7 @@ if __name__ == "__main__":
     pos.append(0)
     pos.append(0)
     pos.append(uniform(loc=-6000, scale=1000))
-    mom = [0,0, randint(1, 2*7, scale=500)] # Scale: GeV -> MeV
+    mom = [0, 0, randint(1, 2 * 7, scale=500)]  # Scale: GeV -> MeV
     pid = 13
 
     pga = GeneratorAction.ParticleGenerator(pos, mom, pid)
@@ -95,7 +95,6 @@ if __name__ == "__main__":
 
     myTA = TrackingAction.LengthTrackingAction()
     gRunManager.SetUserAction(myTA)
-
 
     #  This is a trick that, if enabled, lets the event action notify the
     #  detector when the event is over.  This allows the sensitive detector

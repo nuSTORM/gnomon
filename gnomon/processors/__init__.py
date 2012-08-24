@@ -29,6 +29,7 @@ _proc_lookup = {}
 for processor in _processors:
     _proc_lookup[processor.__name__] = processor
 
+
 def lookupProcessor(name):
     if name in _proc_lookup:
         return _proc_lookup[name]

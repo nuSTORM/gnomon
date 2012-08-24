@@ -154,7 +154,7 @@ class JSONFileManager(Manager):
 
     """
 
-    def __init__(self, arg_file = None):
+    def __init__(self, arg_file=None):
         """JSONFileManager constructor
 
         \param arg_file arg_file is a file object or filename
@@ -179,15 +179,12 @@ class JSONFileManager(Manager):
         """
         self.file.write(document.rstrip() + '\n')
 
-
     def shutdown(self):
         """Closes down JSONFileManager
-        
-        Closes the file that the class has open 
+
+        Closes the file that the class has open
         """
-        try:  
+        try:
             self.file.close()
         except:
             pass
-            
-

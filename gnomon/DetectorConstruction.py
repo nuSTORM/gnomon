@@ -40,6 +40,7 @@ class BoxDetectorConstruction(G4.G4VUserDetectorConstruction):
         # Return pointer to world volume
         return self.world
 
+
 class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
     "Vlenf Detector Construction"
 
@@ -47,7 +48,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.log = logging.getLogger('root')
         self.log = self.log.getChild(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
-        
+
         G4.G4VUserDetectorConstruction.__init__(self)
         self.world = None
         self.gdml_parser = G4.G4GDMLParser()
