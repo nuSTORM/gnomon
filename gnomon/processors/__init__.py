@@ -9,6 +9,8 @@ from gnomon.processors.Fitter import VlenfPolynomialFitter
 from gnomon.processors.Fitter import ClassifyVariables
 from gnomon.processors.Truth import AppendTruth
 from gnomon.processors.DataManager import CouchManager
+from gnomon.processors.Filter import SaveInteresting
+from gnomon.processors.Filter import AppearanceCuts
 
 
 _processors = [VlenfSimpleDigitizer,
@@ -18,7 +20,9 @@ _processors = [VlenfSimpleDigitizer,
                VlenfPolynomialFitter,
                ClassifyVariables,
                AppendTruth,
-               CouchManager]
+               CouchManager,
+               AppearanceCuts,
+               SaveInteresting]
 
 # Build lookup table of class names to class objects
 _proc_lookup = {}

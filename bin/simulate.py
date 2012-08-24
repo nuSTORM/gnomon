@@ -22,6 +22,7 @@ from gnomon import EventAction
 from gnomon import GeneratorAction
 from gnomon import TrackingAction
 from gnomon.DetectorConstruction import VlenfDetectorConstruction
+from gnomon.Configuration import RUNTIME_CONFIG as rc
 from gnomon import Logging
 
 from scipy.stats import uniform
@@ -82,9 +83,11 @@ if __name__ == "__main__":
     #
 
     pos = []
-    pos.append(uniform(loc=-1000, scale=2000))
-    pos.append(uniform(loc=-1000, scale=2000))
-    pos.append(uniform(loc=-1000, scale=2000))
+    width = rc['width'] * rc['bars']
+
+    pos.append(uniform(loc=-width/2, scale=width))
+    pos.append(uniform(loc=-width/2, scale=width))
+    pos.append(GeneratorAction.composite_z(rc))
     
     #config['vertex']
     mom = [0, 0, config['energy_MeV']]
@@ -117,6 +120,8 @@ if __name__ == "__main__":
     processors.append("VlenfPolynomialFitter")
     processors.append("ClassifyVariables")
     processors.append("AppendTruth")
+    processors.append("AppearanceCuts")
+    processors.append("SaveInteresting")
     processors.append("CouchManager")
     
     myEA = EventAction.VlenfEventAction(processors)

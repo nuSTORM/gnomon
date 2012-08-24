@@ -1,5 +1,5 @@
 from unittest import TestCase
-import GeneratorAction as GA
+from gnomon import GeneratorAction as GA
 
 bad_verticies = [[0, 1],
                  'some_other_string',
@@ -8,8 +8,26 @@ good_verticies = [[1, 2, 3],
                   [0.1, 0.2, 0.3],
                   [0, 1.0, 2]]
 
+class TestCompositeZ(TestCase):
+    def setUp(self):
+        config = {}
+        config['layers'] = 444
+        config['thickness_layer'] = 40.0
+        config['thickness_bar']  = 10.0
+        config['density_iron'] = 7.87
+        config['density_scint'] = 1.06
 
-class TestVlenfGeneratorAction(TestCase):
+        self.max_size = config['layers'] * config['thickness_layer'] / 2
+        self.dist = GA.composite_z(config)
+
+
+    def test_rvs_range(self):
+        for i in range(1000):
+            assert -self.max_size < self.dist.rvs() < self.max_size
+
+
+
+"""class TestVlenfGeneratorAction(TestCase):
     def setUp(self):
         self.ga = GA.VlenfGeneratorAction()
 
@@ -81,3 +99,4 @@ class TestGenieGeneratorAction(TestCase):
 
     def test_GeneratePrimaries(self):
         pass
+"""

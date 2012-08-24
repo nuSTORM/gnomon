@@ -12,7 +12,7 @@ master_couch = couchdb.Server(master_url)
 slave_url = servers[0]
 slave_couch = couchdb.Server(slave_url)
 
-be_continous = True
+be_continuous = True
 
 for dbname in master_couch:
     if dbname[0] != '_':
@@ -24,4 +24,4 @@ for dbname in master_couch:
         print '\tslave:', slave_link
 
         slave_couch.replicate(master_link, slave_link,
-                              continous=be_continous, create_target=True)
+                              continuous=be_continuous, create_target=True)

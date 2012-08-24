@@ -140,7 +140,6 @@ class ClassifyVariables(Base.Processor):
                         Q_list_track.append(q)
 
             minos_vars = {}
-            minos_vars['n_planes'] = len(planes_with_hits)
             minos_vars['mean_strip_pulse_height'] = minos_mean_pulse_height
             minos_vars['mean_low'] = mean_low
             minos_vars['mean_high'] = mean_high
@@ -148,12 +147,13 @@ class ClassifyVariables(Base.Processor):
             minos_vars['transverse_profile'] = float(
                 sum(Q_list_track)) / sum(Q_list_all)
             c['minos'] = minos_vars
-
             # end minos
+
+            c['n_planes'] = len(planes_with_hits)
 
             doc['classification'] = c
 
-            del doc['tracks']
+            #del doc['tracks']
 
             new_docs.append(doc)
 
@@ -162,30 +162,38 @@ class ClassifyVariables(Base.Processor):
 class ContinousLongitudinalLength(Base.Processor):
     """Extract the continous longitudinal length
     """
+
     def process(self, docs):
+        """Process an event"""
+
         #  These docs will be returned
         new_docs = []
         
+        # Loop over documents (most likely tracks)
         for doc in docs:
+            # If not analyzable or track, skip
             if not doc['analyzable'] or doc['type'] != 'track':
+                # Keep the doc though since others may want down the pipeline
                 new_docs.append(doc)
                 continue
 
             scint_planes_with_hits = set()  # z coordinate, no repeats
             
             for view in ['x', 'y']:
+                #  Ensure that tracks haven't already been extracted (ex. muon)
                 if len(doc['tracks'][view].keys()) > 1:
                     self.log.error('Expected unclassified tracks')
                     self.log.error('Please run before extracting tracks')
+                    raise ValueError("Expected unclassified tracks")
 
+                #  Leftovers should be all hits
                 points = doc['tracks'][view]['LEFTOVERS']
                 for z, x, Q in points:
                     scint_planes_with_hits.add(z)
 
             #  Convert to list so can sort...
             scint_planes_with_hits = list(scint_planes_with_hits)
-                    
-            scint_planes_with_hits.sort()
+            scint_planes_with_hits.sort()  # still no repeats
                 
             #  Iterate over the hits computing continous lengths, compare
             # against maximum.

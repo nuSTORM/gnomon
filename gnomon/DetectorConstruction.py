@@ -60,6 +60,15 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.my_field = None
         self.field_polarity = field_polarity
 
+        self.gdml_parser.Read(self.filename)
+
+        # Grab constants from the GDML <define>
+        rc['layers'] = int(self.gdml_parser.GetConstant("layers"))
+        rc['bars'] = int(self.gdml_parser.GetConstant("bars"))
+        for name in ["width", "thickness_layer", "thickness_bar",
+                     "density_scint", "density_iron"]:
+            rc[name] = self.gdml_parser.GetConstant(name)
+
     def __del__(self):
         pass
 
@@ -70,15 +79,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
     def Construct(self):  # pylint: disable-msg=C0103
         """Construct the VLENF from a GDML file"""
         # Parse the GDML
-        self.gdml_parser.Read(self.filename)
         self.world = self.gdml_parser.GetWorldVolume()
-
-        # Grab constants from the GDML <define>
-        rc['layers'] = int(self.gdml_parser.GetConstant("layers"))
-        rc['bars'] = int(self.gdml_parser.GetConstant("bars"))
-
-        for name in ["width", "thickness_layer", "thickness_bar"]:
-            rc[name] = self.gdml_parser.GetConstant(name)
 
         # Create sensitive detector
         self.sensitive_detector = ScintSD()

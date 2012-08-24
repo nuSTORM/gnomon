@@ -8,12 +8,13 @@ import random
 
 
 servers = ['http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
-           'http://gnomon:balls@tasd.fnal.gov:5984/']
+           #'http://gnomon:balls@tasd.fnal.gov:5984/'
+           ]
 
 polarity = '-'
 
-number_of_events = 1e6
-repeat_point = 4  # how many times to redo same point
+number_of_events = 100000
+repeat_point = 5  # how many times to redo same point
 
 flags = '--log_level CRITICAL'
 
@@ -21,10 +22,15 @@ random.seed()
 
 tempdir = tempfile.mkdtemp()
 
-for db_settings in [('electron', 12), ('muon', -14), ('electron', 14)]:
+to_simulate = []
+to_simulate.append(('muon', -14))
+to_simulate.append(('electron', 14))
+to_simulate.append(('electron', 12))
+
+for db_settings in to_simulate:
     energy_dist, pid = db_settings
     db_name = "_".join(map(str, db_settings))
-    #db_name = '%s_test' % db_name
+    db_name = '%s_test' % db_name
 
     for i in range(repeat_point):
         server = random.choice(servers) 

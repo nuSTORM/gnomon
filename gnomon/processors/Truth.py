@@ -16,7 +16,7 @@ class AppendTruth(Base.Processor):
         for doc in docs:
             doc['mc'] = {}
 
-            for name in ['generator', 'tracking']:
+            for name in ['generator', 'tracking', 'event_type']:
                 if name in rc:
                     doc['mc'][name] = rc[name]
                     rc[name] = {} # must reset!

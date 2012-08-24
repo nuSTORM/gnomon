@@ -17,6 +17,7 @@ import math
 import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 from scipy.stats.distributions import rv_frozen
+import scipy
 
 def lookup_cc_partner(nu_pid):
     """Lookup the charge current partner
@@ -40,19 +41,19 @@ def convert_3vector_to_dict(value):
         raise ValueError('Wrong type for 3-vector since not list', value)
     if len(value) != 3:
         raise ValueError('Wrong dimensions for 3-vector')
-    
+
     new_dict = {}
     new_dict['x'] = value[0]
     new_dict['y'] = value[1]
     new_dict['z'] = value[2]
-    
+
     return new_dict
 
 def convert_dict_to_g4vector(value, new_vector=G4.G4ThreeVector()):
     new_vector.x = value['x']
     new_vector.y = value['y']
     new_vector.z = value['z']
-    
+
     return new_vector
 
 def is_neutrino_code(pdg_code):
@@ -60,7 +61,7 @@ def is_neutrino_code(pdg_code):
         return True
     return False
 
-        
+
 class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     """Geant4 interface class"""
 
@@ -90,17 +91,71 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
                            particle['momentum']['y'],
                            particle['momentum']['z'])
 
-            
+
             v = G4.G4PrimaryVertex()
             v.SetPosition(particle['position']['x'],
                           particle['position']['y'],
                           particle['position']['z'])
 
             v.SetPrimary(pp)
-            
+
             event.AddPrimaryVertex(v)
-            
-            self.setMCInfo(particle)
+
+        self.setMCInfo(particle)
+
+class composite_z():
+    """Deriving from scipy.stats failed, so just overloaded rvs.
+    This really should hook into the GDML or something since it is geo
+    dependent this way"""
+
+    def __init__(self, config):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+        self.log.debug('Initialized %s', self.__class__.__name__)
+
+        self.layers = config['layers']
+        self.z_extent = config['layers'] * config['thickness_layer']
+        self.thickness_layer = config['thickness_layer']
+        self.thickness_bar = config['thickness_bar']
+
+        self.density = {}
+        self.density['Iron'] = config['density_iron']
+        self.density['Scint.'] = config['density_scint']
+
+        self.material = None
+
+    def get_material(self):  # hack for Genie to know material
+        """Return material of last rvs call"""
+        return self.material
+
+    def rvs(self):
+        import random
+        layer = random.randint(-self.layers/2,self.layers/2) # inclusive
+
+        z = layer * self.thickness_layer
+
+        d_sc = self.density['Scint.']
+        t_sc = 2 * self.thickness_bar
+
+        t_fe = self.thickness_layer - t_sc
+        d_fe = self.density['Iron']
+
+        # How much material is there
+        my_max = t_fe * d_fe + t_sc * d_sc
+
+        # Choose random by gram
+        my_choice = random.uniform(0, my_max)
+
+        if my_choice < t_fe * d_fe:  # Is iron
+            z += random.uniform(0, t_fe)
+            self.material = 'Iron'
+        else:  # is scint
+            z += t_fe
+            z += random.uniform(0,t_sc)
+            self.material = 'Scint.'
+
+        self.log.debug('Material is %s' % self.material)
+        return z
 
 
 class Distribution():
@@ -110,23 +165,40 @@ class Distribution():
 
         if isinstance(some_obj, (float, int)):
             self.static_value = some_obj
-        elif issubclass(type(some_obj), rv_frozen):
+        elif hasattr(some_obj, 'rvs'):
             self.scipy_dist = some_obj
         else:
             raise ValueError("Do not understand", some_obj)
+
+        self.cache = None
+
+    def dist(self):
+        #  Horrible HACK.  Since we don't have Genie know about GDML we have
+        # to let GenieGenerator have a hook to know what material to simulate
+        if self.scipy_dist is None:
+            return None
+        return self.scipy_dist
 
     def is_static(self):
         if self.static_value is not None:
             return True
         return False
 
+    def get_cache(self):
+        return self.cache
+
+    def set_cache(self, value):
+        self.cache = value
+
     def get(self):
         if self.static_value is not None:
-            return self.static_value
+            self.set_cache(self.static_value)
         elif self.scipy_dist is not None:
-            return self.scipy_dist.rvs()
+            self.set_cache(self.scipy_dist.rvs())
         else:
             raise RuntimeError("Should never get here")
+
+        return self.get_cache()
 
 class Generator():
     """Generator base class"""
@@ -142,7 +214,7 @@ class Generator():
 
         self.set_position(position)
         self.set_momentum(momentum)
-        self.set_pid(pid) # Can be neutrino with forced interaction  
+        self.set_pid(pid) # Can be neutrino with forced interaction
 
     def set_position(self, position):
         self._set_vector_value('position', position)
@@ -177,29 +249,36 @@ class ParticleGenerator(Generator):
 
                 for key2, value2 in value.iteritems():
                     new_particle[key][key2] = value2.get()
-            else:    
+            else:
                 new_particle[key] = value.get()
 
         self.log.info("Generated particle:")
         self.log.info(new_particle)
-        
+
         return [new_particle]
 
 
 
 class GenieGenerator(Generator):
-    """Generate events from a Genie ntuple"""
+    """Generate events from a Genie ntuple
+
+    A Genie ntuple that already knew the GDML would be useful.  Otherwise,
+    we run gevgen per material and have to do nasty geometry stuff here
+    """
 
     def __init__(self, position, momentum, pid):
         Generator.__init__(self, position, momentum, pid)
 
-         #  The event list is a generator so requires calling 'next' on it
-        self.event_list = None  # set by generate_file
+        #  The event list is a generator so requires calling 'next' on it.
+        # The key is a material 'Iron', 'Scint.'  etc
+        self.event_list = {}
+        self.filenames = {}
 
     def __del__(self):
-        os.remove(self.filename)
+        for key in self.filenames.keys():
+            os.remove(self.filenames[key])
 
-    def _create_file(self):
+    def _create_file(self, material):
         my_id, filename = tempfile.mkstemp(suffix='.root')
 
         seed = random.randint(1, sys.maxint)
@@ -207,14 +286,22 @@ class GenieGenerator(Generator):
         max_energy = self.config['generator']['max_energy_GeV']
 
         xsec_filename = os.path.join(self.config['data_dir'], 'xsec.xml')
-        
+
+        #  Environmental variables need to be set to tell Genie where cross
+        # section files are and a repeatable random number seed
         env_vars = 'GSPLOAD=%s GSEED=%d' % (xsec_filename, seed)
 
         command = '%s gevgen' % env_vars
 
         command += ' -p %d' % self.particle['pid'].get()
         command += ' -r %d' % self.config['run_number']
-        command += ' -t 1000260560'
+
+        pdg_codes = {}
+        pdg_codes['Iron'] = '1000260560'
+        pdg_codes['Scint.'] = '1000010010[0.085]+1000060120[0.915]'
+        
+        command += ' -t %s' % pdg_codes[material]
+
         command += ' -n %d' % self.config['generator']['size_of_genie_buffer']
 
         self.energy_distribution = 'm' # todo fixme!!!!
@@ -242,16 +329,16 @@ class GenieGenerator(Generator):
         os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" %
                   (self.config['run_number'], filename))
         os.system('rm gntp.%d.ghep.root' % self.config['run_number'])
-        self.filename = filename
+        self.filenames[material] = filename
 
-        self.event_list = self._get_next_events()
+        self.event_list[material] = self._get_next_events(material)
 
-    def _get_next_events(self):
+    def _get_next_events(self, material):
         """Get next events from Genie ROOT file
 
         Looks over the generator"""
 
-        f = ROOT.TFile(self.filename)
+        f = ROOT.TFile(self.filenames[material])
         try:
             t = f.Get('gst')
             n = t.GetEntries()
@@ -263,9 +350,9 @@ class GenieGenerator(Generator):
             t.GetEntry(i)
             next_events = []
 
-            position = convert_3vector_to_dict([t.vtxx + self.particle['position']['x'].get(),
-                                                t.vtxy + self.particle['position']['y'].get(),
-                                                t.vtxz + self.particle['position']['z'].get()])
+            position = convert_3vector_to_dict([self.particle['position']['x'].get_cache(),
+                                                self.particle['position']['y'].get_cache(),
+                                                self.particle['position']['z'].get_cache()])
 
             lepton_event = {}
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:
@@ -273,8 +360,8 @@ class GenieGenerator(Generator):
             else:
                 lepton_event['pid'] = lookup_cc_partner(self.particle['pid'].get())
 
-                
-            # units: GeV -> MeV                                                                                                                                 
+
+            # units: GeV -> MeV
             momentum_vector = [1000*x for x in [t.pxl,t.pyl,t.pzl]]
 
             lepton_event['momentum'] = convert_3vector_to_dict(momentum_vector)
@@ -312,6 +399,7 @@ class GenieGenerator(Generator):
 
             event_type['incoming_neutrino'] = t.__getattr__('neu')
             event_type['neutrino_energy'] = t.__getattr__('Ev')
+            event_type['target_material'] = t.__getattr__('tgt')
 
             yield next_events, event_type
 
@@ -322,17 +410,33 @@ class GenieGenerator(Generator):
         if not is_neutrino_code(self.particle['pid'].get()):
             raise ValueError("PID must be neutrino PDG code")
 
-        try:
-            if self.event_list == None:
-                self.log.info('Empty event list, populating with Genie...')
-                self._create_file()
+        material = 'Iron'
 
-            particles, event_type = next(self.event_list)
+        # More hack: need to know position to know material...
+        position = convert_3vector_to_dict([self.particle['position']['x'].get(),
+                                            self.particle['position']['y'].get(),
+                                            self.particle['position']['z'].get()])
+
+        # Is this a distribution?  Need material hook HACK
+        dist = self.particle['position']['z'].dist()
+        if dist.__class__.__name__ == 'composite_z':
+            material = dist.get_material()
+            self.log.info("Choosing material %s" % material)
+
+        if material not in self.event_list:
+            self.event_list[material] = None
+
+        try:
+            if self.event_list[material] == None:
+                self.log.info('Empty event list, populating with Genie...')
+                self._create_file(material)
+
+            particles, event_type = next(self.event_list[material])
         except StopIteration:
             self.log.info("Generating more Genie events")
-            self._create_file()
-            particles, event_type = next(self.event_list)
+            self._create_file(material)
+            particles, event_type = next(self.event_list[material])
 
-        rc['generator'] = {'particles': particles, 'event_type': event_type}
+        rc['event_type'] = event_type
 
         return particles
