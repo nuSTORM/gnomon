@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="GDMLSchema/gdml.xsd">
+
+
+  <materials>
+    <!-- Define the scintillator's material properties -->
+    <element Z="6" name="CarbonElement">
+      <atom unit="g/mole" value="12.01"/>
+    </element>
+
+    <element Z="1" name="HydrogenElement">
+      <atom unit="g/mole" value="1.01"/>
+    </element>
+
+    <material name="ScintillatorMaterial" state="solid">
+      <MEE unit="eV" value="64.6844741120544"/>
+      <D unit="g/cm3" value="1.032"/>
+      <fraction n="0.914544377696929" ref="CarbonElement"/>
+      <fraction n="0.0854556223030713" ref="HydrogenElement"/>
+    </material>
+
+    <!-- Now define what's "outside" our detector -->
+    <material Z="1" name="Galactic" state="gas">
+      <T unit="K" value="2.73"/>
+      <P unit="pascal" value="3e-18"/>
+      <MEE unit="eV" value="19.2"/>
+      <D unit="g/cm3" value="1e-25"/>
+      <atom unit="g/mole" value="1.01"/>
+    </material>
+  </materials>
+
+  <!-- There are only two shapes we build our geometry out of: steel plates and
+       scintillator bars.  There's also the artificial shape of the world volume
+       but that's just for Geant4's sake -->
+  <solids>
+    <box lunit="m" name="SteelBox" x="1000" y="1000" z="1000"/>
+    <box lunit="m" name="WorldSolid" x="2000" y="2000" z="2000"/>  
+  </solids>
+
+  <structure>
+    <volume name="Box">
+      <materialref ref="ScintillatorMaterial"/>
+      <solidref ref="SteelBox"/>
+    </volume>
+    
+    <volume name="World">
+      <materialref ref="Galactic"/>
+      <solidref ref="WorldSolid"/>
+      <physvol name="SteelBoxPhys">
+        <volumeref ref="Box"/>
+        <position name="SteelBox_pos" unit="mm" x="0" y="0" z="0.0"/>
+      </physvol>
+    </volume>
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="World"/>
+  </setup>
+
+</gdml>
