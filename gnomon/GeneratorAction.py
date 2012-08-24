@@ -304,7 +304,9 @@ class GenieGenerator(Generator):
 
         command += ' -n %d' % self.config['generator']['size_of_genie_buffer']
 
-        self.energy_distribution = 'm' # todo fixme!!!!
+        self.energy_distribution = self.config['distribution'][0]
+
+        self.log.info('Energy distribution: %s' % self.config['distribution'])
 
         if self.energy_distribution == 'm' or self.energy_distribution == 'e':
             command += ' -e 0.1,%f' % max_energy
@@ -313,7 +315,7 @@ class GenieGenerator(Generator):
             #  muon decay without any accelerator effects.  This is a good
             #  approximation in the far detector limit ONLY.
             flux_filename = 'flux_file_%s.dat' % self.energy_distribution
-            flux_filename = os.path.join(self.config['data_dir'], 'flux_file_e.dat')
+            flux_filename = os.path.join(self.config['data_dir'], flux_filename)
 
             command += ' -f %s' % flux_filename
         elif type(self.energy_distribution) == float:

@@ -46,7 +46,7 @@ source /home/tunnell/env/gnomon/bin/activate
 cd $VIRTUAL_ENV/src/gnomon
 source setup.sh
 export COUCHDB_URL=%(server_url)s
-time python bin/simulate.py --name %(db_name)s --vertex 1000 -1000 0 --pid %(pid)d --distribution %(energy)s --events %(this_number_evts)d %(flags)s --run %(run)d --polarity %(polarity)s
+time python bin/simulate.py --name %(db_name)s --pid %(pid)d --distribution %(energy)s --events %(this_number_evts)d %(flags)s --run %(run)d --polarity %(polarity)s
 """ % {'db_name': db_name, 'this_number_evts': this_number_evts * 10**i, 'run': run, 'flags': flags, 'server_url': server, 'polarity': polarity, 'energy': energy_dist, 'pid': pid}
 
         file.write(script)
