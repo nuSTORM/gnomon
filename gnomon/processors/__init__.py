@@ -11,6 +11,7 @@ from gnomon.processors.Truth import AppendTruth
 from gnomon.processors.DataManager import CouchManager
 from gnomon.processors.Filter import SaveInteresting
 from gnomon.processors.Filter import AppearanceCuts
+from gnomon.processors.Fiducial import FiducialCuts
 
 
 _processors = [VlenfSimpleDigitizer,
@@ -22,7 +23,8 @@ _processors = [VlenfSimpleDigitizer,
                AppendTruth,
                CouchManager,
                AppearanceCuts,
-               SaveInteresting]
+               SaveInteresting,
+               FiducialCuts]
 
 # Build lookup table of class names to class objects
 _proc_lookup = {}

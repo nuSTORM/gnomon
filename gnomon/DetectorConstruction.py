@@ -70,6 +70,13 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
                      "density_scint", "density_iron"]:
             rc[name] = self.gdml_parser.GetConstant(name)
 
+        det_width = rc['width'] * rc['bars']
+        iron_volume = det_width * det_width * (rc['layers']/2 * (rc['thickness_layer'] - rc['thickness_bar']))
+        scint_volume = det_width * det_width * (rc['layers']/2 * rc['thickness_bar'])
+        self.mass = iron_volume * rc['density_iron'] + scint_volume * rc['density_scint']
+        self.mass /= 10**3 # mm^2 -> cm^3, density in /cm^3 but distances in mm
+        self.log.info("Mass [g]: %f" % self.mass)
+
     def __del__(self):
         pass
 

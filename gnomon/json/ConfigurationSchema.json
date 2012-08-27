@@ -19,7 +19,8 @@
             "enum": [
                 "muon", 
                 "electron", 
-                "point"
+                "point",
+		"flat"
             ], 
             "type": "string"
         }, 
@@ -30,6 +31,28 @@
         "events": {
             "description": "Number of events to simulate", 
             "type": "integer"
+        }, 
+        "fiducial": {
+            "description": "Settings about the fiducial cuts", 
+            "properties": {
+                "longitudinal_downstream": {
+                    "description": "Allowed distance to downstream end in z [mm]", 
+                    "type": "number"
+                }, 
+                "longitudinal_upstream": {
+                    "description": "Allowed distance to downstream end in z [mm]", 
+                    "type": "number"
+                }, 
+                "transverse_inner": {
+                    "description": "Allowed distance to transverse detector center where SCTL is (x,y) [mm]", 
+                    "type": "number"
+                }, 
+                "transverse_outer": {
+                    "description": "Allowed distance to transverse outer edge (x,y) [mm]", 
+                    "type": "number"
+                }
+            }, 
+            "type": "object"
         }, 
         "generator": {
             "description": "Generator settings", 

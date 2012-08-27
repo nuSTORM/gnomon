@@ -14,7 +14,7 @@ pi = 3.1415
 parent_energy = 3.8 # GeV 
 
 E_min = 0.10  # GeV
-E_max = parent_energy # GeV
+E_max = 5.0
 E_steps = 500
 
 mass_muon = 0.1056 # GeV
@@ -25,8 +25,9 @@ theta = 0
 
 distance = 1 # km, GLoBES normalization
 
-flux_file_e = open('flux_file_e.dat', 'w')
-flux_file_mu = open('flux_file_m.dat', 'w')
+flux_file_e = open('flux_file_e.dat', 'w') # electron
+flux_file_mu = open('flux_file_m.dat', 'w') # muon
+flux_file_flat = open('flux_file_f.dat', 'w') # flat
 
 for E in frange (E_min, E_max, E_steps):
     cos_theta = 1
@@ -44,10 +45,16 @@ for E in frange (E_min, E_max, E_steps):
     flux_e  *= (2*pi) / parent_energy  # solid angle -> cos(theta), y -> E
     flux_mu *= (2*pi) / parent_energy  # solid angle -> cos(theta), y -> E  
 
+    if E > parent_energy:
+        flux_e = 0.0
+        flux_mu = 0.0
+
     flux_file_e.write('%0.9g %0.9g\n' % (E, flux_e))
     flux_file_mu.write('%0.9g %0.9g\n' % (E, flux_mu))
+    flux_file_flat.write('%0.9g %0.9g\n' % (E, 1.0))
 
 
 flux_file_e.close()
 flux_file_mu.close()
+flux_file_flat.close()
 

@@ -44,8 +44,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    config_class = Configuration.DEFAULT(
-        args.name, args.run, overload=vars(args))
+    config_class = Configuration.DEFAULT(args.name, args.run,
+                                         overload=vars(args))
     Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
 
     Logging.setupLogging(args.log_level, args.name)
@@ -98,7 +98,8 @@ if __name__ == "__main__":
             raise NotImplementedError
 
         assert config['distribution'] == 'electron' or\
-            config['distribution'] == 'muon'
+            config['distribution'] == 'muon' or\
+            config['distribution'] == 'flat'
 
         log.warning('Energy argument ignored... assuming 3.8 GeV muons')
 
@@ -116,6 +117,7 @@ if __name__ == "__main__":
     processors.append("VlenfSimpleDigitizer")
     processors.append("EmptyTrackFromDigits")
     processors.append("ContinousLongitudinalLength")
+    processors.append("FiducialCuts")
     processors.append("ExtractTracks")
     processors.append("VlenfPolynomialFitter")
     processors.append("ClassifyVariables")

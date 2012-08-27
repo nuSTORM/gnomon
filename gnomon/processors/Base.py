@@ -4,6 +4,7 @@
 
 import logging
 from gnomon import Configuration
+from gnomon.Configuration import RUNTIME_CONFIG
 
 
 class Processor():
@@ -18,6 +19,7 @@ class Processor():
         self.log = self.log.getChild(self.__class__.__name__)
 
         self.config = Configuration.GLOBAL_CONFIG
+        self.runtime_config = RUNTIME_CONFIG
 
     def process(self, docs):
         """Not implemented"""

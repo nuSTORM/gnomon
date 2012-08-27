@@ -67,17 +67,22 @@ class AppearanceCuts(Base.Processor):
                 #  CC nu_mu_bar that bend wrong
                 if doc['mc']['event_type']['cc'] and \
                         doc['mc']['event_type']['incoming_neutrino'] == -14 and\
-                        pass_cuts['curve']:
+                        pass_cuts['all']:
                     is_interesting = True
+                    
+                    if curve < -0.5e-4:
+                        clsf['is_very_interesting'] = True
             except:
                 pass
+
+            
 
             ### Save ###
 
             clsf['is_interesting'] = is_interesting
             doc['classification'] = clsf
 
-            if 'cuts':
+            if 'cuts' not in doc:
                 doc['cuts'] = {}
             doc['cuts']['appearance'] = pass_cuts
 

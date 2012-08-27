@@ -8,13 +8,13 @@ import random
 
 
 servers = ['http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
-           'http://gnomon:balls@tasd.fnal.gov:5984/'
+           #'http://gnomon:balls@tasd.fnal.gov:5984/'
            ]
 
 polarity = '-'
 
 number_of_events = 100000
-repeat_point = 5  # how many times to redo same point
+repeat_point = 20  # how many times to redo same point
 
 flags = '--log_level CRITICAL'
 
@@ -23,14 +23,15 @@ random.seed()
 tempdir = tempfile.mkdtemp()
 
 to_simulate = []
-to_simulate.append(('muon', -14))
-to_simulate.append(('electron', 14))
-to_simulate.append(('electron', 12))
+to_simulate.append(('flat', -14))
+to_simulate.append(('flat', 14))
+to_simulate.append(('flat', 12))
 
 for db_settings in to_simulate:
     energy_dist, pid = db_settings
-    db_name = "_".join(map(str, db_settings))
-    db_name = '%s_fiducial' % db_name
+    #db_name = "_".join(map(str, db_settings))
+    #db_name = '%s_fiducill' % db_name
+    db_name = 'mm'
 
     for i in range(repeat_point):
         server = random.choice(servers)
@@ -47,7 +48,7 @@ cd $VIRTUAL_ENV/src/gnomon
 source setup.sh
 export COUCHDB_URL=%(server_url)s
 time python bin/simulate.py --name %(db_name)s --pid %(pid)d --distribution %(energy)s --events %(this_number_evts)d %(flags)s --run %(run)d --polarity %(polarity)s
-""" % {'db_name': db_name, 'this_number_evts': this_number_evts * 10 ** i, 'run': run, 'flags': flags, 'server_url': server, 'polarity': polarity, 'energy': energy_dist, 'pid': pid}
+""" % {'db_name': db_name, 'this_number_evts': this_number_evts, 'run': run, 'flags': flags, 'server_url': server, 'polarity': polarity, 'energy': energy_dist, 'pid': pid}
 
         file.write(script)
         file.close()
@@ -66,7 +67,7 @@ time python bin/simulate.py --name %(db_name)s --pid %(pid)d --distribution %(en
 
         print command
         os.system(command)
-        time.sleep(1)
+        time.sleep(2)
 
 
 shutil.rmtree(tempdir)

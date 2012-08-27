@@ -50,10 +50,8 @@ def fetch_config_config(filename):
     return my_dict
 
 
-def populate_args(parser):
-    """Add commandline arguments to parser from schema
-    """
-    schema = fetch_config_config('ConfigurationSchema.json')
+def populate_args_level(schema, parser):
+    """ Populate just one node in a tree; can be recursive"""
     for key, value in schema['properties'].iteritems():
         if key == 'name':
             continue
@@ -77,9 +75,20 @@ def populate_args(parser):
 
                 if value['items']['type'] != 'number':
                     raise NotImplementedError("Only float arrays work")
-
                 parser.add_argument(arg, help=desc, type=float,
                                     nargs=value['maxItems'], metavar='N')
+            elif value['type'] == 'object':
+                #group = parser.add_argument_group(key, value['description'])
+                #populate_args_level(value, group)
+                pass
+
+
+def populate_args(parser):
+    """Add commandline arguments to parser from schema
+    """
+    schema = fetch_config_config('ConfigurationSchema.json')
+
+    populate_args_level(schema, parser)
 
 
 class ConfigurationBase():
