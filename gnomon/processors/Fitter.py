@@ -282,12 +282,12 @@ class VlenfPolynomialFitter(Base.Processor):
         Base.Processor.__init__(self)
         self.field = MagneticField.WandsToroidField('+')
 
-    def Fit(self, zx):
-        """Returns results of fit
-
-        """
-
-        z, trans, Q = zip(*zx)
+    def Fit(self, zxq):
+        """Perform a 2D fit on 2D points then return parameters
+        
+   :param zxq: A list where each element is (z, transverse, charge)
+   """
+        z, trans, Q = zip(*zxq)
 
         assert len(trans) == len(z)
         ndf = len(z) - 3
@@ -326,6 +326,21 @@ class VlenfPolynomialFitter(Base.Processor):
             value[i] = x[0] * x[i] + y[0] * y[i]
             value[i] /= math.hypot(x[0], y[0])
         return value
+
+    def _get_last_transverse_over_list(self, zxq):
+        """ Get transverse coord at highest z
+
+        :param zx: A list where each element is (z, transverse, charge) 
+        """
+        z_max = None
+        x_of_interest = None
+
+        for z, x, q in zxq:
+            if z == None or z > z_max:
+                x_of_interest = x
+
+        return x_of_interest
+                
 
     def process(self, docs):
         new_docs = []
@@ -366,10 +381,12 @@ class VlenfPolynomialFitter(Base.Processor):
                 rf['y'] = fity_doc['params']
                 y0, y1, y2 = rf['y']
 
+                x_end = self._get_last_transverse_over_list(tracks['x'][lx])
+                y_end = self._get_last_transverse_over_list(tracks['y'][ly])
+
                 rf['u'] = self._rotate(rf['x'], rf['y'])
 
-                rf['R'] = (
-                    1 + rf['u'][1] ** 2) ** (1.5) / (2 * rf['u'][2])  # mm
+                rf['R'] = (1 + rf['u'][1] ** 2) ** (1.5) / (2 * rf['u'][2])  # mm
                 rf['B'] = self.field.PhenomModel(math.hypot(x0, y0))
 
                 rf['p_MeV'] = 300 * rf['B'] * rf['R'] / 1000  # MeV

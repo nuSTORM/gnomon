@@ -41,7 +41,7 @@ class AppearanceCuts(Base.Processor):
             if (n_planes > 200):
                 pass_cuts['length'] = True
 
-            if (curve < 0.0):
+            if (curve < 0.5e-4):
                 pass_cuts['curve'] = True
 
             pass_cuts['all'] = pass_cuts['length'] and pass_cuts['curve']

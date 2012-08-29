@@ -13,10 +13,10 @@ servers = ['http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
 
 polarity = '-'
 
-number_of_events = 100000
+number_of_events = 1000
 repeat_point = 5  # how many times to redo same point
 
-flags = '--log_level CRITICAL'
+flags = '--log_level INFO'
 
 random.seed()
 
@@ -30,7 +30,7 @@ to_simulate.append(('electron', 12))
 for db_settings in to_simulate:
     energy_dist, pid = db_settings
     db_name = "_".join(map(str, db_settings))
-    db_name = '%s_fiducial' % db_name
+    #db_name = '%s_fiducia' % db_name
 
     for i in range(repeat_point):
         server = random.choice(servers)
