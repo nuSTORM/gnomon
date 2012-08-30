@@ -75,7 +75,9 @@ class CouchManager(Manager):
             try:
                 my_db = couch.create(dbname)
             except:
-                self.log.error("Race condition caught")
+                self.log.critical("Race condition caught")
+                raise RuntimeError("Race condition caught when creating DB")
+                
 
             try:
                 auth_doc = {}

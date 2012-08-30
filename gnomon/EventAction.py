@@ -32,7 +32,7 @@ class VlenfEventAction(G4.G4UserEventAction):
 
     def BeginOfEventAction(self, event):
         """Executed at the beginning of an event, print hits"""
-        self.log.debug("Beggining event %s", event.GetEventID())
+        self.log.info("Simulating event %s", event.GetEventID())
         self.sd.setEventNumber(event.GetEventID())
 
     def setSD(self, sd):
@@ -40,7 +40,7 @@ class VlenfEventAction(G4.G4UserEventAction):
 
     def EndOfEventAction(self, event):
         """Executed at the end of an event, do nothing"""
-        self.log.info('Processed event %d', event.GetEventID())
+        self.log.debug('Processesing simulated event %d', event.GetEventID())
 
         docs = self.sd.getDocs()
         self.sd.clearDocs()
@@ -50,6 +50,7 @@ class VlenfEventAction(G4.G4UserEventAction):
             if not docs:
                 self.log.warning('%s did not return documents in process()!',
                                  processor.__class__.__name__)
+
 
     def shutdown(self):
         for processor in self.processors:

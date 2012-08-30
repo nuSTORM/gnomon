@@ -116,9 +116,9 @@ if __name__ == "__main__":
     processors = []
     processors.append("VlenfSimpleDigitizer")
     processors.append("EmptyTrackFromDigits")
-    processors.append("ContinousLongitudinalLength")
     processors.append("FiducialCuts")
     processors.append("ExtractTracks")
+    processors.append("CombineViews")
     processors.append("VlenfPolynomialFitter")
     processors.append("ClassifyVariables")
     processors.append("AppendTruth")

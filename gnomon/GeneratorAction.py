@@ -294,8 +294,9 @@ class GenieGenerator(Generator):
         xsec_filename = os.path.join(self.config['data_dir'], 'xsec.xml')
 
         #  Environmental variables need to be set to tell Genie where cross
-        # section files are and a repeatable random number seed
-        env_vars = 'GSPLOAD=%s GSEED=%d' % (xsec_filename, seed)
+        # section files are and a repeatable random number seed. Also, disable
+        # any X windows popping up (was causing crashes...)
+        env_vars = 'DISPLAY= GSPLOAD=%s GSEED=%d' % (xsec_filename, seed)
 
         command = '%s gevgen' % env_vars
 
@@ -311,7 +312,7 @@ class GenieGenerator(Generator):
         command += ' -n %d' % self.config['generator']['size_of_genie_buffer']
 
         self.energy_distribution = self.config['distribution']
-        self.log.info('Energy distribution: %s' % self.energy_distribution)
+        self.log.info('Neutrino energy distribution: %s' % self.energy_distribution)
 
         if self.energy_distribution == 'muon' or\
                 self.energy_distribution == 'electron' or\
@@ -400,22 +401,27 @@ class GenieGenerator(Generator):
 
             event_type = {}
 
+            to_save = {} # maps our names to Genie gst names
+            to_save['incoming_neutrino'] = 'neu'
+            to_save['neutrino_energy'] = 'Ev'
+            to_save['target_material'] = 'tgt'
+
+            for key, value in to_save.iteritems():
+                self.log.info('%s : %s' % (key, str(t.__getattr__(value))))
+                event_type[key] = t.__getattr__(value)
+
             self.log.debug('Event type:')
             for my_type in ['qel', 'res', 'dis', 'coh', 'dfr',
                             'imd', 'nuel', 'em']:
-                self.log.debug('\t%s:%d', my_type, t.__getattr__(my_type))
+                if t.__getattr__(my_type) == 1:
+                    self.log.debug('\t%s', my_type)
                 event_type[my_type] = t.__getattr__(my_type)
 
             self.log.debug('Propogator:')
             for prop in ['nc', 'cc']:
-                self.log.debug('\t%s:%d', prop, t.__getattr__(prop))
+                if t.__getattr__(prop) == 1:
+                    self.log.debug('\t%s', prop)
                 event_type[prop] = t.__getattr__(prop)
-
-            self.log.debug('y: %f', t.y)
-
-            event_type['incoming_neutrino'] = t.__getattr__('neu')
-            event_type['neutrino_energy'] = t.__getattr__('Ev')
-            event_type['target_material'] = t.__getattr__('tgt')
 
             yield next_events, event_type
 

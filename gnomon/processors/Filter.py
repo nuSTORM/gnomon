@@ -25,7 +25,7 @@ class AppearanceCuts(Base.Processor):
             n_planes = clsf['n_planes']
 
             # Curvature (ie. coefficient of z**2) in the bending plane 'u'
-            curve = clsf['fit_poly']['u'][2]
+            curve = clsf['fit_poly']['combined'][2]
 
             ###  Variables to return  ###
 
@@ -41,7 +41,7 @@ class AppearanceCuts(Base.Processor):
             if (n_planes > 200):
                 pass_cuts['length'] = True
 
-            if (curve < 0.5e-4):
+            if (curve < 0.0):
                 pass_cuts['curve'] = True
 
             pass_cuts['all'] = pass_cuts['length'] and pass_cuts['curve']
@@ -92,6 +92,11 @@ class AppearanceCuts(Base.Processor):
 
 
 class SaveInteresting(Base.Processor):
+    """Save extra information about 'interesting' events
+
+    Save for example hit information.
+    """
+
 
     def process(self, docs):
         new_docs = []

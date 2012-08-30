@@ -159,66 +159,89 @@ class ClassifyVariables(Base.Processor):
 
         return new_docs
 
+class CombineViews(Base.Processor):
+    """Combine x and y views"""
 
-class ContinousLongitudinalLength(Base.Processor):
-    """Extract the continous longitudinal length
-    """
+    def sort_points(self, points):
+        """Take points (z,x,q) and sort by increasing z"""
+        new_points = []
+        z_lookup = {}
+        for z, x, Q in points:
+            z_lookup[z] = (z, x, Q)
+
+        z_keys = z_lookup.keys()
+        z_keys.sort()
+
+        for key in z_keys:
+            new_points.append(z_lookup[key])
+
+        return new_points
 
     def process(self, docs):
-        """Process an event"""
-
-        #  These docs will be returned
         new_docs = []
 
-        # Loop over documents (most likely tracks)
         for doc in docs:
-            # If not analyzable or track, skip
-            if not doc['analyzable'] or doc['type'] != 'track':
-                # Keep the doc though since others may want down the pipeline
+            clsf = doc['classification']
+
+            #  Throw away if not analyzable track
+            if 'type' not in doc or\
+                    doc['type'] != 'track' or\
+                    doc['analyzable'] is False:
                 new_docs.append(doc)
                 continue
 
-            scint_planes_with_hits = set()  # z coordinate, no repeats
+            #  Require extracted tracks
+            if 'lengths' not in clsf or\
+                    'x' not in clsf['lengths'] or\
+                    'y' not in clsf['lengths']:
+                new_docs.append(doc)
+                continue
 
-            for view in ['x', 'y']:
-                #  Ensure that tracks haven't already been extracted (ex. muon)
-                if len(doc['tracks'][view].keys()) > 1:
-                    self.log.error('Expected unclassified tracks')
-                    self.log.error('Please run before extracting tracks')
-                    raise ValueError("Expected unclassified tracks")
+            tracks = doc['tracks']
 
-                #  Leftovers should be all hits
-                points = doc['tracks'][view]['LEFTOVERS']
-                for z, x, Q in points:
-                    scint_planes_with_hits.add(z)
 
-            #  Convert to list so can sort...
-            scint_planes_with_hits = list(scint_planes_with_hits)
-            scint_planes_with_hits.sort()  # still no repeats
+            lx = clsf['lengths']['x'][0]
+            pts_x = tracks['x'][lx]
+            pts_x = self.sort_points(pts_x)
 
-            #  Iterate over the hits computing continous lengths, compare
-            # against maximum.
-            max_length = None
-            this_length = 0
-            for i, z in enumerate(scint_planes_with_hits):
-                if i + 1 >= len(scint_planes_with_hits):
-                    break
+            ly = clsf['lengths']['y'][0]
+            pts_y = tracks['y'][ly]
+            pts_y = self.sort_points(pts_y)
 
-                dz = scint_planes_with_hits[i + 1] - z
-                if dz <= rc['thickness_layer']:
-                    this_length += dz
-                    if this_length > max_length or max_length is None:
-                        max_length = this_length
+            new_points = []
+
+            while len(pts_y) > 0 and len(pts_x) > 0:
+                # While there are still points to match up
+
+                z_x, trans_x, Q_x = pts_x.pop()
+                z_y, trans_y, Q_y = pts_y.pop()
+
+                if math.fabs(z_x - z_y) < rc['thickness_layer']:
+                    #  If they are in the same layer
+                    new_z = (z_x + z_y) / 2.0
+                    new_r = math.hypot(trans_x, trans_y)
+                    new_theta = math.atan2(trans_y, trans_x) # y first according to pydocs
+                    new_Q = Q_x + Q_y
+                    new_points.append((new_z, new_r, new_Q))
                 else:
-                    this_length = 0
+                    # Otherwise, toss out most downstream point and keep the
+                    # upstream point.
+                    if z_x > z_y:
+                        pts_y.append((z_y, trans_y, Q_y))
+                    else:
+                        pts_x.append((z_x, trans_x, Q_x))
 
-            doc['classification']['longitudinal_length'] = max_length
+            tracks['combined'] = new_points
+
+            # Save our modified tracks
+            doc['tracks'] = tracks
             new_docs.append(doc)
+
         return new_docs
 
 
 class ExtractTracks(Base.Processor):
-    """Extract tracks with graph theoretic concepts"""
+    """Extract tracks per view with graph theoretic concepts"""
 
     def process(self, docs):
         run = None
@@ -243,6 +266,7 @@ class ExtractTracks(Base.Processor):
                 gr = dag.CreateVertices(points)
                 gr = dag.CreateDirectedEdges(points, gr, rc['thickness_layer'])
                 if gr.edges() == []:
+                    doc['analyzable'] = False
                     continue
 
                 parent_node = dag.FindParentNode(gr)
@@ -284,7 +308,7 @@ class VlenfPolynomialFitter(Base.Processor):
 
     def Fit(self, zxq):
         """Perform a 2D fit on 2D points then return parameters
-        
+
    :param zxq: A list where each element is (z, transverse, charge)
    """
         z, trans, Q = zip(*zxq)
@@ -321,6 +345,7 @@ class VlenfPolynomialFitter(Base.Processor):
         return doc
 
     def _rotate(self, x, y):
+        self.log.debug('Rotating using x=%s and y=%s' % (str(x), str(y)))
         value = [0, 0, 0]
         for i in range(3):
             value[i] = x[0] * x[i] + y[0] * y[i]
@@ -330,7 +355,7 @@ class VlenfPolynomialFitter(Base.Processor):
     def _get_last_transverse_over_list(self, zxq):
         """ Get transverse coord at highest z
 
-        :param zx: A list where each element is (z, transverse, charge) 
+        :param zx: A list where each element is (z, transverse, charge)
         """
         z_max = None
         x_of_interest = None
@@ -340,11 +365,12 @@ class VlenfPolynomialFitter(Base.Processor):
                 x_of_interest = x
 
         return x_of_interest
-                
+
 
     def process(self, docs):
         new_docs = []
         for doc in docs:
+            #  Checking state
             if 'type' not in doc or\
                     doc['type'] != 'track' or\
                     doc['analyzable'] is False:
@@ -353,53 +379,59 @@ class VlenfPolynomialFitter(Base.Processor):
 
             clsf = doc['classification']
 
-            try:
+            if 'tracks' not in doc:
+                self.log.info('Skipping since no tracks found...')
+                new_docs.append(doc)
+                continue
 
-                tracks = doc['tracks']
+            if 'lengths' not in clsf:
+                self.log.info('Skipping no extracted tracks to fit')
+                new_docs.append(doc)
+                continue
 
-                assert 'lengths' in clsf
+            tracks = doc['tracks']
 
-                lx = clsf['lengths']['x'][0]
-                fitx_doc = self.Fit(tracks['x'][lx])
-                ly = clsf['lengths']['y'][0]
-                fity_doc = self.Fit(tracks['y'][ly])
+            rf = {}  # raw fit
+            rf['gof'] = {}
 
-                for fit_doc in [fitx_doc, fity_doc]:
-                    assert len(fit_doc['params']) == 3
+            for view in ['x', 'y', 'combined']:
 
-                assert fitx_doc['gof'] != 'FAIL', "Fit failed; enough hits?"
-                assert fity_doc['gof'] != 'FAIL', "Fit failed; enough hits?"
-                doc['analyzable'] = True
+                if view == 'combined':
+                    points = tracks[view]
+                else:
+                    l = clsf['lengths'][view][0]
+                    points = tracks[view][l]
 
-                rf = {}  # raw fit
+                try:
+                    fit_doc = self.Fit(points)
+                except Exception, err:
+                    self.log.exception('Error from polynomial fitter:')
+                    #  Something bad happened... mark event not analyzable
+                    doc['analyzable'] = False
 
-                rf['gof'] = {'x': fitx_doc['gof'], 'y': fity_doc['gof']}
+                if fit_doc['gof'] != 'FAIL':
+                    rf['gof'][view] = fit_doc['gof']
+                else: # fail
+                    self.log.warning("Fit in %s failed" % view)
+                    doc['analyzable'] = False
+                    continue
 
-                rf['x'] = fitx_doc['params']
+                if len(fit_doc['params']) == 3:
+                    rf[view] = fit_doc['params']
+                else: # fail
+                    self.log.error("Fit in %s failed; didn't receive params" % view)
+                    doc['analyzable'] = False
+                    continue
+
+            if doc['analyzable']:
+                # Rotate fits to bending plane
                 x0, x1, x2 = rf['x']
-
-                rf['y'] = fity_doc['params']
-                y0, y1, y2 = rf['y']
-
-                x_end = self._get_last_transverse_over_list(tracks['x'][lx])
-                y_end = self._get_last_transverse_over_list(tracks['y'][ly])
-
+                y0, y1, y2 = rf['y']            
                 rf['u'] = self._rotate(rf['x'], rf['y'])
 
-                rf['R'] = (1 + rf['u'][1] ** 2) ** (1.5) / (2 * rf['u'][2])  # mm
-                rf['B'] = self.field.PhenomModel(math.hypot(x0, y0))
-
-                rf['p_MeV'] = 300 * rf['B'] * rf['R'] / 1000  # MeV
-
-                clsf['fit_poly'] = rf
-
-            except Exception, err:
-                self.log.exception('Error from polynomial fitter:')
-                #  Something bad happened... mark event not analyzable
-                doc['analyzable'] = False
-
+            # Save
+            clsf['fit_poly'] = rf
             doc['classification'] = clsf
-
             new_docs.append(doc)
 
         return new_docs

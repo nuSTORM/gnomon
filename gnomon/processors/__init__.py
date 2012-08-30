@@ -3,7 +3,7 @@
 
 from gnomon.processors.Digitizer import VlenfSimpleDigitizer
 from gnomon.processors.Fitter import EmptyTrackFromDigits
-from gnomon.processors.Fitter import ContinousLongitudinalLength
+from gnomon.processors.Fitter import CombineViews
 from gnomon.processors.Fitter import ExtractTracks
 from gnomon.processors.Fitter import VlenfPolynomialFitter
 from gnomon.processors.Fitter import ClassifyVariables
@@ -16,7 +16,7 @@ from gnomon.processors.Fiducial import FiducialCuts
 
 _processors = [VlenfSimpleDigitizer,
                EmptyTrackFromDigits,
-               ContinousLongitudinalLength,
+               CombineViews,
                ExtractTracks,
                VlenfPolynomialFitter,
                ClassifyVariables,
