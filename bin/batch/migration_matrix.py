@@ -14,7 +14,7 @@ servers = ['http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
 polarity = '-'
 
 number_of_events = 100000
-repeat_point = 10  # how many times to redo same point
+repeat_point = 20  # how many times to redo same point
 
 flags = '--log_level CRITICAL'
 
