@@ -280,9 +280,13 @@ class GenieGenerator(Generator):
         self.event_list = {}
         self.filenames = {}
 
+        self.genie_temp_dir = tempfile.mkdtemp()
+
     def __del__(self):
         for key in self.filenames.keys():
             os.remove(self.filenames[key])
+
+        os.rmdir(self.genie_temp_dir)
 
     def _create_file(self, material):
         my_id, filename = tempfile.mkstemp(suffix='.root')
@@ -338,10 +342,24 @@ class GenieGenerator(Generator):
 
         self.log.info('Running the command: %s', command)
 
+        print filename
+
+        intermediate_file = os.path.join(self.genie_temp_dir,
+                                         "gntp.%d.ghep.root" % self.config['run_number'])
+
+        command = """cd %(tmpdir)s
+%(command)s
+gntpc -i %(int_file)s -o %(filename)s -f gst > /dev/null
+""" % { "tmpdir" : self.genie_temp_dir,
+        "command" : command,
+        "int_file" : intermediate_file,
+        "filename" : filename }
+
+        self.log.info('Running the command: %s', command)
         os.system(command)
-        os.system("gntpc -i gntp.%d.ghep.root -o %s -f gst > /dev/null" %
-                  (self.config['run_number'], filename))
-        os.system('rm gntp.%d.ghep.root' % self.config['run_number'])
+
+        os.remove(intermediate_file)
+
         self.filenames[material] = filename
 
         self.event_list[material] = self._get_next_events(material)
@@ -391,11 +409,9 @@ class GenieGenerator(Generator):
                 hadron_event['position'] = position
 
                 # units: GeV -> MeV
-                momentum_vector = [1000 * x for x in [t.
-                                                      pxf[j], t.pyf[j], t.pzf[j]]]
+                momentum_vector = [1000 * x for x in [t.pxf[j], t.pyf[j], t.pzf[j]]]
 
-                hadron_event[
-                    'momentum'] = convert_3vector_to_dict(momentum_vector)
+                hadron_event['momentum'] = convert_3vector_to_dict(momentum_vector)
 
                 next_events.append(hadron_event)
 
@@ -425,6 +441,9 @@ class GenieGenerator(Generator):
 
             yield next_events, event_type
 
+        f.Close()
+        os.remove(self.filenames[material])
+
     def generate(self):
         if self.particle['pid'].is_static() == False:
             raise ValueError("PID must be static")
@@ -436,8 +455,7 @@ class GenieGenerator(Generator):
 
         # More hack: need to know position to know material...
         position = convert_3vector_to_dict([self.particle['position']['x'].get(),
-                                            self.particle[
-                                                'position']['y'].get(),
+                                            self.particle['position']['y'].get(),
                                             self.particle['position']['z'].get()])
 
         # Is this a distribution?  Need material hook HACK
