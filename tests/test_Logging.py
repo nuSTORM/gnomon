@@ -6,11 +6,12 @@ import exceptions
 import logging  # python's
 import gnomon.Logging as Logging  # gnomon's
 from gnomon import Configuration
+Configuration.DEFAULT = Configuration.MockConfiguration
 
 
 class TestLogging(TestCase):
     def setUp(self):
-        config_instance = Configuration.MockConfiguration()
+        config_instance = Configuration.DEFAULT()
         Configuration.GLOBAL_CONFIG = config_instance.get_configuration_dict()
 
     def test_exist_getLogLevels(self):

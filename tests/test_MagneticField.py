@@ -1,5 +1,5 @@
 from unittest import TestCase
-import MagneticField
+from gnomon import MagneticField
 
 
 class MockG4ThreeVector():

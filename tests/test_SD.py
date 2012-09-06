@@ -2,10 +2,11 @@ from unittest import TestCase
 import sys
 import argparse
 import exceptions
-import Configuration
+from gnomon import Configuration
+from gnomon.DetectorConstruction import VlenfDetectorConstruction
 Configuration.DEFAULT = Configuration.MockConfiguration
 
-import SD
+from gnomon import SD
 
 
 class MockG4ThreeVector():
@@ -16,16 +17,11 @@ class MockG4ThreeVector():
 
 class TestSD(TestCase):
     def setUp(self):
-        self.layers = 444
-        self.bars = 500
-        self.width = 10
-        self.thickness_layer = 30
-        self.thickness_bar = 10
-        self.sd = SD.ScintSD(self.layers,
-                             self.bars,
-                             self.width,
-                             self.thickness_layer,
-                             self.thickness_bar)
+        config_instance = Configuration.DEFAULT("mock")
+        Configuration.GLOBAL_CONFIG = config_instance.get_configuration_dict()
+
+        VlenfDetectorConstruction(field_polarity='+') # sets runtime geometry config
+        self.sd = SD.ScintSD()
 
     def test_setEventNumber(self):
         for i in range(10):

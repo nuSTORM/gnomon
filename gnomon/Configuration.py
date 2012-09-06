@@ -132,7 +132,8 @@ class ConfigurationBase():
 class LocalConfiguration(ConfigurationBase):
     """Configuration fetched from disk"""
 
-    def __init__(self, name, run=0, overload=None):
+    def __init__(self, name, run=0, overload=None,
+                 filename='ConfigurationDefaults.json'):
         """Setup the CouchDB configuration manager.
 
         The default connection is to localhost's port 5984.  This can be
@@ -141,7 +142,7 @@ class LocalConfiguration(ConfigurationBase):
 
         ConfigurationBase.__init__(self, name, run)
 
-        defaults = fetch_config_config('ConfigurationDefaults.json')
+        defaults = fetch_config_config(filename)
 
         if overload:
             for key, val in overload.iteritems():
@@ -150,17 +151,14 @@ class LocalConfiguration(ConfigurationBase):
 
         self.set_json(defaults)
 
-class MockConfiguration(ConfigurationBase):
-    """Mock configuration for testing"""
+class MockConfiguration(LocalConfiguration):
+    """Mock configuration for testing
 
-    def __init__(self):
-        ConfigurationBase.__init__(self, name="mock", run=0)
+    This is just a reference to LocalConfiguration for now
+    """
+    pass
+
         
-        self.json = {}
-        self.json['log_dir'] = tempfile.mkdtemp() # temp dir
-
-    def __del__(self):
-        os.rmdir(self.json['log_dir'])
 
 DEFAULT = LocalConfiguration
 GLOBAL_CONFIG = None
