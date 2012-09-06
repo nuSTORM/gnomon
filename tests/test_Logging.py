@@ -4,12 +4,14 @@ import argparse
 import exceptions
 
 import logging  # python's
-import Logging  # gnomon's
+import gnomon.Logging as Logging  # gnomon's
+from gnomon import Configuration
 
 
 class TestLogging(TestCase):
     def setUp(self):
-        pass
+        config_instance = Configuration.MockConfiguration()
+        Configuration.GLOBAL_CONFIG = config_instance.get_configuration_dict()
 
     def test_exist_getLogLevels(self):
         bad_level_name = 'blarg'

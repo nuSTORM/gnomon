@@ -1,5 +1,5 @@
 from unittest import TestCase
-from Graph import DAG
+from gnomon.Graph import DAG
 
 points = [[5385, -1605], [5335, -1595], [5285, -1595]]
 

@@ -9,6 +9,7 @@ import os
 import inspect
 import random
 import sys
+import tempfile
 import json
 import validictory
 from array import array
@@ -148,6 +149,18 @@ class LocalConfiguration(ConfigurationBase):
                     defaults[key] = val
 
         self.set_json(defaults)
+
+class MockConfiguration(ConfigurationBase):
+    """Mock configuration for testing"""
+
+    def __init__(self):
+        ConfigurationBase.__init__(self, name="mock", run=0)
+        
+        self.json = {}
+        self.json['log_dir'] = tempfile.mkdtemp() # temp dir
+
+    def __del__(self):
+        os.rmdir(self.json['log_dir'])
 
 DEFAULT = LocalConfiguration
 GLOBAL_CONFIG = None

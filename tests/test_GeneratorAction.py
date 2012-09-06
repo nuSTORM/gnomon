@@ -23,7 +23,9 @@ class TestCompositeZ(TestCase):
 
     def test_rvs_range(self):
         for i in range(1000):
-            assert -self.max_size < self.dist.rvs() < self.max_size
+            rand_val = self.dist.rvs()
+            error_string = "%f %f" % (rand_val, self.max_size)
+            assert -self.max_size < rand_val < self.max_size, error_string
 
 
 
