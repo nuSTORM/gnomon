@@ -1,7 +1,7 @@
-Gnomon: sterile neutrino detector sim for VLENF
-=====================================
+Gnomon: NuSTORM Detector Simulation
+===================================
 
-Description
+This softare is intended for people within the NuSTORM collaboration in order to simulate the response of the detectors used for the oscillation analyses.
 
 Development
 -----------
@@ -26,13 +26,11 @@ Subscribe to the mailing list for update announcements!
 
    install
    faq
-   code
-   generating_docs
 
 Authors
 -------
 
-Gnomon is developed by Christopher Tunnell.
+Gnomon was made by Christopher Tunnell <c.tunnell1@physics.ox.ac.uk>.
 
 Indices and tables
 ------------------

@@ -243,11 +243,11 @@ Install Genie:
 Step 7: gnomon
 ^^^^^^^^^^^^^^
 
-Now you are ready to get gnomon.  One can currently work only from the developer's version.  To get the code, run::
+Now you are ready to get gnomon.  One can currently work only from the developer's version.  To get the code, run:
 
 .. literalinclude:: snip/snip13.bash
 
-There is no installation for the actual gnomon code since it's written in an interpreted language (i.e. python).  In order to tell Python where to look for gnomon, you must append ``$VIRTUAL_ENV/bin/activate`` with the following::
+There is no installation for the actual gnomon code since it's written in an interpreted language (i.e. python).  In order to tell Python where to look for gnomon, you must append ``$VIRTUAL_ENV/bin/activate`` with the following:
 
 .. literalinclude:: snip/snip14.bash
 

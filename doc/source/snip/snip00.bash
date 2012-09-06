@@ -5,3 +5,5 @@ sudo apt-get -y install build-essential xorg-dev \
   liblapack-dev mercurial libboost-all-dev \
   libatlas-base-dev subversion gfortran libxml2-dev\
   liblog4cpp5-dev python-numpy python-scipy
+
+easy_install msrflux virtualenv
