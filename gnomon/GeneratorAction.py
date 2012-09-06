@@ -18,6 +18,7 @@ import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 from scipy.stats.distributions import rv_frozen
 import scipy
+import random
 
 
 def lookup_cc_partner(nu_pid):
@@ -134,16 +135,15 @@ class composite_z():
         return self.material
 
     def rvs(self):
-        import random
-        layer = random.randint(-self.layers / 2, self.layers / 2)  # inclusive
-
-        z = layer * self.thickness_layer
+        layer = random.randint(-self.layers / 2, self.layers / 2 - 1)  # inclusive
 
         d_sc = self.density['Scint.']
         t_sc = 2 * self.thickness_bar
 
         t_fe = self.thickness_layer - t_sc
         d_fe = self.density['Iron']
+
+        z = layer * self.thickness_layer
 
         # How much material is there
         my_max = t_fe * d_fe + t_sc * d_sc
@@ -159,7 +159,7 @@ class composite_z():
             z += random.uniform(0, t_sc)
             self.material = 'Scint.'
 
-        self.log.debug('Material is %s' % self.material)
+        #self.log.debug('Material is %s' % self.material)
         return z
 
 
