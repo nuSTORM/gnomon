@@ -7,8 +7,10 @@ import math
 import random
 
 
-servers = ['http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
-           'http://gnomon:balls@tasd.fnal.gov:5984/']
+servers = [
+    'http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
+    #'http://gnomon:balls@tasd.fnal.gov:5984/'
+    ]
 
 polarity = '-'
 

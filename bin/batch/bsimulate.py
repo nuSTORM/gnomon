@@ -66,7 +66,7 @@ time python bin/simulate.py --name %(db_name)s --pid %(pid)d --distribution %(en
 
         print command
         os.system(command)
-        time.sleep(1)
+        #time.sleep(1)
 
 
 shutil.rmtree(tempdir)
