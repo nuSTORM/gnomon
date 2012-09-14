@@ -9,7 +9,7 @@ echo export PATH=\$PATH:\${LHAPDF}/bin:\${GENIE}/bin >> $VIRTUAL_ENV/bin/activat
 echo export PYTHONPATH=\$PYTHONPATH:\${LHAPDF}/lib/python2.6/site-packages/ >> $VIRTUAL_ENV/bin/activate
 echo export LHAPATH=\`lhapdf-config --pdfsets-path\` >> $VIRTUAL_ENV/bin/activate
 echo export LLP=LD_LIBRARY_PATH >> $VIRTUAL_ENV/bin/activate
-echo eval \${LLP}=\${!LLP}:\${LHAPDF}/lib:\${GENIE}/lib:\${PYTHIA6}:/opt/local/lib >> $VIRTUAL_ENV/bin/activate
+echo eval \${LLP}=\${!LLP}:\${LHAPDF}/lib:\${GENIE}/lib:\${PYTHIA6} >> $VIRTUAL_ENV/bin/activate
 
 source $VIRTUAL_ENV/bin/activate
 

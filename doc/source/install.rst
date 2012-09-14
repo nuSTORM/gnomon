@@ -1,6 +1,8 @@
 Installation
 ============
 
+*Want to cheat?* :doc:`/cheat`
+
 Software Prerequisites
 ----------------------
 
@@ -13,7 +15,7 @@ Gnomon and its dependencies depends on several software packages:
 * xerces C++ 3.1.1 (for GDML)
 * GEANT4.9.5
 * g4py
-* ROOT 5.32
+* ROOT 5.34
 
 For development, we also recommend:
 
@@ -30,7 +32,7 @@ Step-by-Step Installation
 Although Gnomon can run on any Linux distribution or Mac OS X, we recommend the
 use of Ubuntu Server 12.04 LTS or Mac OS X for Gnomon testing and development.  For these
 instructions, we will assume you are starting with a fresh Ubuntu 12.04 or fresh
-Mac OS X 10.7.3 installation.  Notes about using Scientific Linux can be found
+Mac OS X 10.8.1 installation.  Notes about using Scientific Linux can be found
 in the :doc:`faq`.
 
 Steps 1 will require root privileges, but the remaining steps will be done in
@@ -71,7 +73,7 @@ assumed for these instructions.  Instructions are provided at the Macports
 website http://guide.macports.org/.  It is assumed that the versions of your
 software are::
 
-* Mac OS X >=10.7.3
+* Mac OS X >=10.8
 * Xcode >=4.3.1
 * MacPorts >=2.0.4 (requires Xcode)
 
@@ -80,6 +82,8 @@ are able to install MacPorts.  Xcode is available through the AppStore but it is
 also required to go into the Xcode preferences, select the Downloads tab, and
 ensure that the "Command Line Tools" component is installed.  This is all
 outlined in the MacPorts installation guide which is referenced above.
+
+There is various Fortran code within Genie but the default XCode compiler doesn't ship with a fortran compiler.  The last two lines of the commands below deal with this.
 
 Next we must run the following commands::
 
@@ -93,12 +97,8 @@ Next we must run the following commands::
      sudo easy_install virtualenv
      export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
 
-``yum`` packages from the Redhat based distributions (SL5)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Unsupported**.  Command dump::
-
-  yum install mercurial
+     sudo port install gcc47 +gfortran
+     sudo port select gcc mp-gcc47
 
 See :doc:`faq` about how to change the Python version in userspace.
 
@@ -167,9 +167,9 @@ Gnomon uses the ROOT I/O system to record event information to disk
 for access later.  In addition, we expect many Gnomon users will
 want to use ROOT to analyze the output of Gnomon.
 
-Begin by downloading the ROOT 5.32 tarball from `the ROOT download
-page <http://root.cern.ch/drupal/content/production-version-532>`_.
-As of this writing, the latest version is 5.32.00.  Then, from the
+Begin by downloading the ROOT 5.34 tarball from `the ROOT download
+page <http://root.cern.ch/drupal/content/production-version-534>`_.
+As of this writing, the latest version is 5.34.00.  Then, from the
 download directory, execute the following commands:
 
 .. literalinclude:: snip/snip072.bash
@@ -238,7 +238,7 @@ Install Genie:
 
 .. literalinclude:: snip/snip12.bash
 
-
+At this point you should find the command ``gevgen`` in your ``bin`` folder.  If you do not, look for errors in the previous command's output.  You may need to run ``make`` twice.
 
 Step 7: gnomon
 ^^^^^^^^^^^^^^
