@@ -11,7 +11,7 @@ servers = ['http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
            'http://gnomon:balls@tasd.fnal.gov:5984/'
            ]
 
-polarity = '-'
+polarity = -1.0
 
 number_of_events = 1000
 repeat_point = 2  # how many times to redo same point
@@ -46,7 +46,7 @@ source /home/tunnell/env/gnomon/bin/activate
 cd $VIRTUAL_ENV/src/gnomon
 source setup.sh
 export COUCHDB_URL=%(server_url)s
-time python bin/simulate.py --name %(db_name)s --pid %(pid)d --distribution %(energy)s --events %(this_number_evts)d %(flags)s --run %(run)d --polarity %(polarity)s
+time python bin/simulate.py --name %(db_name)s --pid %(pid)d --distribution %(energy)s --events %(this_number_evts)d %(flags)s --run %(run)d --polarity %(polarity)f
 """ % {'db_name': db_name, 'this_number_evts': this_number_evts, 'run': run, 'flags': flags, 'server_url': server, 'polarity': polarity, 'energy': energy_dist, 'pid': pid}
 
         file.write(script)

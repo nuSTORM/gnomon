@@ -1,22 +1,42 @@
 import math
 import Geant4 as G4
+from gnomon.Configuration import RUNTIME_CONFIG as rc
 
 
 class WandsToroidField(G4.G4MagneticField):
     "Toroid Field from Bob Wands simulation parameterization"
 
-    def __init__(self, focus):
-        G4.G4MagneticField.__init__(self)
-        if focus == '+':
-            self.sign = 1
-        elif focus == '-':
-            self.sign = -1
-        elif focus == '0':
-            self.sign = 0
-        else:
-            raise ValueError
+    def __init__(self, scale=1.0, B0=1.53, B1=0.032, B2=0.64, H=0.28):
+        """Initial field map
 
-    def PhenomModel(self, r, B0=1.53, B1=0.032, B2=0.64, H=0.28):
+        scale has the sign of the field.  Focus signal with scale = 1, focus
+        background with scale = -1.  Have 80% field with scale = 0.8
+
+        B0, B1, B2, and H are fit parameters.
+
+        Default values from Ryan Bayes, March 15th, 2012, talk to Valencia grp.
+        B0 = 1.36  # T
+        B1 = 0.0406  # T m
+        B2 = 0.8  # T
+        H = 0.16  # 1/m
+
+        Field to field map from Bob Wands, 1 cm plate, Jan. 30, 2012  
+        """
+
+        G4.G4MagneticField.__init__(self)
+
+        self.scale = float(scale)
+
+        self.B0 = B0
+        self.B1 = B1
+        self.B2 = B2
+        self.H = H
+
+        # Save field
+        rc['field'] = self.scale
+
+
+    def PhenomModel(self, r):
         """Fit to field map
 
         A phenomenological fit by Ryan Bayes (Glasgow) to a field map
@@ -24,7 +44,7 @@ class WandsToroidField(G4.G4MagneticField):
         January 30th, 2012.  Not defined for r <= 0"""
         if r <= 0:
             raise ValueError
-        field = B0 + B1 * G4.m / r + B2 * math.exp(-1 * H * r / G4.m)
+        field = self.B0 + self.B1 * G4.m / r + self.B2 * math.exp(-1 * self.H * r / G4.m)
         return field
 
     def GetFieldValue(self, pos, time):
@@ -35,20 +55,13 @@ class WandsToroidField(G4.G4MagneticField):
         bfield.y = 0
         bfield.z = 0.
 
-        if self.sign == 0:
+        if self.scale == 0.0:
             return bfield * G4.tesla
 
-        # From Bob Wands, 1 cm plate, Jan. 30
         r = math.sqrt(pos.x ** 2 + pos.y ** 2)
 
-        #  Ryan Bayes, March 15th, 2012, talk to Valencia grp.
-        B0 = 1.36  # T
-        B1 = 0.0406  # T m
-        B2 = 0.8  # T
-        H = 0.16  # 1/m
-
         if r != 0.0:
-            B = self.sign * self.PhenomModel(r, B0, B1, B2, H)
+            B = self.scale * self.PhenomModel(r)
             bfield.x = -1 * (pos.y / r) * B
             bfield.y = 1 * (pos.x / r) * B
 

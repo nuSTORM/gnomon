@@ -18,7 +18,7 @@
     }, 
     "name": "test", 
     "pid": 14, 
-    "polarity": "+", 
+    "polarity": 1.0, 
     "run_number": 0, 
     "seed": 0, 
     "vertex": [

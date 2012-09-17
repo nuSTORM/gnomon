@@ -77,12 +77,8 @@
             "type": "integer"
         }, 
         "polarity": {
-            "description": "Which type of muon to focus in", 
-            "enum": [
-                "0", 
-                "-", 
-                "+"
-            ], 
+            "description": "Which type of muon to focus (1.0 for mu+, -1.0 for mu-, 0).  Number which is a field 'scale'.  ", 
+	    "type": "number",
             "type": "string"
         }, 
         "run_number": {

@@ -16,7 +16,16 @@ class AppendTruth(Base.Processor):
         for doc in docs:
             doc['mc'] = {}
 
-            for name in ['generator', 'tracking', 'event_type']:
+            # Persistent
+            for name in ['field']:
+                doc['mc'][name] = rc[name]
+                if name in rc:
+                    doc['mc'][name] = rc[name]
+
+            # Nonpersistent
+            for name in ['generator',
+                         'tracking',
+                         'event_type']:
                 if name in rc:
                     doc['mc'][name] = rc[name]
                     rc[name] = {}  # must reset!

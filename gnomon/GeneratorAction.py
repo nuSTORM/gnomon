@@ -13,6 +13,7 @@ import sys
 import os
 import random
 import tempfile
+import subprocess
 import math
 import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
@@ -338,8 +339,6 @@ class GenieGenerator(Generator):
         else:
             raise ValueError('bad energy distribution')
 
-        command += ' > /dev/null'  # shut it up
-
         self.log.info('Running the command: %s', command)
 
         print filename
@@ -349,14 +348,32 @@ class GenieGenerator(Generator):
 
         command = """cd %(tmpdir)s
 %(command)s
-gntpc -i %(int_file)s -o %(filename)s -f gst > /dev/null
+gntpc -i %(int_file)s -o %(filename)s -f gst
 """ % { "tmpdir" : self.genie_temp_dir,
         "command" : command,
         "int_file" : intermediate_file,
         "filename" : filename }
 
         self.log.info('Running the command: %s', command)
-        os.system(command)
+
+        s = subprocess.Popen(command,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             shell=True) # unsafe, but no easy way TODO
+
+        # Trick to send stdout -> debug
+        while True:
+            line = s.stdout.readline()
+            if not line:
+                break
+            self.log.debug(line)
+
+        # Trick to send stderr -> error
+        while True:
+            line = s.stdout.readline()
+            if not line:
+                break
+            self.log.error(line)
 
         os.remove(intermediate_file)
 

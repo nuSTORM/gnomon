@@ -304,7 +304,7 @@ class VlenfPolynomialFitter(Base.Processor):
 
     def __init__(self):
         Base.Processor.__init__(self)
-        self.field = MagneticField.WandsToroidField('+')
+        self.field = MagneticField.WandsToroidField()
 
     def Fit(self, zxq):
         """Perform a 2D fit on 2D points then return parameters
