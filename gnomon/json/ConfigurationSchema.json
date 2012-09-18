@@ -19,8 +19,8 @@
             "enum": [
                 "muon", 
                 "electron", 
-                "point",
-		"flat"
+                "point", 
+                "flat"
             ], 
             "type": "string"
         }, 
@@ -78,8 +78,7 @@
         }, 
         "polarity": {
             "description": "Which type of muon to focus (1.0 for mu+, -1.0 for mu-, 0).  Number which is a field 'scale'.  ", 
-	    "type": "number",
-            "type": "string"
+            "type": "number"
         }, 
         "run_number": {
             "description": "The run number.  If zero, random.", 
