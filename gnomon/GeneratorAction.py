@@ -348,7 +348,7 @@ class GenieGenerator(Generator):
 
         command = """cd %(tmpdir)s
 %(command)s
-gntpc -i %(int_file)s -o %(filename)s -f gst
+DISPLAY= gntpc -i %(int_file)s -o %(filename)s -f gst
 """ % { "tmpdir" : self.genie_temp_dir,
         "command" : command,
         "int_file" : intermediate_file,
