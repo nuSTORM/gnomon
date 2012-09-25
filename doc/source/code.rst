@@ -4,28 +4,28 @@ Code Documentation
 Configuration
 --------------
 
- .. automodule:: Configuration
+ .. automodule:: gnomon.Configuration
     :members:
     :undoc-members:
 
 DetectorConstruction
 --------------------
 
- .. automodule:: DetectorConstruction
+ .. automodule:: gnomon.DetectorConstruction
      :members:
      :undoc-members:
 
 EventAction
 -----------
 
- .. automodule:: EventAction
+ .. automodule:: gnomon.EventAction
      :members:
      :undoc-members:
 
 GeneratorAction
 ---------------
 
- .. automodule:: GeneratorAction
+ .. automodule:: gnomon.GeneratorAction
      :members:
      :undoc-members:
 
@@ -33,21 +33,21 @@ GeneratorAction
 Graph
 -----
 
- .. automodule:: Graph
+ .. automodule:: gnomon.Graph
      :members:
      :undoc-members:
 
 Logging
 -------
 
- .. automodule:: Logging
+ .. automodule:: gnomon.Logging
      :members:
      :undoc-members:
 
 MagneticField
 -------------
 
- .. automodule:: MagneticField
+ .. automodule:: gnomon.MagneticField
      :members:
      :undoc-members:
 
@@ -55,13 +55,13 @@ MagneticField
 SD
 --
 
- .. automodule:: SD
+ .. automodule:: gnomon.SD
      :members:
      :undoc-members:
 
 TrackingAction
 --------------
 
- .. automodule:: TrackingAction
+ .. automodule:: gnomon.TrackingAction
      :members:
      :undoc-members:
