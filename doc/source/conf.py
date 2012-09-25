@@ -214,3 +214,24 @@ man_pages = [
     ('index', 'gnomon', u'gnomon Documentation',
      [u'Christopher Tunnell'], 1)
 ]
+
+
+class Mock(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __call__(self, *args, **kwargs):
+        return Mock()
+
+    @classmethod
+    def __getattr__(cls, name):
+        if name in ('__file__', '__path__'):
+            return '/dev/null'
+        elif name[0] == name[0].upper():
+            return type(name, (), {})
+        else:
+            return Mock()
+
+MOCK_MODULES = ['Geant4', 'ROOT', 'scipy']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = Mock()

@@ -67,3 +67,8 @@ Why is the test coverage of Geant4 interfaces poor?
 ---------------------------------------------------
 
 Hard to instantiate.  Geant4 isn't modular enough.
+
+Genie hints
+-----------
+
+   genie
