@@ -1,6 +1,6 @@
-=========================================
+=============
 gnomon README
-=========================================
+=============
 
 .. sectnum::
 
@@ -9,23 +9,45 @@ gnomon README
 What is gnomon
 ~~~~~~~~~~~~~~
 
-gnomon is a far detector simulation for the magnetized iron sampling calorimeter of nuSTORM.  It does:
+gnomon is a far detector simulation for the magnetized iron sampling calorimeter of nuSTORM.
 
-- one thing
-- two things
- 
-  - sub thing
-  - sub thing 2
+Documentation
+~~~~~~~~~~~~~
 
-User Documentation
-~~~~~~~~~~~~~~~~~~
-
-User documentation is available at:
+User and developer documentation is available in HTML format at:
 
 http://gnomon.readthedocs.org/
 
-Developer Documentation (like Java Docs)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+And a PDF can be found at:
 
-TBD
+http://media.readthedocs.org/pdf/gnomon/latest/gnomon.pdf
+
+Development team
+~~~~~~~~~~~~~~~~
+
+Development is done within github.  The development page is here:
+
+https://github.com/nuSTORM/gnomon
+
+Feel free to fork the project then make a pull request once you have developed a feature.  You do not need any special
+access to start developing on gnomon.  There are, however, develop team leaders who must approve your request to commit
+code.  They will review your code -- or assign somebody to review your code -- before merging the commit with the trunk.
+
+There is currently no mailing list so it is encouraged that you contact the authors directly.
+
+Authors
+~~~~~~~
+
+The official list of authors is maintained here:
+
+https://github.com/nuSTORM?tab=members
+
+To keep the list of authors within the code, an unofficial list follows (alphabetical):
+
+David Adey
+Ryan Bayes
+Christopher Tunnell <c.tunnell1@physics.ox.ac.uk>
+
+
+
 
