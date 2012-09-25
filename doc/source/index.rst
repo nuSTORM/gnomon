@@ -31,7 +31,11 @@ Subscribe to the mailing list for update announcements!
 Authors
 -------
 
-Gnomon was made by Christopher Tunnell <c.tunnell1@physics.ox.ac.uk>.
+Gnomon was made by:
+
+David Adey
+Ryan Bayes
+Christopher Tunnell <c.tunnell1@physics.ox.ac.uk>
 
 Indices and tables
 ------------------
