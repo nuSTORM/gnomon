@@ -8,5 +8,9 @@ setup(
     license='LICENSE.txt',
     author='tunnell',
     author_email='c.tunnell1@physics.ox.ac.uk',
-    description=''
+    description='',
+    requires = [
+               'python-graph-core',
+               'validictory',
+               ],
 )
