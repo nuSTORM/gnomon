@@ -44,9 +44,9 @@ https://github.com/nuSTORM?tab=members
 
 To keep the list of authors within the code, an unofficial list follows (alphabetical):
 
-David Adey
-Ryan Bayes
-Christopher Tunnell <c.tunnell1@physics.ox.ac.uk>
+* David Adey
+* Ryan Bayes
+* Christopher Tunnell <c.tunnell1@physics.ox.ac.uk>
 
 
 
