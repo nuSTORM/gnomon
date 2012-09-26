@@ -1,5 +1,11 @@
-Code Documentation
-==================
+Developer Documentation
+=======================
+
+On this page, the code related to the infrastructure of gnomon will be discussed which is mostly contained in the base
+of the gnomon package.  Please see the User Documentation for information on the processors.
+
+At a basic level, the core of gnomon is either code to satify Geant4 interfaces (EventActions, etc.) or internal
+bookkeeping (configuration, etc.).
 
 Configuration
 --------------
@@ -52,16 +58,9 @@ MagneticField
      :undoc-members:
 
 
-SD
---
+SensitiveDetector
+-----------------
 
- .. automodule:: gnomon.SD
-     :members:
-     :undoc-members:
-
-TrackingAction
---------------
-
- .. automodule:: gnomon.TrackingAction
+ .. automodule:: gnomon.SensitiveDetector
      :members:
      :undoc-members:

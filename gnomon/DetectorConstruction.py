@@ -1,18 +1,26 @@
-"""Construct VLENF geometry"""
+"""Construct a detector within Geant4
+
+This module deals with creating detectors (geometries, sensitive detectors, etc.) and interfacing them with Geant4.
+There is, for example, a class that loads geometries from GDML.
+
+TODO: can box construction and calorimeter construction be superclassed?  Ideally with superclass handling the Geant4
+interface and the subclasses tweaking the detector for their specific need.
+"""
 
 
 import os
 import logging
 import Geant4 as G4
-from SD import ScintSD
+from SensitiveDetector import ScintSD
 import MagneticField
 import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
-from Geant4 import G4Material
 
 
 class BoxDetectorConstruction(G4.G4VUserDetectorConstruction):
-    "Vlenf Detector Construction"
+    """Create a cuboid geometry of uniform material
+
+     Useful for testing particle interactions with uniform materials"""
 
     def __init__(self, name):
         self.log = logging.getLogger('root')
@@ -29,20 +37,20 @@ class BoxDetectorConstruction(G4.G4VUserDetectorConstruction):
         self.filename = os.path.join(self.config['data_dir'], name)
 
     def Construct(self):  # pylint: disable-msg=C0103
-        """Construct the VLENF from a GDML file"""
+        """Construct a cuboid from a GDML file without sensitive detector"""
         # Parse the GDML
         self.gdml_parser.Read(self.filename)
         self.world = self.gdml_parser.GetWorldVolume()
 
         self.log.info("Materials:")
-        self.log.info(G4Material.GetMaterialTable())
+        self.log.info(G4.G4Material.GetMaterialTable())
 
         # Return pointer to world volume
         return self.world
 
 
-class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
-    "Vlenf Detector Construction"
+class MagIronSamplingCaloDetectorConstruction(G4.G4VUserDetectorConstruction):
+    """Create a magnetized iron sampling calorimeter"""
 
     def __init__(self, field_polarity):
         self.log = logging.getLogger('root')
@@ -85,7 +93,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         return self.sensitive_detector
 
     def Construct(self):  # pylint: disable-msg=C0103
-        """Construct the VLENF from a GDML file"""
+        """Construct nuSTORM from a GDML file"""
         # Parse the GDML
         self.world = self.gdml_parser.GetWorldVolume()
 
@@ -113,7 +121,7 @@ class VlenfDetectorConstruction(G4.G4VUserDetectorConstruction):
         my_lv.SetFieldManager(self.field_manager, False)
 
         self.log.info("Materials:")
-        self.log.info(G4Material.GetMaterialTable())
+        self.log.info(G4.G4Material.GetMaterialTable())
 
         # Return pointer to world volume
         return self.world

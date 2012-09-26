@@ -4,25 +4,23 @@ from gnomon.Configuration import RUNTIME_CONFIG as rc
 
 
 class WandsToroidField(G4.G4MagneticField):
-    "Toroid Field from Bob Wands simulation parameterization"
+    """Toroid Field from Bob Wands simulation parameterization
+
+    scale has the sign of the field.  Focus signal with scale = 1, focus
+    background with scale = -1.  Have 80% field with scale = 0.8
+
+    B0, B1, B2, and H are fit parameters.
+
+    Default values from Ryan Bayes, March 15th, 2012, talk to Valencia grp.
+    B0 = 1.36  # T
+    B1 = 0.0406  # T m
+    B2 = 0.8  # T
+    H = 0.16  # 1/m
+
+    Field to field map from Bob Wands, 1 cm plate, Jan. 30, 2012
+    """
 
     def __init__(self, scale=1.0, B0=1.53, B1=0.032, B2=0.64, H=0.28):
-        """Initial field map
-
-        scale has the sign of the field.  Focus signal with scale = 1, focus
-        background with scale = -1.  Have 80% field with scale = 0.8
-
-        B0, B1, B2, and H are fit parameters.
-
-        Default values from Ryan Bayes, March 15th, 2012, talk to Valencia grp.
-        B0 = 1.36  # T
-        B1 = 0.0406  # T m
-        B2 = 0.8  # T
-        H = 0.16  # 1/m
-
-        Field to field map from Bob Wands, 1 cm plate, Jan. 30, 2012  
-        """
-
         G4.G4MagneticField.__init__(self)
 
         self.scale = float(scale)

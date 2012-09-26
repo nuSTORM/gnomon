@@ -232,6 +232,6 @@ class Mock(object):
         else:
             return Mock()
 
-MOCK_MODULES = ['Geant4', 'ROOT', 'scipy']
+MOCK_MODULES = ['Geant4', 'ROOT', 'scipy', 'scipy.stats', 'scipy.optimize', 'scipy.stats.distributions']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()

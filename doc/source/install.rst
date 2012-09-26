@@ -40,7 +40,7 @@ your home directory without administrator intervention.
 
 
 Step 1: Prerequisites
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 The installation instructions diverge depending on which
 operating system you are using.  Please find your package manager and
@@ -66,7 +66,7 @@ To be able to generate the documentation, we also need these tools::
 
 
 ``port`` packages from MacPorts package manager OS X
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Macports is one possible package manager for OS X and the one that will be
 assumed for these instructions.  Instructions are provided at the Macports
@@ -230,7 +230,7 @@ Now you can enable the Gnomon environment whenever you want by typing
 
 
 Genie
-^^^^^^^^^^^^^^
+^^^^^
 
 Please install Genie per the directions on their `website <http://www.genie-mc.org/>`_.  At the time writing, only version 2.7.1 has been tested with gnomon.  However, there is no svn tag for this release so you might want to try the trunk.  The gnomon software will only expect a file in the GST file format so it should be independent of Genie version.
 

@@ -7,11 +7,10 @@ import Geant4 as G4
 import processors
 
 
-class VlenfEventAction(G4.G4UserEventAction):
-    """The VLENF Event Action"""
+class EventAction(G4.G4UserEventAction):
+    """A Geant4 interface that subclasses G4UserEventAction and runs processors over Geant4 events"""
 
     def __init__(self, processor_names):  # pga=None):
-        """execute the constructor of the parent class G4UserEventAction"""
         G4.G4UserEventAction.__init__(self)
 
         self.log = logging.getLogger('root')
@@ -31,15 +30,18 @@ class VlenfEventAction(G4.G4UserEventAction):
         self.sd = None
 
     def BeginOfEventAction(self, event):
-        """Executed at the beginning of an event, print hits"""
+        """Save event number"""
         self.log.info("Simulating event %s", event.GetEventID())
         self.sd.setEventNumber(event.GetEventID())
 
     def setSD(self, sd):
+        """Hook to the sensitive detector class
+
+        User for fetching hits from sensitive detector to pass to processor loop"""
         self.sd = sd
 
     def EndOfEventAction(self, event):
-        """Executed at the end of an event, do nothing"""
+        """At the end of an event, grab sensitive detector hits then run processor loop"""
         self.log.debug('Processesing simulated event %d', event.GetEventID())
 
         docs = self.sd.getDocs()
@@ -53,5 +55,6 @@ class VlenfEventAction(G4.G4UserEventAction):
 
 
     def shutdown(self):
+        """Shutdown each processor"""
         for processor in self.processors:
             processor.shutdown()

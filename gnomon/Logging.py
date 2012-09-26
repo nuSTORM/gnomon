@@ -1,3 +1,5 @@
+"""Handle routing output, errors, and exceptions to disk and screen
+"""
 import logging
 import sys
 import time
@@ -7,6 +9,7 @@ import gnomon.Configuration as Configuration
 
 
 def getLogLevels():
+    "Return log levels that Python's logging facilities understands"
     return ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 
@@ -14,16 +17,16 @@ def addLogLevelOptionToArgs(parser):
     """Add log level arguments to command line parser
 
     This is not in the schema because the log level needs to be known when
-    setting up the Configuration classes"""
+    setting up the Configuration classes
+    """
     parser.add_argument('--log_level',
                         choices=getLogLevels(),
                         default='INFO')
 
 
 class StreamToLogger(object):
-    """
-    Fake file-like stream object that redirects writes to a logger instance.
-    """
+    "Fake file-like stream object that redirects writes to a logger instance."
+
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level

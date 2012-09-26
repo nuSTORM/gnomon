@@ -25,17 +25,18 @@ Subscribe to the mailing list for update announcements!
    :maxdepth: 2
 
    install
+   user
    code
    faq
+   genie
+   cheat
 
 Authors
 -------
 
 Gnomon was made by:
 
-David Adey
-Ryan Bayes
-Christopher Tunnell <c.tunnell1@physics.ox.ac.uk>
+.. include:: ../../AUTHORS
 
 Indices and tables
 ------------------
