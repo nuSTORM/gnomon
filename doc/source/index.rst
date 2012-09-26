@@ -8,9 +8,13 @@ iron sampling calorimter within nuSTORM.
 The nuSTORM experiment
 ----------------------
 
-The neutrinos from stored muons (nuSTORM) experiment is a proposal to search for sterile neutrinos, measure neutrino
-cross sections, and perform accelerator R&D using beams of decaying muons.  The Letter Of Intent (LOI) that was submit
-to Fermilab is available here:
+nuSTORM is an entry-level muon storage ring intended to produce flavor pure beams of muon neutrinos and electron
+antineutrinos (or electron neutrinos and muon antineutrinos when mu-minus are stored). When paired with a magnetized
+detector at short baseline (1 to 2 km), nuSTORM is intended to make a definitive measurement on the presence or absence
+of an LSND/MiniBooNE type sterile neutrino. Near detectors in the nuSTORM beam could be used to make very clean, high
+statistics measurements of both electron and muon neutrino cross sections.
+
+The Letter Of Intent (LOI) that was submit to Fermilab is available here:
 
   http://arxiv.org/abs/1206.0294
 
