@@ -6,10 +6,6 @@ gnomon README
 
 .. contents:: The tiny table of contents
 
-What is gnomon
-~~~~~~~~~~~~~~
-
-gnomon is a far detector simulation for the magnetized iron sampling calorimeter of nuSTORM.
 
 Documentation
 ~~~~~~~~~~~~~
