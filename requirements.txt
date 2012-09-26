@@ -1,3 +1,4 @@
 python-graph-core
 validictory
 couchdb
+numpy
