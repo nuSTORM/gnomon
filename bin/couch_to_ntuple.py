@@ -22,14 +22,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=my_description)
 
     parser.add_argument('--name', '-n', help='DB in CouchDB for output',
-                        type=str, required=True)
+        type=str, required=True)
     parser.add_argument('--type', '-t', help='event type', type=str,
-                        required=True)
+        required=True)
     parser.add_argument('--logfileless', action='store_true',
-                        help='this will disable writing out a log file')
+        help='this will disable writing out a log file')
 
     parser.add_argument('--run', help='run number',
-                        type=int, required=True)
+        type=int, required=True)
 
     Logging.addLogLevelOptionToArgs(parser)  # adds --log_level
     args = parser.parse_args()
@@ -59,7 +59,7 @@ function(doc) {
 
     filename = 'root/gnomon_%s_%d_%s.root' % (args.name, args.run, args.type)
     file = ROOT.TFile(filename,
-                      'RECREATE')
+        'RECREATE')
     t = ROOT.TTree('t', '')
 
     my_struct = None
@@ -93,18 +93,19 @@ function(doc) {
                     for element in elements_3vector:
                         if element not in my_value.keys():
                             raise ValueError('Dictionary is not 3-vector since missing %s',
-                                             element)
+                                element)
                         my_struct_code += 'float %s_%s;' % (key, element)
                 else:
                     raise ValueError('Unsupported type in JSON')
 
             my_struct_code += '};'
             log.info('Using following structure for converting Python: %s',
-                     my_struct_code)
+                my_struct_code)
 
             ROOT.gROOT.ProcessLine(my_struct_code)
 
             from ROOT import MyStruct
+
             my_struct = MyStruct()
 
             for key in keys:
@@ -124,13 +125,13 @@ function(doc) {
                     for element in elements_3vector:
                         new_key = '%s_%s' % (key, element)
                         t.Branch(new_key, ROOT.AddressOf(my_struct, new_key),
-                                 '%s/%s' % (new_key, code))
+                            '%s/%s' % (new_key, code))
                     continue
                 else:
                     raise ValueError
 
                 t.Branch(key, ROOT.AddressOf(my_struct, key),
-                         '%s/%s' % (key, code))
+                    '%s/%s' % (key, code))
 
         for key in keys:
             my_value = doc[key]

@@ -1,19 +1,17 @@
 """Routines to save output
 """
 
-
 import os
 import sys
 import couchdb
 import gnomon.Configuration as Configuration
 from gnomon.processors import Base
-import gzip
-import json
 
 
 class Manager(Base.Processor):  # pylint: disable-msg=R0922
     """Output base class
     """
+
     def __init__(self):
         Base.Processor.__init__(self)
         self.config = Configuration.GLOBAL_CONFIG
@@ -77,7 +75,6 @@ class CouchManager(Manager):
             except:
                 self.log.critical("Race condition caught")
                 raise RuntimeError("Race condition caught when creating DB")
-                
 
             try:
                 auth_doc = {}

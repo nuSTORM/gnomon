@@ -8,6 +8,7 @@ def parse_requirements(file_name):
     print requirements
     return requirements
 
+
 def get_version():
     file_obj = open('VERSION')
     return file_obj.read().rstrip('\n')
@@ -24,5 +25,5 @@ setup(
     author_email='c.tunnell1@physics.ox.ac.uk',
     long_description=open('README.rst').read(),
     description='desc',
-    install_requires = parse_requirements('requirements.txt')
+    install_requires=parse_requirements('requirements.txt')
 )

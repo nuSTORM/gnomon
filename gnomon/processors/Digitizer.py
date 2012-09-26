@@ -1,7 +1,6 @@
 """The Digitization routines are for simulating electronics response in various
 ways.  Oh, and we use USA spelling here, so use a 'zed' and like it."""
 
-
 from gnomon.processors import Base
 
 

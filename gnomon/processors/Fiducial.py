@@ -1,14 +1,11 @@
 """Determine distance to fiducial boundary"""
 
-import logging
-
 import numpy as np
 import math
 from gnomon.processors import Base
 
 
 class FiducialCuts(Base.Processor):
-
     def distance_to_boundaries(self, z, x):
         # config is inherited from the parent class
         self.z_extent = self.runtime_config['layers'] * self.runtime_config['thickness_layer']
@@ -36,7 +33,7 @@ class FiducialCuts(Base.Processor):
         cuts['all'] = pass_all
 
         return cuts
-                
+
 
     def process(self, docs):
         new_docs = []
@@ -62,7 +59,7 @@ class FiducialCuts(Base.Processor):
                 points = doc['tracks'][view]['LEFTOVERS']
 
                 for z, x, Q in points:
-                    distance = self.distance_to_boundaries(z,x)
+                    distance = self.distance_to_boundaries(z, x)
                     point_cuts = self.apply_cuts(distance)
 
                     for key, value in point_cuts.iteritems():
@@ -71,7 +68,7 @@ class FiducialCuts(Base.Processor):
 
                         event_cuts[key] = event_cuts[key] and value
 
-                    
+
             ### Save ###
 
             if 'cuts' not in doc:

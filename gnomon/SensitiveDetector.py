@@ -105,8 +105,8 @@ class ScintSD(G4.G4VSensitiveDetector):
             raise
 
         guess_trans = bar_number
-        guess_trans = self.width * (guess_trans - self.bars / 2) + \
-            self.width / 2
+        guess_trans = self.width * (guess_trans - self.bars / 2) +\
+                      self.width / 2
         if view == 'X':
             trans = position.x
             doc['x'] = guess_trans
@@ -124,7 +124,7 @@ class ScintSD(G4.G4VSensitiveDetector):
         except:
             self.log.error('Bad transverse position:')
             self.log.error('Guess in z: %f, Position in z: %f',
-                           guess_trans, trans)
+                guess_trans, trans)
             raise
 
         return doc
@@ -162,9 +162,9 @@ class ScintSD(G4.G4VSensitiveDetector):
 
         my_z = theTouchable.GetTranslation(0).z
         doc['position_bar'] = self.getMCHitBarPosition(doc['layer'],
-                                                       doc['bar'],
-                                                       doc['view'],
-                                                       position,
-                                                       my_z)
+            doc['bar'],
+            doc['view'],
+            position,
+            my_z)
 
         self.docs.append(doc)

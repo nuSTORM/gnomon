@@ -1,15 +1,10 @@
 """Filter routines"""
 
-import logging
-
 import numpy as np
-import math
 from gnomon.processors import Base
-from gnomon.Configuration import RUNTIME_CONFIG as rc
 
 
 class AppearanceCuts(Base.Processor):
-
     def process(self, docs):
         new_docs = []
 
@@ -56,26 +51,26 @@ class AppearanceCuts(Base.Processor):
 
             try:
                 #  CC nu_e events that pass the length cut are bizarre
-                if doc['mc']['event_type']['cc'] and \
-                        doc['mc']['event_type']['incoming_neutrino'] == 12 and\
-                        pass_cuts['length']:
+                if doc['mc']['event_type']['cc'] and\
+                   doc['mc']['event_type']['incoming_neutrino'] == 12 and\
+                   pass_cuts['length']:
                     is_interesting = True
             except:
                 pass
 
             try:
                 #  CC nu_mu_bar that bend wrong
-                if doc['mc']['event_type']['cc'] and \
-                        doc['mc']['event_type']['incoming_neutrino'] == -14 and\
-                        pass_cuts['all']:
+                if doc['mc']['event_type']['cc'] and\
+                   doc['mc']['event_type']['incoming_neutrino'] == -14 and\
+                   pass_cuts['all']:
                     is_interesting = True
-                    
+
                     if curve < -0.5e-4:
                         clsf['is_very_interesting'] = True
             except:
                 pass
 
-            
+
 
             ### Save ###
 

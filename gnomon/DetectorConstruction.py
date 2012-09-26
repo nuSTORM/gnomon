@@ -7,7 +7,6 @@ TODO: can box construction and calorimeter construction be superclassed?  Ideall
 interface and the subclasses tweaking the detector for their specific need.
 """
 
-
 import os
 import logging
 import Geant4 as G4
@@ -64,7 +63,7 @@ class MagIronSamplingCaloDetectorConstruction(G4.G4VUserDetectorConstruction):
 
         self.config = Configuration.GLOBAL_CONFIG
         self.filename = os.path.join(self.config['data_dir'],
-                                     'iron_scint_bars.gdml')
+            'iron_scint_bars.gdml')
         self.field_manager = None
         self.my_field = None
         self.field_polarity = field_polarity
@@ -79,10 +78,10 @@ class MagIronSamplingCaloDetectorConstruction(G4.G4VUserDetectorConstruction):
             rc[name] = self.gdml_parser.GetConstant(name)
 
         det_width = rc['width'] * rc['bars']
-        iron_volume = det_width * det_width * (rc['layers']/2 * (rc['thickness_layer'] - rc['thickness_bar']))
-        scint_volume = det_width * det_width * (rc['layers']/2 * rc['thickness_bar'])
+        iron_volume = det_width * det_width * (rc['layers'] / 2 * (rc['thickness_layer'] - rc['thickness_bar']))
+        scint_volume = det_width * det_width * (rc['layers'] / 2 * rc['thickness_bar'])
         self.mass = iron_volume * rc['density_iron'] + scint_volume * rc['density_scint']
-        self.mass /= 10**3 # mm^2 -> cm^3, density in /cm^3 but distances in mm
+        self.mass /= 10 ** 3 # mm^2 -> cm^3, density in /cm^3 but distances in mm
         self.log.info("Mass [g]: %f" % self.mass)
 
     def __del__(self):

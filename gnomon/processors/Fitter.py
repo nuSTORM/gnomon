@@ -1,7 +1,5 @@
 """Fitter routines"""
 
-import logging
-
 from scipy.optimize import leastsq
 import numpy as np
 import math
@@ -159,6 +157,7 @@ class ClassifyVariables(Base.Processor):
 
         return new_docs
 
+
 class CombineViews(Base.Processor):
     """Combine x and y views"""
 
@@ -185,20 +184,19 @@ class CombineViews(Base.Processor):
 
             #  Throw away if not analyzable track
             if 'type' not in doc or\
-                    doc['type'] != 'track' or\
-                    doc['analyzable'] is False:
+               doc['type'] != 'track' or\
+               doc['analyzable'] is False:
                 new_docs.append(doc)
                 continue
 
             #  Require extracted tracks
             if 'lengths' not in clsf or\
-                    'x' not in clsf['lengths'] or\
-                    'y' not in clsf['lengths']:
+               'x' not in clsf['lengths'] or\
+               'y' not in clsf['lengths']:
                 new_docs.append(doc)
                 continue
 
             tracks = doc['tracks']
-
 
             lx = clsf['lengths']['x'][0]
             pts_x = tracks['x'][lx]
@@ -301,7 +299,6 @@ class ExtractTracks(Base.Processor):
 
 
 class VlenfPolynomialFitter(Base.Processor):
-
     def __init__(self):
         Base.Processor.__init__(self)
         self.field = MagneticField.WandsToroidField()
@@ -372,8 +369,8 @@ class VlenfPolynomialFitter(Base.Processor):
         for doc in docs:
             #  Checking state
             if 'type' not in doc or\
-                    doc['type'] != 'track' or\
-                    doc['analyzable'] is False:
+               doc['type'] != 'track' or\
+               doc['analyzable'] is False:
                 new_docs.append(doc)
                 continue
 
@@ -395,7 +392,6 @@ class VlenfPolynomialFitter(Base.Processor):
             rf['gof'] = {}
 
             for view in ['x', 'y', 'combined']:
-
                 if view == 'combined':
                     points = tracks[view]
                 else:
@@ -426,7 +422,7 @@ class VlenfPolynomialFitter(Base.Processor):
             if doc['analyzable']:
                 # Rotate fits to bending plane
                 x0, x1, x2 = rf['x']
-                y0, y1, y2 = rf['y']            
+                y0, y1, y2 = rf['y']
                 rf['u'] = self._rotate(rf['x'], rf['y'])
 
             # Save

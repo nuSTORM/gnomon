@@ -36,7 +36,8 @@ source /home/tunnell/env/gnomon/bin/activate
 export COUCHDB_URL=%(server_url)s
 cd $VIRTUAL_ENV/src/gnomon
 time python simulate.py --name distance --vertex 0 0 0 --events %(number_of_events)d %(flags)s --run %(run)d --polarity 0 --energy %(energy)f --pid %(pid)d
-""" % {'number_of_events': number_of_events, 'run': run, 'flags': flags, 'server_url': server, 'energy': energy, 'pid': pid}
+""" % {'number_of_events': number_of_events, 'run': run, 'flags': flags, 'server_url': server, 'energy': energy,
+       'pid': pid}
 
         file.write(script)
         file.close()
@@ -56,6 +57,5 @@ time python simulate.py --name distance --vertex 0 0 0 --events %(number_of_even
         print command
         #os.system(command)
         time.sleep(1)
-
 
 shutil.rmtree(tempdir)

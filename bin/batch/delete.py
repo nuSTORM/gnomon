@@ -1,5 +1,4 @@
 """Delete everything"""
-import argparse
 import couchdb
 
 

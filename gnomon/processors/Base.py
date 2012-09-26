@@ -1,7 +1,6 @@
 """Base class for processors
 """
 
-
 import logging
 from gnomon import Configuration
 from gnomon.Configuration import RUNTIME_CONFIG

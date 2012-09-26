@@ -2,7 +2,6 @@
 
 # system libraries
 import sys
-import argparse
 import logging
 import os
 import math
@@ -14,6 +13,7 @@ sys.stdout = open(os.devnull)  # make fake stdout
 import Geant4 as G4  # Then silently import Geant4!
 from Geant4 import HepRandom, gRunManager
 from Geant4 import gTransportationManager, gApplyUICommand, mm
+
 sys.stdout = temp  # Then return sys.stdout
 
 # gnomon

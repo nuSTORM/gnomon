@@ -1,7 +1,6 @@
 import tempfile
 import sys
 import os
-import time
 import shutil
 import math
 import random
@@ -10,7 +9,7 @@ import random
 servers = [
     #'http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
     'http://gnomon:balls@tasd.fnal.gov:5984/'
-           ]
+]
 
 polarity = '-'
 
@@ -75,6 +74,5 @@ time python bin/simulate.py --name %(db_name)s --pid %(pid)d --distribution %(en
         print command
         os.system(command)
         #time.sleep(1)
-
 
 shutil.rmtree(tempdir)

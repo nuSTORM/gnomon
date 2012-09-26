@@ -51,7 +51,7 @@ class EventAction(G4.G4UserEventAction):
             docs = processor.process(docs)
             if not docs:
                 self.log.warning('%s did not return documents in process()!',
-                                 processor.__class__.__name__)
+                    processor.__class__.__name__)
 
 
     def shutdown(self):

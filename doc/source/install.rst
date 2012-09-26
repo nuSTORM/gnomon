@@ -16,6 +16,7 @@ Gnomon and its dependencies depends on several software packages:
 * GEANT4.9.5
 * g4py
 * ROOT 5.34
+* Genie (optional)
 
 For development, we also recommend:
 
@@ -29,11 +30,10 @@ We will explain how to install all of these packages in the following section.
 Step-by-Step Installation
 ---------------------------------------
 
-Although Gnomon can run on any Linux distribution or Mac OS X, we recommend the
+Although Gnomon should run on any Linux distribution or Mac OS X, we recommend the
 use of Ubuntu Server 12.04 LTS or Mac OS X for Gnomon testing and development.  For these
-instructions, we will assume you are starting with a fresh Ubuntu 12.04 or fresh
-Mac OS X 10.8.1 installation.  Notes about using Scientific Linux can be found
-in the :doc:`faq`.
+instructions, we will assume you are starting with a fresh Ubuntu 12.04. Notes about using Mac OS X 10.8.1
+or Scientific Linux can be found in the :doc:`faq`.
 
 Steps 1 will require root privileges, but the remaining steps will be done in
 your home directory without administrator intervention.
@@ -64,43 +64,6 @@ To be able to generate the documentation, we also need these tools::
 
   sudo apt-get install texlive dvipng
 
-
-``port`` packages from MacPorts package manager OS X
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Macports is one possible package manager for OS X and the one that will be
-assumed for these instructions.  Instructions are provided at the Macports
-website http://guide.macports.org/.  It is assumed that the versions of your
-software are::
-
-* Mac OS X >=10.8
-* Xcode >=4.3.1
-* MacPorts >=2.0.4 (requires Xcode)
-
-If you do not have MacPorts, then you must ensure Xcode is installed before you
-are able to install MacPorts.  Xcode is available through the AppStore but it is
-also required to go into the Xcode preferences, select the Downloads tab, and
-ensure that the "Command Line Tools" component is installed.  This is all
-outlined in the MacPorts installation guide which is referenced above.
-
-There is various Fortran code within Genie but the default XCode compiler doesn't ship with a fortran compiler.  The last two lines of the commands below deal with this.
-
-Next we must run the following commands::
-
-     sudo port install wget
-     sudo port install cmake
-     sudo port install boost +python27
-     sudo port select --set python python27
-     sudo easy_install sphinx
-     sudo port install mercurial
-     sudo port install py27-tkinter
-     sudo easy_install virtualenv
-     export EXTRAS="--with-python-incdir=$VIRTUAL_ENV/include/python2.7 --with-python-libdir=$VIRTUAL_ENV/lib"
-
-     sudo port install gcc47 +gfortran
-     sudo port select gcc mp-gcc47
-
-See :doc:`faq` about how to change the Python version in userspace.
 
 Step 2: virtualenv
 ^^^^^^^^^^^^^^^^^^
@@ -229,8 +192,8 @@ Now you can enable the Gnomon environment whenever you want by typing
 ``.bashrc`` login script equivalent.
 
 
-Genie
-^^^^^
+Step almost 7: Genie
+^^^^^^^^^^^^^^^^^^^^
 
 Please install Genie per the directions on their `website <http://www.genie-mc.org/>`_.  At the time writing, only version 2.7.1 has been tested with gnomon.  However, there is no svn tag for this release so you might want to try the trunk.  The gnomon software will only expect a file in the GST file format so it should be independent of Genie version.
 

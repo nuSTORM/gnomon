@@ -13,7 +13,6 @@ Any new configuration must inherit from ConfigurationBase.
 
 """
 
-
 import os
 import inspect
 import random
@@ -162,6 +161,7 @@ class LocalConfiguration(ConfigurationBase):
 
         self.set_json(defaults)
 
+
 class MockConfiguration(LocalConfiguration):
     """Mock configuration for testing
 
@@ -169,7 +169,6 @@ class MockConfiguration(LocalConfiguration):
     """
     pass
 
-        
 
 DEFAULT = LocalConfiguration
 GLOBAL_CONFIG = None

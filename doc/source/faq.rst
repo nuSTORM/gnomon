@@ -1,6 +1,45 @@
 Frequently Asked Questions
 =====================================
 
+Installing on a Mac
+-------------------
+
+Macports is one possible package manager for OS X and the one that will be
+assumed for these instructions.  Instructions are provided at the Macports
+website http://guide.macports.org/.  It is assumed that the versions of your
+software are::
+
+* Mac OS X >=10.8
+* Xcode >=4.3.1
+* MacPorts >=2.0.4 (requires Xcode)
+
+If you do not have MacPorts, then you must ensure Xcode is installed before you
+are able to install MacPorts.  Xcode is available through the AppStore but it is
+also required to go into the Xcode preferences, select the Downloads tab, and
+ensure that the "Command Line Tools" component is installed.  This is all
+outlined in the MacPorts installation guide which is referenced above.
+
+There is various Fortran code within Genie but the default XCode compiler doesn't ship with a fortran compiler.  The last two lines of the commands below deal with this.
+
+Next we must run the following commands::
+
+     sudo port install wget
+     sudo port install cmake
+     sudo port install boost +python27
+     sudo port select --set python python27
+     sudo easy_install sphinx
+     sudo port install mercurial
+     sudo port install py27-tkinter
+     sudo easy_install virtualenv
+
+
+     sudo port install gcc47 +gfortran
+     sudo port select gcc mp-gcc47
+
+See :doc:`faq` about how to change the Python version in userspace.
+
+
+
 On a Mac, I get "Fatal Python Error: PyThreadState"?!
 -----------------------------------------------------
 

@@ -1,9 +1,7 @@
 from unittest import TestCase
-import sys
-import argparse
-import exceptions
 from gnomon import Configuration
 from gnomon.DetectorConstruction import VlenfDetectorConstruction
+
 Configuration.DEFAULT = Configuration.MockConfiguration
 
 from gnomon import SD
@@ -83,7 +81,7 @@ class TestSD(TestCase):
 
             with self.assertRaises(AssertionError):
                 self.sd.getMCHitBarPosition(layer_number, bar_number, view,
-                                            bad_position)
+                    bad_position)
 
             self.sd.getMCHitBarPosition(
                 layer_number, bar_number, view, position)

@@ -5,7 +5,6 @@ import sys
 import argparse
 import logging
 import os
-import math
 import random
 
 # Geant4
@@ -14,6 +13,7 @@ sys.stdout = open(os.devnull)  # make fake stdout
 import Geant4 as G4  # Then silently import Geant4!
 from Geant4 import HepRandom, gRunManager
 from Geant4 import gTransportationManager, gApplyUICommand, mm
+
 sys.stdout = temp  # Then return sys.stdout
 
 # gnomon
@@ -29,7 +29,6 @@ from scipy.stats import uniform
 
 log = None  # Logger for this file
 
-
 if __name__ == "__main__":
     desc = 'Simulate the NuSTORM experiment magnetized iron detectors'
     parser = argparse.ArgumentParser(description=desc)
@@ -38,14 +37,14 @@ if __name__ == "__main__":
 
     Configuration.populate_args(parser)
     parser.add_argument('--name', '-n', help='DB in CouchDB for output',
-                        type=str, required=True)
+        type=str, required=True)
     parser.add_argument('--run', '-r', help='run number',
-                        type=int, required=True)
+        type=int, required=True)
 
     args = parser.parse_args()
 
     config_class = Configuration.DEFAULT(args.name, args.run,
-                                         overload=vars(args))
+        overload=vars(args))
     Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
 
     Logging.setupLogging(args.log_level, args.name)
@@ -98,8 +97,8 @@ if __name__ == "__main__":
             raise NotImplementedError
 
         assert config['distribution'] == 'electron' or\
-            config['distribution'] == 'muon' or\
-            config['distribution'] == 'flat'
+               config['distribution'] == 'muon' or\
+               config['distribution'] == 'flat'
 
         log.warning('Energy argument ignored... assuming 3.8 GeV muons')
 

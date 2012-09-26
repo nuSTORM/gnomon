@@ -13,7 +13,7 @@ class TestCompositeZ(TestCase):
         config = {}
         config['layers'] = 444
         config['thickness_layer'] = 40.0
-        config['thickness_bar']  = 10.0
+        config['thickness_bar'] = 10.0
         config['density_iron'] = 7.87
         config['density_scint'] = 1.06
 
@@ -26,7 +26,6 @@ class TestCompositeZ(TestCase):
             rand_val = self.dist.rvs()
             error_string = "%f %f" % (rand_val, self.max_size)
             assert -self.max_size < rand_val < self.max_size, error_string
-
 
 
 """class TestVlenfGeneratorAction(TestCase):

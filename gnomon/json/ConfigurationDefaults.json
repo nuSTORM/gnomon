@@ -1,29 +1,29 @@
 {
-    "couchdb": {
-        "commit_threshold": 1024, 
-        "url": "http://nustorm.physics.ox.ac.uk:5984/"
-    }, 
-    "distribution": "electron", 
-    "energy_MeV": 3800, 
-    "events": 100, 
-    "fiducial": {
-        "longitudinal_downstream": 10.0, 
-        "longitudinal_upstream": 120.0, 
-        "transverse_inner": 0.0, 
-        "transverse_outer": 50.0
-    }, 
-    "generator": {
-        "max_energy_GeV": 5.0, 
-        "size_of_genie_buffer": 100
-    }, 
-    "name": "test", 
-    "pid": 14, 
-    "polarity": 1.0, 
-    "run_number": 0, 
-    "seed": 0, 
-    "vertex": [
-        100, 
-        -100, 
+    "couchdb":{
+        "commit_threshold":1024,
+        "url":"http://nustorm.physics.ox.ac.uk:5984/"
+    },
+    "distribution":"electron",
+    "energy_MeV":3800,
+    "events":100,
+    "fiducial":{
+        "longitudinal_downstream":10.0,
+        "longitudinal_upstream":120.0,
+        "transverse_inner":0.0,
+        "transverse_outer":50.0
+    },
+    "generator":{
+        "max_energy_GeV":5.0,
+        "size_of_genie_buffer":100
+    },
+    "name":"test",
+    "pid":14,
+    "polarity":1.0,
+    "run_number":0,
+    "seed":0,
+    "vertex":[
+        100,
+        -100,
         0
     ]
 }

@@ -1,102 +1,102 @@
 {
-    "properties": {
-        "couchdb": {
-            "description": "Settings for CouchDB", 
-            "properties": {
-                "commit_threshold": {
-                    "description": "The number of kB required in the cache before committing to CouchDB", 
-                    "type": "integer"
-                }, 
-                "url": {
-                    "description": "The URL to a CouchDB instance.  Example, http://test.com:5984/", 
-                    "type": "string"
+    "properties":{
+        "couchdb":{
+            "description":"Settings for CouchDB",
+            "properties":{
+                "commit_threshold":{
+                    "description":"The number of kB required in the cache before committing to CouchDB",
+                    "type":"integer"
+                },
+                "url":{
+                    "description":"The URL to a CouchDB instance.  Example, http://test.com:5984/",
+                    "type":"string"
                 }
-            }, 
-            "type": "object"
-        }, 
-        "distribution": {
-            "description": "What energy distribution to use", 
-            "enum": [
-                "muon", 
-                "electron", 
-                "point", 
+            },
+            "type":"object"
+        },
+        "distribution":{
+            "description":"What energy distribution to use",
+            "enum":[
+                "muon",
+                "electron",
+                "point",
                 "flat"
-            ], 
-            "type": "string"
-        }, 
-        "energy_MeV": {
-            "description": "Particle energy in MeV.  If the PID is a neutrino, this is the muon energy", 
-            "type": "number"
-        }, 
-        "events": {
-            "description": "Number of events to simulate", 
-            "type": "integer"
-        }, 
-        "fiducial": {
-            "description": "Settings about the fiducial cuts", 
-            "properties": {
-                "longitudinal_downstream": {
-                    "description": "Allowed distance to downstream end in z [mm]", 
-                    "type": "number"
-                }, 
-                "longitudinal_upstream": {
-                    "description": "Allowed distance to downstream end in z [mm]", 
-                    "type": "number"
-                }, 
-                "transverse_inner": {
-                    "description": "Allowed distance to transverse detector center where SCTL is (x,y) [mm]", 
-                    "type": "number"
-                }, 
-                "transverse_outer": {
-                    "description": "Allowed distance to transverse outer edge (x,y) [mm]", 
-                    "type": "number"
+            ],
+            "type":"string"
+        },
+        "energy_MeV":{
+            "description":"Particle energy in MeV.  If the PID is a neutrino, this is the muon energy",
+            "type":"number"
+        },
+        "events":{
+            "description":"Number of events to simulate",
+            "type":"integer"
+        },
+        "fiducial":{
+            "description":"Settings about the fiducial cuts",
+            "properties":{
+                "longitudinal_downstream":{
+                    "description":"Allowed distance to downstream end in z [mm]",
+                    "type":"number"
+                },
+                "longitudinal_upstream":{
+                    "description":"Allowed distance to downstream end in z [mm]",
+                    "type":"number"
+                },
+                "transverse_inner":{
+                    "description":"Allowed distance to transverse detector center where SCTL is (x,y) [mm]",
+                    "type":"number"
+                },
+                "transverse_outer":{
+                    "description":"Allowed distance to transverse outer edge (x,y) [mm]",
+                    "type":"number"
                 }
-            }, 
-            "type": "object"
-        }, 
-        "generator": {
-            "description": "Generator settings", 
-            "properties": {
-                "max_energy_GeV": {
-                    "description": "Maximum energy for Genie", 
-                    "type": "number"
-                }, 
-                "size_of_genie_buffer": {
-                    "description": "How many Genie events to simulate when filling the buffer", 
-                    "type": "integer"
+            },
+            "type":"object"
+        },
+        "generator":{
+            "description":"Generator settings",
+            "properties":{
+                "max_energy_GeV":{
+                    "description":"Maximum energy for Genie",
+                    "type":"number"
+                },
+                "size_of_genie_buffer":{
+                    "description":"How many Genie events to simulate when filling the buffer",
+                    "type":"integer"
                 }
-            }, 
-            "type": "object"
-        }, 
-        "name": {
-            "description": "The file or DB name for the output", 
-            "type": "string"
-        }, 
-        "pid": {
-            "description": "PID of particle to generate.  If neutrino, Genie will be used", 
-            "type": "integer"
-        }, 
-        "polarity": {
-            "description": "Which type of muon to focus (1.0 for mu+, -1.0 for mu-, 0).  Number which is a field 'scale'.  ", 
-            "type": "number"
-        }, 
-        "run_number": {
-            "description": "The run number.  If zero, random.", 
-            "type": "integer"
-        }, 
-        "seed": {
-            "description": "Random number seed for Geant4 and Python.  If zero, system clock", 
-            "type": "integer"
-        }, 
-        "vertex": {
-            "description": "The vertex of the simulated particle [mm].  Set to -999, -999, -999 for uniform.", 
-            "items": {
-                "type": "number"
-            }, 
-            "maxItems": 3, 
-            "minItems": 3, 
-            "type": "array"
+            },
+            "type":"object"
+        },
+        "name":{
+            "description":"The file or DB name for the output",
+            "type":"string"
+        },
+        "pid":{
+            "description":"PID of particle to generate.  If neutrino, Genie will be used",
+            "type":"integer"
+        },
+        "polarity":{
+            "description":"Which type of muon to focus (1.0 for mu+, -1.0 for mu-, 0).  Number which is a field 'scale'.  ",
+            "type":"number"
+        },
+        "run_number":{
+            "description":"The run number.  If zero, random.",
+            "type":"integer"
+        },
+        "seed":{
+            "description":"Random number seed for Geant4 and Python.  If zero, system clock",
+            "type":"integer"
+        },
+        "vertex":{
+            "description":"The vertex of the simulated particle [mm].  Set to -999, -999, -999 for uniform.",
+            "items":{
+                "type":"number"
+            },
+            "maxItems":3,
+            "minItems":3,
+            "type":"array"
         }
-    }, 
-    "type": "object"
+    },
+    "type":"object"
 }

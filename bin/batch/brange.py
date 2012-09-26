@@ -1,16 +1,14 @@
 import tempfile
-import sys
 import os
 import time
 import shutil
-import math
 import random
 
 
 servers = [
     'http://gnomon:balls@nustorm.physics.ox.ac.uk:5984/',
     #'http://gnomon:balls@tasd.fnal.gov:5984/'
-    ]
+]
 
 polarity = '-'
 
@@ -55,6 +53,5 @@ time python bin/range.py %(material)s""" % {'server_url': server, 'material': ma
         print command
         os.system(command)
         time.sleep(1)
-
 
 shutil.rmtree(tempdir)

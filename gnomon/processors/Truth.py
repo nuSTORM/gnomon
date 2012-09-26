@@ -1,6 +1,5 @@
 """Add truth values to data stream"""
 
-
 from gnomon.processors import Base
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 

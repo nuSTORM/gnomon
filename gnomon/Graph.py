@@ -10,7 +10,6 @@ from pygraph.algorithms import accessibility
 
 
 class Graph():
-
     def FindParentNode(self, gr):
         transitive_closure = accessibility.accessibility(gr)
 

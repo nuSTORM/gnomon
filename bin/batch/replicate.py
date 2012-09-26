@@ -1,6 +1,5 @@
 import couchdb
 import urlparse
-import os
 
 
 servers = ['http://gnomon:balls@tasd.fnal.gov:5984/',
@@ -24,4 +23,4 @@ for dbname in master_couch:
         print '\tslave:', slave_link
 
         slave_couch.replicate(master_link, slave_link,
-                              continuous=be_continuous, create_target=True)
+            continuous=be_continuous, create_target=True)

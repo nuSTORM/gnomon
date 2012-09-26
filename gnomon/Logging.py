@@ -20,8 +20,8 @@ def addLogLevelOptionToArgs(parser):
     setting up the Configuration classes
     """
     parser.add_argument('--log_level',
-                        choices=getLogLevels(),
-                        default='INFO')
+        choices=getLogLevels(),
+        default='INFO')
 
 
 class StreamToLogger(object):
@@ -42,10 +42,10 @@ def setupLogging(console_level, name):
     output_filename = 'gnomon_%s_%s.log' % (name, str(uuid.uuid4()))
 
     output_filename = os.path.join(config['log_dir'],
-                                   output_filename)
+        output_filename)
 
     logging.basicConfig(filename=output_filename, mode='w',
-                        level=logging.DEBUG)
+        level=logging.DEBUG)
 
     console_handler = logging.StreamHandler(sys.__stdout__)
     console_handler.setLevel(console_level)

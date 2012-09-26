@@ -8,9 +8,9 @@ Development
 
 Gnomon is under heavy development.  Tagged releases will happen soon,
 but in the meantime we encourage people to obtain the code directly
-from the Mercurial repository hosted at Bitbucket:
+from the git repository hosted at github:
 
-  http://bitbucket.org/gnomon/gnomon
+  https://github.com/nuSTORM/gnomon
 
 
 

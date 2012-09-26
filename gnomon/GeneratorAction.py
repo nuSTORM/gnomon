@@ -19,7 +19,6 @@ import gnomon.Configuration as Configuration
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 from scipy.stats.distributions import rv_frozen
 import scipy
-import random
 
 
 def lookup_cc_partner(nu_pid):
@@ -93,13 +92,13 @@ class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
             pp.SetPDGcode(particle['pid'])
 
             pp.SetMomentum(particle['momentum']['x'],
-                           particle['momentum']['y'],
-                           particle['momentum']['z'])
+                particle['momentum']['y'],
+                particle['momentum']['z'])
 
             v = G4.G4PrimaryVertex()
             v.SetPosition(particle['position']['x'],
-                          particle['position']['y'],
-                          particle['position']['z'])
+                particle['position']['y'],
+                particle['position']['z'])
 
             v.SetPrimary(pp)
 
@@ -320,8 +319,8 @@ class GenieGenerator(Generator):
         self.log.info('Neutrino energy distribution: %s' % self.energy_distribution)
 
         if self.energy_distribution == 'muon' or\
-                self.energy_distribution == 'electron' or\
-                self.energy_distribution == 'flat':
+           self.energy_distribution == 'electron' or\
+           self.energy_distribution == 'flat':
             # muon, electron, or flat
 
             command += ' -e 0.1,%f' % max_energy
@@ -331,7 +330,7 @@ class GenieGenerator(Generator):
             #  approximation in the far detector limit ONLY.
             flux_filename = 'flux_file_%s.dat' % self.energy_distribution[0]
             flux_filename = os.path.join(self.config['data_dir'],
-                                         flux_filename)
+                flux_filename)
 
             command += ' -f %s' % flux_filename
         elif type(self.energy_distribution) == float:
@@ -344,22 +343,22 @@ class GenieGenerator(Generator):
         print filename
 
         intermediate_file = os.path.join(self.genie_temp_dir,
-                                         "gntp.%d.ghep.root" % self.config['run_number'])
+            "gntp.%d.ghep.root" % self.config['run_number'])
 
         command = """cd %(tmpdir)s
 %(command)s
 DISPLAY= gntpc -i %(int_file)s -o %(filename)s -f gst
-""" % { "tmpdir" : self.genie_temp_dir,
-        "command" : command,
-        "int_file" : intermediate_file,
-        "filename" : filename }
+""" % {"tmpdir": self.genie_temp_dir,
+       "command": command,
+       "int_file": intermediate_file,
+       "filename": filename}
 
         self.log.info('Running the command: %s', command)
 
         s = subprocess.Popen(command,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE,
-                             shell=True) # unsafe, but no easy way TODO
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True) # unsafe, but no easy way TODO
 
         # Trick to send stdout -> debug
         while True:
@@ -400,13 +399,13 @@ DISPLAY= gntpc -i %(int_file)s -o %(filename)s -f gst
 
             position = convert_3vector_to_dict([self.particle['position']['x'].get_cache(),
                                                 self.particle['position'][
-                                                    'y'].get_cache(),
+                                                'y'].get_cache(),
                                                 self.particle['position']['z'].get_cache()])
 
             lepton_event = {}
             if t.El ** 2 - (t.pxl ** 2 + t.pyl ** 2 + t.pzl ** 2) < 1e-7:
                 lepton_event['pid'] = self.particle[
-                    'pid'].get()  # Either NC or ES
+                                      'pid'].get()  # Either NC or ES
             else:
                 lepton_event['pid'] = lookup_cc_partner(
                     self.particle['pid'].get())

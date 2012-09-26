@@ -6,6 +6,7 @@ import exceptions
 import logging  # python's
 import gnomon.Logging as Logging  # gnomon's
 from gnomon import Configuration
+
 Configuration.DEFAULT = Configuration.MockConfiguration
 
 
