@@ -30,7 +30,7 @@ class TestCompositeZ(TestCase):
 
 """class TestVlenfGeneratorAction(TestCase):
     def setUp(self):
-        self.ga = GA.VlenfGeneratorAction()
+        self.ga = GA.GnomonGeneratorAction()
 
     def test_log(self):
         self.ga.log.debug('test')

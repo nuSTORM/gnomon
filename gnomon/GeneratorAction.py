@@ -67,7 +67,7 @@ def is_neutrino_code(pdg_code):
     return False
 
 
-class VlenfGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
+class GnomonGeneratorAction(G4.G4VUserPrimaryGeneratorAction):
     """Geant4 interface class"""
 
     def __init__(self, generator):
