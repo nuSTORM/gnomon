@@ -48,7 +48,7 @@ class ConfigurationBase(object):
         if self.configuration_dict is not None:
             raise RuntimeError("Can only set configuration once", self.configuration_dict)
 
-        schema = self.fetch_config('ConfigurationSchema.json')
+        schema = fetch_config('ConfigurationSchema.json')
         validictory.validate(config_json, schema)
 
         config_json['name'] = self.name
@@ -68,7 +68,7 @@ class LocalConfiguration(ConfigurationBase):
                  filename='ConfigurationDefaults.json'):
         ConfigurationBase.__init__(self, name, run)
 
-        defaults = self.fetch_config(filename)
+        defaults = fetch_config(filename)
 
         if overload:
             for key, val in overload.iteritems():
