@@ -104,44 +104,46 @@ class ConfigurationBase(object):
         my_dict = json.loads(fileobj.read())
         return my_dict
 
-    def populate_args(self, parser):
-        """Add commandline arguments to parser from schema
-        """
-        schema = self.fetch_config('ConfigurationSchema.json')
 
-        self.populate_args_level(schema, parser)
+def populate_args(self, parser):
+    """Add commandline arguments to parser from schema
+    """
+    schema = self.fetch_config('ConfigurationSchema.json')
 
-    def populate_args_level(self, schema, parser):
-        """Use a schema to populate a command line argument parser"""
-        for key, value in schema['properties'].iteritems():
-            if key == 'name':
-                continue
+    self.populate_args_level(schema, parser)
 
-            arg = '--%s' % key
-            desc = value['description']
 
-            if 'type' in value:
-                if value['type'] == 'string':
-                    if 'enum' in value:
-                        parser.add_argument(arg, help=desc, type=str,
-                            choices=value['enum'])
-                    else:
-                        parser.add_argument(arg, help=desc, type=str)
-                elif value['type'] == 'number':
-                    parser.add_argument(arg, help=desc, type=float)
-                elif value['type'] == 'integer':
-                    parser.add_argument(arg, help=desc, type=int)
-                elif str(value['type']) == 'array':
-                    assert value['minItems'] == value['maxItems']
+def populate_args_level(self, schema, parser):
+    """Use a schema to populate a command line argument parser"""
+    for key, value in schema['properties'].iteritems():
+        if key == 'name':
+            continue
 
-                    if value['items']['type'] != 'number':
-                        raise NotImplementedError("Only float arrays work")
-                    parser.add_argument(arg, help=desc, type=float,
-                        nargs=value['maxItems'], metavar='N')
-                elif value['type'] == 'object':
-                    #group = parser.add_argument_group(key, value['description'])
-                    #populate_args_level(value, group)
-                    pass
+        arg = '--%s' % key
+        desc = value['description']
+
+        if 'type' in value:
+            if value['type'] == 'string':
+                if 'enum' in value:
+                    parser.add_argument(arg, help=desc, type=str,
+                        choices=value['enum'])
+                else:
+                    parser.add_argument(arg, help=desc, type=str)
+            elif value['type'] == 'number':
+                parser.add_argument(arg, help=desc, type=float)
+            elif value['type'] == 'integer':
+                parser.add_argument(arg, help=desc, type=int)
+            elif str(value['type']) == 'array':
+                assert value['minItems'] == value['maxItems']
+
+                if value['items']['type'] != 'number':
+                    raise NotImplementedError("Only float arrays work")
+                parser.add_argument(arg, help=desc, type=float,
+                    nargs=value['maxItems'], metavar='N')
+            elif value['type'] == 'object':
+                #group = parser.add_argument_group(key, value['description'])
+                #populate_args_level(value, group)
+                pass
 
 
 class LocalConfiguration(ConfigurationBase):
