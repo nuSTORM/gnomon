@@ -20,7 +20,6 @@ sys.stdout = temp  # Then return sys.stdout
 from gnomon import Configuration
 from gnomon import EventAction
 from gnomon import GeneratorAction
-from gnomon import TrackingAction
 from gnomon.DetectorConstruction import MagIronSamplingCaloDetectorConstruction
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 from gnomon import Logging
@@ -109,7 +108,7 @@ if __name__ == "__main__":
             raise NotImplementedError
         pga = GeneratorAction.ParticleGenerator(pos, mom, pid)
 
-    pga = GeneratorAction.VlenfGeneratorAction(pga)
+    pga = GeneratorAction.GeneratorAction(pga)
     gRunManager.SetUserAction(pga)
 
     processors = []
@@ -125,11 +124,8 @@ if __name__ == "__main__":
     processors.append("SaveInteresting")
     processors.append("CouchManager")
 
-    myEA = EventAction.VlenfEventAction(processors)
+    myEA = EventAction.EventAction(processors)
     gRunManager.SetUserAction(myEA)
-
-    myTA = TrackingAction.LengthTrackingAction()
-    gRunManager.SetUserAction(myTA)
 
     gRunManager.Initialize()
 
