@@ -1,0 +1,54 @@
+{
+    "properties":{
+        "analyzable":{
+            "description":"Is the event analyzable (successful fit and track extraction)",
+            "type":"boolean"
+        },
+        "classification":{
+            "description":"various classifications of the event",
+            "properties":{
+                "n_planes":{
+                    "description":"Number of hit planes",
+                    "type":"integer"
+                }
+            },
+            "type":"object"
+        },
+        "cuts":{
+            "description":"cut results",
+            "properties":{
+                "appearance":{
+                    "description":"appearance analysis",
+                    "properties":{
+                        "all":{
+                            "description":"all cuts passed?",
+                            "type":"boolean"
+                        }
+                    },
+                    "type":"object"
+                },
+                "fiducial":{
+                    "description":"fiducial analysis",
+                    "properties":{
+                        "all":{
+                            "description":"all cuts passed?",
+                            "type":"boolean"
+                        }
+                    },
+                    "type":"object"
+                }
+            },
+            "type":"object"
+        },
+        "event":{
+            "description":"The event number",
+            "type":"integer"
+        },
+        "run":{
+            "description":"The event number",
+            "type":"integer"
+        },
+        "type":"object"
+    },
+    "type":"object"
+}
