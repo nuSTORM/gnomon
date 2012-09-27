@@ -105,7 +105,7 @@ class ConfigurationBase(object):
         return my_dict
 
 
-def populate_args(self, parser):
+def populate_args(parser):
     """Add commandline arguments to parser from schema
     """
     schema = self.fetch_config('ConfigurationSchema.json')
@@ -113,7 +113,7 @@ def populate_args(self, parser):
     self.populate_args_level(schema, parser)
 
 
-def populate_args_level(self, schema, parser):
+def populate_args_level(schema, parser):
     """Use a schema to populate a command line argument parser"""
     for key, value in schema['properties'].iteritems():
         if key == 'name':
