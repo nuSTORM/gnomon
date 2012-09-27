@@ -59,6 +59,11 @@ class ConfigurationBase(object):
 
         self.configuration_dict = config_json
 
+    def get_configuration_dict(self):
+        """Return configuration as a dictionary
+        """
+        return self.configuration_dict
+
 
 class LocalConfiguration(ConfigurationBase):
     """Read a configuration from disk and overload if necessary
@@ -84,12 +89,6 @@ class MockConfiguration(LocalConfiguration):
     This is just a copy of LocalConfiguration for now
     """
     pass
-
-
-def get_configuration_dict():
-    """Return configuration as a dictionary
-    """
-    return self.configuration_dict
 
 
 def get_source_dir():

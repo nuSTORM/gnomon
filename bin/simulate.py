@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     config_class = Configuration.DEFAULT(args.name, args.run,
         overload=vars(args))
-    Configuration.GLOBAL_CONFIG = Configuration.get_configuration_dict()
+    Configuration.GLOBAL_CONFIG = config_class.get_configuration_dict()
 
     Logging.setupLogging(args.log_level, args.name)
     log = logging.getLogger('root').getChild('simulate')
