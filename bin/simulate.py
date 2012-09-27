@@ -21,7 +21,7 @@ from gnomon import Configuration
 from gnomon import EventAction
 from gnomon import GeneratorAction
 from gnomon import TrackingAction
-from gnomon.DetectorConstruction import VlenfDetectorConstruction
+from gnomon.DetectorConstruction import MagIronSamplingCaloDetectorConstruction
 from gnomon.Configuration import RUNTIME_CONFIG as rc
 from gnomon import Logging
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         log.info('Using seed %d', seed)
     HepRandom.setTheSeed(seed)
 
-    detector = VlenfDetectorConstruction(field_polarity=config['polarity'])
+    detector = MagIronSamplingCaloDetectorConstruction(field_polarity=config['polarity'])
     gRunManager.SetUserInitialization(detector)
 
     physics_list = G4.G4physicslists.QGSP_BERT()
