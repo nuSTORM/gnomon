@@ -108,7 +108,7 @@ if __name__ == "__main__":
             raise NotImplementedError
         pga = GeneratorAction.ParticleGenerator(pos, mom, pid)
 
-    pga = GeneratorAction.GeneratorAction(pga)
+    pga = GeneratorAction.VlenfGeneratorAction(pga)
     gRunManager.SetUserAction(pga)
 
     processors = []
