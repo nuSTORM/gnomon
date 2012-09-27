@@ -26,7 +26,6 @@ import validictory
 
 
 
-
 class ConfigurationBase(object):
     """Base class for all configuration classes
 
@@ -60,57 +59,86 @@ class ConfigurationBase(object):
 
         self.configuration_dict = config_json
 
-    def get_configuration_dict(self):
-        """Return configuration as a dictionary
-        """
-        return self.configuration_dict
 
-    def get_source_dir(self):
-        """Find where the truth path to the directory containing the Configuration module source code
+class LocalConfiguration(ConfigurationBase):
+    """Read a configuration from disk and overload if necessary
+    """
 
-        It can be useful to know the full path to the Configuration module's source code in order to try to guess where the
-        data and log files are stored.  It does this by inspecting the current running python instance."""
+    def __init__(self, name, run=0, overload=None,
+                 filename='ConfigurationDefaults.json'):
+        ConfigurationBase.__init__(self, name, run)
 
-        #  This trick gets the directory of *this* file Configuration.py thus
-        # allowing to find the schema files relative to this file.
-        return os.path.dirname(inspect.getfile(inspect.currentframe()))
+        defaults = self.fetch_config(filename)
 
+        if overload:
+            for key, val in overload.iteritems():
+                if val is not None:
+                    defaults[key] = val
 
-    def get_data_dir(self):
-        """Find the data directory that stores geometries, cross sections, etc."""
-        src_dir = self.get_source_dir()
-        return os.path.join(src_dir, '../data')
+        self.set_json(defaults)
 
 
-    def get_log_dir(self):
-        """Find the directory used for saving log files"""
-        src_dir = self.get_source_dir()
-        return os.path.join(src_dir, '../log')
+class MockConfiguration(LocalConfiguration):
+    """Mock configuration for testing
 
-    def fetch_config(self, filename):
-        """Fetch the Configuration schema information
+    This is just a copy of LocalConfiguration for now
+    """
+    pass
 
-        Finds the schema file, loads the file and reads the JSON, then converts to a dictionary that is returned
-        """
 
-        #  This trick gets the directory of *this* file Configuration.py thus
-        # allowing to find the schema files relative to this file.
-        dir_name = self.get_source_dir()
+def get_configuration_dict(self):
+    """Return configuration as a dictionary
+    """
+    return self.configuration_dict
 
-        # Append json
-        filename = os.path.join('json', filename)
 
-        fileobj = open(os.path.join(dir_name, filename), 'r')
-        my_dict = json.loads(fileobj.read())
-        return my_dict
+def get_source_dir(self):
+    """Find where the truth path to the directory containing the Configuration module source code
+
+    It can be useful to know the full path to the Configuration module's source code in order to try to guess where the
+    data and log files are stored.  It does this by inspecting the current running python instance."""
+
+    #  This trick gets the directory of *this* file Configuration.py thus
+    # allowing to find the schema files relative to this file.
+    return os.path.dirname(inspect.getfile(inspect.currentframe()))
+
+
+def get_data_dir():
+    """Find the data directory that stores geometries, cross sections, etc."""
+    src_dir = get_source_dir()
+    return os.path.join(src_dir, '../data')
+
+
+def get_log_dir():
+    """Find the directory used for saving log files"""
+    src_dir = get_source_dir()
+    return os.path.join(src_dir, '../log')
+
+
+def fetch_config(filename):
+    """Fetch the Configuration schema information
+
+    Finds the schema file, loads the file and reads the JSON, then converts to a dictionary that is returned
+    """
+
+    #  This trick gets the directory of *this* file Configuration.py thus
+    # allowing to find the schema files relative to this file.
+    dir_name = get_source_dir()
+
+    # Append json
+    filename = os.path.join('json', filename)
+
+    fileobj = open(os.path.join(dir_name, filename), 'r')
+    my_dict = json.loads(fileobj.read())
+    return my_dict
 
 
 def populate_args(parser):
     """Add commandline arguments to parser from schema
     """
-    schema = self.fetch_config('ConfigurationSchema.json')
+    schema = fetch_config('ConfigurationSchema.json')
 
-    self.populate_args_level(schema, parser)
+    populate_args_level(schema, parser)
 
 
 def populate_args_level(schema, parser):
@@ -144,32 +172,6 @@ def populate_args_level(schema, parser):
                 #group = parser.add_argument_group(key, value['description'])
                 #populate_args_level(value, group)
                 pass
-
-
-class LocalConfiguration(ConfigurationBase):
-    """Read a configuration from disk and overload if necessary
-    """
-
-    def __init__(self, name, run=0, overload=None,
-                 filename='ConfigurationDefaults.json'):
-        ConfigurationBase.__init__(self, name, run)
-
-        defaults = self.fetch_config(filename)
-
-        if overload:
-            for key, val in overload.iteritems():
-                if val is not None:
-                    defaults[key] = val
-
-        self.set_json(defaults)
-
-
-class MockConfiguration(LocalConfiguration):
-    """Mock configuration for testing
-
-    This is just a copy of LocalConfiguration for now
-    """
-    pass
 
 
 DEFAULT = LocalConfiguration
