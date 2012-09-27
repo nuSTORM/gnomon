@@ -86,13 +86,13 @@ class MockConfiguration(LocalConfiguration):
     pass
 
 
-def get_configuration_dict(self):
+def get_configuration_dict():
     """Return configuration as a dictionary
     """
     return self.configuration_dict
 
 
-def get_source_dir(self):
+def get_source_dir():
     """Find where the truth path to the directory containing the Configuration module source code
 
     It can be useful to know the full path to the Configuration module's source code in order to try to guess where the
