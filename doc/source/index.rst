@@ -46,6 +46,7 @@ User Documentation
    :maxdepth: 2
 
    install
+   createproc
    gnomon.processors
    faq
    cheat
