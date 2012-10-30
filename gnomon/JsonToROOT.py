@@ -1,10 +1,14 @@
 """Create a ROOT file from a Schema and JSON output"""
 
 import ROOT
+import logging
 from collections import Mapping, Set, Sequence
 import validictory
 
-class JsonToRootConverter(object):
+# Maximum buffer size for an array in the ROOT output
+BUFFER_SIZE = 1024
+
+class JsonToROOTConverter(object):
     """Convert JSON output to a ROOT file
 
     Start with a JSON schema which maps keys to their type and also where in the ROOT
@@ -13,6 +17,9 @@ class JsonToRootConverter(object):
     the branches within the struct."""
 
     def __init__(self, schema):
+        self.log = logging.getLogger('root')
+        self.log = self.log.getChild(self.__class__.__name__)
+
         self.schema = schema
 
         #  Create ROOT file and TTree
@@ -24,9 +31,8 @@ class JsonToRootConverter(object):
         self.names_lookup, self.types_lookup = self.make_lookups(schema)
         my_struct_code = self.form_cint(self.names_lookup, self.types_lookup)
 
-        print 'Using following structure for converting Python: %s' %  my_struct_code
-        print 'name lookup', self.names_lookup
-
+        self.log.info('Using following structure for converting Python: %s' %  my_struct_code)
+        
         ROOT.gROOT.ProcessLine(my_struct_code)
 
         from ROOT import MyStruct
@@ -42,7 +48,7 @@ class JsonToRootConverter(object):
                 code = 'C'
             elif my_type == 'integer':
                 code = 'I'
-            elif my_type == 'number':
+            elif my_type == 'number' or my_type == 'array':
                 code = 'F'
             elif my_type == 'object':
                 pass
@@ -52,29 +58,45 @@ class JsonToRootConverter(object):
                 raise ValueError
 
             x = ROOT.AddressOf(self.my_struct, str(name))
-
-            self.t.Branch(name, x,  '%s/%s' % (name, code))
+            if my_type == 'array':
+                self.t.Branch(name, x,  '%s[%d]/%s' % (name, BUFFER_SIZE, code))
+            else:
+                self.t.Branch(name, x,  '%s/%s' % (name, code))
 
     def Process(self, doc):
         try:
             validictory.validate(doc, self.schema, required_by_default=False)
-        except ValueError, error:
-            print error
+        except:
             raise
         
+        default = -99999
+
+        for key in self.names_lookup.values():
+            if isinstance(getattr(self.my_struct, key), (float, int)):
+                setattr(self.my_struct, key, default)  # not defined, ie. default
+            elif isinstance(getattr(self.my_struct, key), (str)):
+                setattr(self.my_struct, key, str(-9999))  # not defined, ie. default  
+                
+
         for key, val in self.objwalk(doc):
-            trunc_key = key  # trunacte off end 
-            if len(trunc_key) > 1 and trunc_key[0] == 'mc':
-                continue
-            #print trunc_key, self.names_lookup.keys()
-            if trunc_key in self.names_lookup.keys():
+            if key in self.names_lookup.keys():
                 setattr(self.my_struct,
-                        self.names_lookup[trunc_key],
+                        self.names_lookup[key],
                         val)
-                self.t.Fill()
-                print 'fill', val, self.names_lookup[trunc_key]
+
+            # check if list
+            if len(key) > 1 and isinstance(key[-1], int) and key[0:-1] in self.names_lookup.keys():
+                temp = getattr(self.my_struct,
+                               self.names_lookup[key[0:-1]])
+                temp[key[-1]] = val
+                setattr(self.my_struct,
+                        self.names_lookup[key[0:-1]],
+                        temp)
+
+        self.t.Fill()
 
     def Shutdown(self):
+        self.file.cd()
         self.t.Write("treegnome")
         #self.file.Write()
 
@@ -91,17 +113,14 @@ class JsonToRootConverter(object):
 
             trunc_key = tuple([x for x in list(trunc_key) if x != 'properties'])
 
-            print trunc_key
             if key[-1] == 'description':
                 names_lookup[trunc_key] = val
-                print 'hi'
             elif key[-1] == 'type':
-                print 'bye'
                 types_lookup[trunc_key] = val
             else:
                 pass
 
-        print 'TEST', names_lookup
+        self.log.info("Names lookup",  names_lookup)
 
         return names_lookup, types_lookup
 
@@ -120,6 +139,8 @@ class JsonToRootConverter(object):
                 my_struct_code += 'float %s;' % name
             elif my_type == "boolean":
                 my_struct_code += 'bool %s;' % name
+            elif my_type == 'array':
+                my_struct_code += 'float %s[%d];' % (name, BUFFER_SIZE)
 
         my_struct_code += '};'
 

@@ -54,6 +54,17 @@ class EmptyTrackFromDigits(Base.Processor):
         doc['classification'] = {}
         doc['tracks'] = tracks
 
+
+        doc['digitized_hits'] = {
+            'xview' : {'x':[], 'z':[], 'adc':[]},
+            'yview' : {'y':[], 'z':[], 'adc':[]},
+            }
+
+        for view in ['x', 'y']:
+            if len(tracks[view]['LEFTOVERS']) > 0:
+                a, b, c = zip(*tracks[view]['LEFTOVERS'])
+                doc['digitized_hits']['%sview' % view] = {'z':a, view : b, 'adc':c}
+        
         new_docs.append(doc)
 
         return new_docs

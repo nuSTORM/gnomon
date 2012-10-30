@@ -398,8 +398,7 @@ DISPLAY= gntpc -i %(int_file)s -o %(filename)s -f gst
             next_events = []
 
             position = convert_3vector_to_dict([self.particle['position']['x'].get_cache(),
-                                                self.particle['position'][
-                                                'y'].get_cache(),
+                                                self.particle['position']['y'].get_cache(),
                                                 self.particle['position']['z'].get_cache()])
 
             lepton_event = {}
@@ -432,6 +431,8 @@ DISPLAY= gntpc -i %(int_file)s -o %(filename)s -f gst
                 next_events.append(hadron_event)
 
             event_type = {}
+
+            event_type['vertex'] = position
 
             to_save = {} # maps our names to Genie gst names
             to_save['incoming_neutrino'] = 'neu'

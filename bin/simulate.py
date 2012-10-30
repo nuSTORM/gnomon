@@ -122,6 +122,7 @@ if __name__ == "__main__":
     processors.append("AppendTruth")
     processors.append("AppearanceCuts")
     processors.append("SaveInteresting")
+    processors.append("CreateROOTDigitizedHits")
     processors.append("CouchManager")
 
     myEA = EventAction.EventAction(processors)
